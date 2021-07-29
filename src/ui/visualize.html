@@ -1,0 +1,85 @@
+<sly-card title="Visualize"
+          subtitle="track video processing"
+          ref="step5"
+          :options="{collapsable: true}"
+          :collapsed.sync="state.collapsed5"
+          :disabled="{disabled: state.disabled5, message: 'complete stage 4'}">
+    <el-button v-if="!data.done5 && !data.progressUploadDir"
+               type="primary" class="regular"
+               @click="state.visualizingStarted = true; command('visualize_videos')"
+               :loading="state.visualizingStarted === true"
+    >
+        <i class="zmdi zmdi-play mr5" v-if="!state.visualizingStarted"></i> Visualize
+    </el-button>
+
+    <div v-if="data.outputUrl" class="mt15 mb15">
+        <div>
+            <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
+            <span style="color: #5a6772;">Visualizing has been successfully finished</span>
+        </div>
+        <sly-field style="padding-top: 20px;"
+               title="Project has created"
+               description="">
+        <sly-field title="" description="Project">
+            <a slot="title" target="_blank"
+               :href="`/projects/${data.dstProjectId}/datasets`">{{ data.dstProjectName }}</a>
+            <sly-icon slot="icon" :options="{ imageUrl: `${data.dstProjectPreviewUrl}` }"/>
+        </sly-field>
+    </sly-field>
+        <sly-field style="padding-top: 0px;"
+                   v-if="data.outputUrl"
+                   title="Visualization files"
+                   description="">
+            <sly-field title="Visualizing data"
+                       description="Visualizing data has been uploaded to Team Files">
+                <a slot="title" target="_blank" :href="`${data.outputUrl}`">{{data.outputName}}</a>
+                <sly-icon slot="icon" :options="{ color: '#33c94c', bgColor: '#d9f7e4', rounded: false }">
+                    <i class="zmdi zmdi-folder"></i>
+                </sly-icon>
+            </sly-field>
+        </sly-field>
+
+    </div>
+    <sly-field style="padding-top: 0px;"
+               v-if="data.outputUrl"
+               title="Grid preview"
+               description="">
+        <video v-if="data.gridPreview" controls style="max-height: 650px; max-width: 100%;">
+
+            <!--                <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">-->
+            <source :src="data.gridPreview" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </sly-field>
+
+    <div v-if="data.progressUploadDir && !data.outputUrl" style="padding-top: 10px">
+        <div style="color: #20a0ff">
+            {{data.progressUploadDir}}: {{data.progressCurrentUploadDir}} / {{data.progressTotalUploadDir}}
+        </div>
+        <el-progress :percentage="data.progressPercentUploadDir"></el-progress>
+    </div>
+
+    <div v-if="data.progressModels "
+         style="padding-top: 20px; ">
+        <div v-if="data.progressModels" class="">
+            <div style="color: #20a0ff">
+                {{data.progressModels}}: {{data.progressCurrentModels}} / {{data.progressTotalModels}}
+            </div>
+            <el-progress :percentage="data.progressPercentModels"></el-progress>
+        </div>
+        <div v-if="data.progressVideos" class="mt10">
+            <div style="color: #20a0ff">
+                {{data.progressVideos}}: {{data.progressCurrentVideos}} / {{data.progressTotalVideos}}
+            </div>
+            <el-progress :percentage="data.progressPercentVideos"></el-progress>
+        </div>
+        <div v-if="data.progressUploadVideo" class="mt10">
+            <div style="color: #20a0ff">
+                {{data.progressUploadVideo}}: {{data.progressCurrentUploadVideo}} / {{data.progressTotalUploadVideo}}
+            </div>
+            <el-progress :percentage="data.progressPercentUploadVideo"></el-progress>
+        </div>
+
+    </div>
+
+</sly-card>

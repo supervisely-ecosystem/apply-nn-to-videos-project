@@ -1,0 +1,36 @@
+<sly-card
+        title="Input data"
+        subtitle="Download videos from project"
+        :options="{collapsable: true}"
+        :collapsed.sync="state.collapsed1"
+        ref="step1"
+>
+    <sly-field title="" description="Project">
+        <a slot="title" target="_blank"
+           :href="`/projects/${data.projectId}/datasets`">{{data.projectName}} ({{data.projectItemsCount}}
+            videos)</a>
+        <sly-icon slot="icon" :options="{ imageUrl: `${data.projectPreviewUrl}` }"/>
+    </sly-field>
+    <el-button
+            style="margin-top: 8px"
+            type="primary"
+            class="regular"
+            :loading="data.progressInputProject"
+            @click="command('select_projects_handler')"
+            v-if="!data.done1">
+        Select
+    </el-button>
+
+    <div v-if="data.progressInputProject && !data.done1" class="mb5" style="padding-top: 20px">
+        <div style="color: #20a0ff">{{data.progressInputProject}}: {{data.progressCurrentInputProject}} /
+            {{data.progressTotalInputProject}}
+        </div>
+        <el-progress :percentage="data.progressPercentInputProject"></el-progress>
+    </div>
+
+    <div v-if="data.done1" style="padding-top: 8px">
+        <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
+        <span style="color: #5a6772;">Project has been successfully selected</span>
+    </div>
+</sly-card>
+
