@@ -7,6 +7,7 @@ import connect_to_model
 import choose_classes
 import choose_videos
 import parameters
+import output_data
 
 # import visualize
 
@@ -21,6 +22,7 @@ def init(data, state):
     choose_classes.init(data, state)  # 3 stage
     choose_videos.init(data, state)  # 4 stage
     parameters.init(data, state)  # 5 stage
+    output_data.init(data, state)  # 6 stage
 
 
 
@@ -50,6 +52,11 @@ def restart(api: sly.Api, task_id, context, state, app_logger):
             parameters.restart(data, state)
         else:
             parameters.init(data, state)
+    if restart_from_step <= 6:
+        if restart_from_step == 6:
+            output_data.restart(data, state)
+        else:
+            output_data.init(data, state)
 
     fields = [
         {"field": "data", "payload": data, "append": True, "recursive": False},

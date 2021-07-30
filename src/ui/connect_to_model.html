@@ -20,7 +20,7 @@
                     :disabled="!state.sessionId"
                     @click="state.connectionLoading=true; command('connect')"
             >
-              <i class="zmdi zmdi-refresh mr10" v-if="!state.connectionLoading"></i>Connect
+                <i class="zmdi zmdi-refresh mr10" v-if="!state.connectionLoading"></i>Connect
             </el-button>
 
         </div>
@@ -42,14 +42,16 @@
             </sly-icon>
         </sly-field>
         <div v-for="v,k in data.modelInfo" class="mb10" style="word-break: break-all;">
-            <b>{{k}}</b>: <span>{{v}}</span>
+            <div style="margin-bottom: 4px">
+                <b>{{k}}</b>: <span>{{v}}</span>
+            </div>
         </div>
 
 
         <el-button type="warning" class="regular mt10" :plain="true"
                    @click="state.restartFrom = 2;"
                    v-if="data.connected === true"
-                   :disabled="state.applyingStarted">
+                   :disabled="state.annotatingStarted">
             <i class="zmdi zmdi-rotate-left mr5"></i> reselect
         </el-button>
     </div>

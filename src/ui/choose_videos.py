@@ -14,6 +14,9 @@ def init(data, state):
     state["loadingStats"] = False
     state["selectedVideos"] = []
 
+    state['framesMin'] = {}
+    state['framesMax'] = {}
+
     data["done4"] = False
     state["collapsed4"] = True
     state["disabled4"] = True
@@ -25,6 +28,8 @@ def restart(data, state):
 
 def get_videos_info(project_id):
     general_videos_info = []
+    frames_min = {}
+    frames_max = {}
 
     ds_ids = g.api.dataset.get_list(project_id)
     for ds_id in ds_ids:
@@ -36,13 +41,22 @@ def get_videos_info(project_id):
                  "dataset": ds_id.name,
                  "framesCount": video_info.frames_count,
                  "framesRange": "-",
-                 "framesMin": 0,
-                 "framesMax": video_info.frames_count - 1,
+
                  "isDisabled": True if video_info.frames_count < 5 else False,
 
-                 'videoId': video_info.id
+                 'videoId': video_info.id,
+                 'videoHash': video_info.hash
                  }
             )
+
+            frames_min[f"[{ds_id.name}] {video_info.name}"] = 0
+            frames_max[f"[{ds_id.name}] {video_info.name}"] = video_info.frames_count - 1,
+
+    fields = [
+        {"field": f"state.framesMin", "payload": frames_min},
+        {"field": f"state.framesMax", "payload": frames_max},
+    ]
+    g.api.task.set_fields(g.task_id, fields)
 
     return general_videos_info
 

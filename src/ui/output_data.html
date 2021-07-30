@@ -1,0 +1,45 @@
+<sly-card title="Apply NN to video project"
+          subtitle="track video processing"
+          ref="step6"
+          :options="{collapsable: true}"
+          :collapsed.sync="state.collapsed6"
+          :disabled="{disabled: state.disabled6, message: 'complete stage 5'}">
+
+    <el-button v-if="!data.done6"
+               type="primary" class="regular"
+               @click="state.annotatingStarted = true; command('start_annotation')"
+               :loading="state.annotatingStarted === true"
+    >
+        <i class="zmdi zmdi-play mr5" v-if="!state.annotatingStarted"></i> start
+    </el-button>
+
+    <div v-if="data.dstProjectName" class="mt5 mb10">
+        <sly-field style="padding-top: 0; margin-bottom: 6px"
+                   title="Project preview"
+                   description="">
+            <sly-field title="" description="Project">
+                <a slot="title" target="_blank"
+                   :href="`/projects/${data.dstProjectId}/datasets`">{{ data.dstProjectName }}</a>
+                <sly-icon slot="icon" :options="{ imageUrl: `${data.dstProjectPreviewUrl}` }"/>
+            </sly-field>
+        </sly-field>
+        <div>
+            <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
+            <span style="color: #5a6772;">Annotated project successfully created</span>
+        </div>
+
+
+    </div>
+
+
+    <div v-if="data.progressVideos"
+         style="padding-top: 20px; ">
+        <div v-if="data.progressVideos">
+            <div style="color: #20a0ff">
+                {{data.progressVideos}}: {{data.progressCurrentVideos}} / {{data.progressTotalVideos}}
+            </div>
+            <el-progress :percentage="data.progressPercentVideos"></el-progress>
+        </div>
+    </div>
+
+</sly-card>

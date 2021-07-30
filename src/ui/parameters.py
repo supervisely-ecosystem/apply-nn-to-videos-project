@@ -27,20 +27,21 @@ def get_video_for_preview():
     videos_table = g.api.app.get_field(g.task_id, 'data.videosTable')
     selected_videos = g.api.app.get_field(g.task_id, 'state.selectedVideos')
 
+    frames_min = g.api.app.get_field(g.task_id, 'state.framesMin')
+    frames_max = g.api.app.get_field(g.task_id, 'state.framesMax')
+
     random.shuffle(selected_videos)
     video_name = selected_videos[0]
 
     video_info = [row for row in videos_table if row['name'] == video_name][0]
 
     start_frame = 0
-    end_frame = video_info['framesMax'] + 1
-    while end_frame > video_info['framesMax']:
-        start_frame = random.randint(video_info['framesMin'], video_info['framesMax'])
+    end_frame = frames_max[video_info['name']] + 1
+    while end_frame > frames_max[video_info['name']]:
+        start_frame = random.randint(frames_min[video_info['name']], frames_max[video_info['name']])
         end_frame = start_frame + 4
 
     return video_info['videoId'], (start_frame, end_frame)
-
-
 
 
 @g.my_app.callback("apply_parameters")
@@ -61,9 +62,11 @@ def generate_annotation_example(api: sly.Api, task_id, context, state, app_logge
         api.task.set_fields(task_id, fields)
 
         video_id, frames_range = get_video_for_preview()
-        result = g.api.task.send_request(state['sessionId'], "inference_video_id", data={'videoId': video_id,
-                                                                                         'framesRange': frames_range,
-                                                                                         'isPreview': True})
+        result = g.api.task.send_request(state['sessionId'], "inference_video_id",
+                                         data={'videoId': video_id,
+                                               'framesRange': frames_range,
+                                               'confThres': state['confThres'],
+                                               'isPreview': True})
 
         fields = [
             {"field": "data.videoUrl", "payload": result['preview_url']},
@@ -76,5 +79,3 @@ def generate_annotation_example(api: sly.Api, task_id, context, state, app_logge
         ]
         api.task.set_fields(task_id, fields)
         raise ex
-
-

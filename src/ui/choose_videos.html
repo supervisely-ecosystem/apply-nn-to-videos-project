@@ -57,11 +57,11 @@
                     <template scope="scope">
                         <div class="ml10 mr10">
                             <el-input-number
-                                    v-model="scope.row.framesMin"
+                                    v-model="state.framesMin[scope.row.name]"
                                     :min="0"
-                                    :max="scope.row.framesMax - 5"
+                                    :max="state.framesMax[scope.row.name] - 5"
                                     size="small"
-                                    :disabled="data.done4 || !state.selectedVideos.includes(scope.row.name)"
+                                    :disabled="data.done4 || !state.selectedVideos.includes(scope.row.name) || scope.row.isDisabled"
                                     size="small"></el-input-number>
                         </div>
                     </template>
@@ -70,11 +70,11 @@
                     <template scope="scope">
                         <div class="ml10 mr10">
                             <el-input-number
-                                    v-model="scope.row.framesMax"
-                                    :min="scope.row.framesMin + 5"
+                                    v-model="state.framesMax[scope.row.name]"
+                                    :min="state.framesMin[scope.row.name] + 5"
                                     :max="scope.row.framesCount - 1"
                                     size="small"
-                                    :disabled="data.done4 || !state.selectedVideos.includes(scope.row.name)"
+                                    :disabled="data.done4 || !state.selectedVideos.includes(scope.row.name) || scope.row.isDisabled"
                                     size="small"></el-input-number>
                         </div>
                     </template>
@@ -115,7 +115,7 @@
         <el-button type="warning" class="regular mt10" :plain="true"
                    @click="state.restartFrom = 4;"
                    v-if="data.done4 && !state.started"
-                   :disabled="state.visualizingStarted">
+                   :disabled="state.annotatingStarted">
             <i class="zmdi zmdi-rotate-left mr5"></i> reselect
         </el-button>
     </div>
