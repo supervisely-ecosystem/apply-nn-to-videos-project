@@ -53,7 +53,7 @@ def annotate_video(video_data):
                                      data={'videoId': video_id,
                                            'framesRange': frames_range,
                                            'confThres': conf_thres,
-                                           'isPreview': False})
+                                           'isPreview': False}, timeout=60 * 60 * 24)  # temp solution
 
     return result['ann']
 
@@ -82,14 +82,14 @@ def annotate_videos():
     selected_videos_data = [row for row in videos_table if row['name'] in selected_videos_names]
 
     for video_data in selected_videos_data:
-        # try:
-        annotations = annotate_video(video_data)
-        upload_to_project(video_data, annotations, dataset_id)
-        video_progress(1)
+        try:
+            annotations = annotate_video(video_data)
+            upload_to_project(video_data, annotations, dataset_id)
+            video_progress(1)
 
-        # except Exception as ex:
-        #     raise RuntimeError(f'Error while processing: {video_data["name"]}:'
-        #                        f'{ex}')
+        except Exception as ex:
+            raise RuntimeError(f'Error while processing: {video_data["name"]}:'
+                               f'{ex}')
 
     reset_progress('Videos')
 
@@ -106,7 +106,7 @@ def annotate_videos():
 
 @g.my_app.callback("start_annotation")
 @sly.timeit
-# @g.my_app.ignore_errors_and_show_dialog_window()
+@g.my_app.ignore_errors_and_show_dialog_window()
 def start_annotation(api: sly.Api, task_id, context, state, app_logger):
     annotate_videos()
 

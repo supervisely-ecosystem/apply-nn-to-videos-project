@@ -67,7 +67,7 @@
                     @click="state.previewLoading = true; command('generate_annotation_example')"
                     :loading="state.previewLoading"
                     :disabled="data.done5 || state.disabled5">
-                <i v-if="state.previewLoading" class="zmdi zmdi-slideshow" style="margin-right: 5px"></i> Preview
+                <i v-if="!state.previewLoading" class="zmdi zmdi-slideshow" style="margin-right: 5px"></i> Preview
             </el-button>
         </div>
 

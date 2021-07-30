@@ -5,7 +5,7 @@
           :collapsed.sync="state.collapsed6"
           :disabled="{disabled: state.disabled6, message: 'complete stage 5'}">
 
-    <el-button v-if="!data.done6"
+    <el-button v-if="!data.dstProjectName"
                type="primary" class="regular"
                @click="state.annotatingStarted = true; command('start_annotation')"
                :loading="state.annotatingStarted === true"
@@ -30,10 +30,18 @@
 
 
     </div>
+    <sly-field v-if="state.annotatingStarted"
+               title="WARNING: Tracking in progress"
+               description="do not turn off the power of the agent, it is processing data"
+               style="padding-top: 14px; padding-bottom: 0px; margin: 0 0;">
 
+        <sly-icon slot="icon" :options="{ color: '#fba607', bgColor: '#ffe9da', rounded: false }">
+            <i class="zmdi zmdi-alert-triangle"></i>
+        </sly-icon>
+    </sly-field>
 
     <div v-if="data.progressVideos"
-         style="padding-top: 20px; ">
+         style="padding-top: 14px; ">
         <div v-if="data.progressVideos">
             <div style="color: #20a0ff">
                 {{data.progressVideos}}: {{data.progressCurrentVideos}} / {{data.progressTotalVideos}}

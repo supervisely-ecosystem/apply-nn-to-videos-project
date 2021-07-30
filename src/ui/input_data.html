@@ -15,8 +15,8 @@
             style="margin-top: 8px"
             type="primary"
             class="regular"
-            :loading="data.progressInputProject"
-            @click="command('select_projects_handler')"
+            :loading="state.inputLoading"
+            @click="state.inputLoading=true; command('select_projects_handler')"
             v-if="!data.done1">
         Select
     </el-button>

@@ -1,6 +1,7 @@
 import supervisely_lib as sly
 import sly_globals as g
 
+
 import os
 from functools import partial
 
@@ -50,7 +51,7 @@ def get_videos_info(project_id):
             )
 
             frames_min[f"[{ds_id.name}] {video_info.name}"] = 0
-            frames_max[f"[{ds_id.name}] {video_info.name}"] = video_info.frames_count - 1,
+            frames_max[f"[{ds_id.name}] {video_info.name}"] = video_info.frames_count - 1
 
     fields = [
         {"field": f"state.framesMin", "payload": frames_min},
@@ -70,10 +71,10 @@ def generate_rows(project_ids):
 
 
 def fill_table(table_rows):
-    # selected_videos = [row['name'] for row in table_rows if not row['isDisabled']] #@TODO: all selected
+    selected_videos = [row['name'] for row in table_rows if not row['isDisabled']] #@TODO: all selected in table
     fields = [
         {"field": f"state.statsLoaded", "payload": True},
-        # {"field": f"state.selectedVideos", "payload": selected_videos},
+        {"field": f"state.selectedVideos", "payload": selected_videos},
         {"field": f"data.videosTable", "payload": table_rows, "recursive": False},
     ]
     g.api.task.set_fields(g.task_id, fields)
