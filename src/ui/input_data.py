@@ -13,7 +13,7 @@ import cv2
 def init(data, state):
     data["projectId"] = g.project_info.id
     data["projectName"] = g.project_info.name
-    data["projectItemsCount"] = g.project_info.items_count
+    data["projectItemsCount"] = g.project_info.items_count if g.project_info.items_count else 0
     data["projectPreviewUrl"] = g.api.image.preview_url(g.project_info.reference_image_url, 100, 100)
 
     init_progress("InputProject", data)
