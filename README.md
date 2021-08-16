@@ -2,7 +2,7 @@
 
 <img src=""/>  
 
-# Apply NN to Video Project
+# Apply NN to videos project
 
 <p align="center">
   <a href="#Overview">Overview</a> •
@@ -11,12 +11,12 @@
     <a href="#Screenshots">Screenshots</a>
 </p>
 
-[![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](https://ecosystem.supervise.ly/apps/supervisely-ecosystem/synthetic-videos-for-tracking)
+[![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](https://ecosystem.supervise.ly/apps/supervisely-ecosystem/apply-nn-to-videos-project)
 [![](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://supervise.ly/slack)
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/supervisely-ecosystem/FairMOT)
-[![views](https://app.supervise.ly/public/api/v3/ecosystem.counters?repo=supervisely-ecosystem/FairMOT/supervisely/visualize&counter=views&label=views)](https://supervise.ly)
-[![used by teams](https://app.supervise.ly/public/api/v3/ecosystem.counters?repo=supervisely-ecosystem/FairMOT/supervisely/visualize&counter=downloads&label=used%20by%20teams)](https://supervise.ly)
-[![runs](https://app.supervise.ly/public/api/v3/ecosystem.counters?repo=supervisely-ecosystem/FairMOT/supervisely/visualize&counter=runs&label=runs&123)](https://supervise.ly)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/supervisely-ecosystem/apply-nn-to-videos-project)
+[![views](https://app.supervise.ly/public/api/v3/ecosystem.counters?repo=supervisely-ecosystem/apply-nn-to-videos-project&counter=views&label=views)](https://supervise.ly)
+[![used by teams](https://app.supervise.ly/public/api/v3/ecosystem.counters?repo=supervisely-ecosystem/apply-nn-to-videos-project&counter=downloads&label=used%20by%20teams)](https://supervise.ly)
+[![runs](https://app.supervise.ly/public/api/v3/ecosystem.counters?repo=supervisely-ecosystem/apply-nn-to-videos-project&counter=runs&label=runs&123)](https://supervise.ly)
 
 </div>
 
@@ -32,7 +32,8 @@ Application key points:
 
 # How to Use
 
-1. Train your model using [Train FairMOT](https://ecosystem.supervise.ly/apps/supervisely-ecosystem%252Ffairmot%252Fsupervisely%252Ftrain).  
+`in developing`
+<!-- 1. Train your model using [Train FairMOT](https://ecosystem.supervise.ly/apps/supervisely-ecosystem%252Ffairmot%252Fsupervisely%252Ftrain).  
 After the end of the train, you get a folder with checkpoints available in [Supervisely Files](https://app.supervise.ly/files/) by `/FairMOT/train/{experiment_name}/checkpoints` path.
 
 <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/FairMOT/supervisely/train" src="https://imgur.com/Mk1gpGJ.png" width="350px" style='padding-bottom: 10px'/>
@@ -46,7 +47,7 @@ After the end of the train, you get a folder with checkpoints available in [Supe
 <img src="https://imgur.com/08YUfgS.png" width="80%" style='padding-top: 10px'>  
 
 
-4. Set the settings and start the visualization
+4. Set the settings and start the visualization -->
 
 
 # Watch Demo Video
@@ -60,4 +61,5 @@ After the end of the train, you get a folder with checkpoints available in [Supe
 
 # Screenshots
 
-<img src="https://imgur.com/C9qX691.png" width="auto" style='padding-top: 10px'>
+`in developing`
+<!-- <img src=".png" width="auto" style='padding-top: 10px'> -->
