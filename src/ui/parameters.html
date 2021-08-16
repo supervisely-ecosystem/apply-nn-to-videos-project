@@ -1,0 +1,114 @@
+<div class="fflex" style="align-items: stretch;">
+
+    <sly-card title="Parameters"
+              subtitle="set visualization parameters"
+              class="mr15 "
+              :class="{'custom-full-height': !state.collapsed5}"
+              :options="{collapsable: true}"
+              :collapsed.sync="state.collapsed5"
+              :style="[!state.collapsed5 ? {minWidth: '310px', maxWidth: '310px'} : {width: '100%', margin: 0}]"
+              :disabled="{disabled: state.disabled5, message: 'complete stage 4'}"
+              ref="step5">
+        <div class="fflex"
+             style="flex-direction: column; justify-content: space-between; align-items: flex-start; height: 100%;">
+            <div>
+                <sly-field title="Output project name"
+                           description="folder name to save visualization result">
+                    <el-input placeholder="visualization_0"
+                              v-model="state.expId"
+                              :disabled="data.done5"></el-input>
+                </sly-field>
+
+
+                <sly-field title="Confidence threshold"
+                           description="to filter predictions">
+                    <div class="fflex">
+                        <!--            <span class="mr5">Evaluate validation set every </span>-->
+                        <el-input-number v-model="state.confThres" :min="0" :max="1" :step="0.1"
+                                         :disabled="data.done5"></el-input-number>
+                    </div>
+                </sly-field>
+            </div>
+
+            <div>
+                <el-button type="primary" class="regular mt10"
+                           @click="command('apply_parameters')"
+                           v-if="!data.done5">
+                    Apply settings
+                </el-button>
+                <div v-if="data.done5">
+                    <i class="zmdi zmdi-check-circle mr5 mt5 mb5" style="color: #13ce66"></i>
+                    <span style="color: #5a6772;">Parameters defined</span>
+                </div>
+                <el-button type="warning" class="regular mt10" :plain="true"
+                           @click="state.restartFrom = 5;"
+                           v-if="data.done5"
+                           :disabled="state.annotatingStarted">
+                    <i class="zmdi zmdi-rotate-left mr5"></i> reselect
+                </el-button>
+            </div>
+        </div>
+
+
+    </sly-card>
+
+    <sly-card title="Preview"
+              class="card-vertical-lifter"
+              subtitle="Generate 5 frames preview"
+              style="width: 100%;"
+              :collapsed.sync="state.collapsed5"
+              :disabled="{disabled: state.disabled5, message: 'complete stage 4 to unlock'}"
+              v-if="!state.collapsed5"
+              ref="step5">
+        <div slot="header" class="mb10">
+
+            <el-button
+                    type="primary"
+                    @click="state.previewLoading = true; command('generate_annotation_example')"
+                    :loading="state.previewLoading"
+                    :disabled="data.done5 || state.disabled5">
+                <i v-if="!state.previewLoading" class="zmdi zmdi-slideshow" style="margin-right: 5px"></i> Preview
+            </el-button>
+        </div>
+
+
+        <sly-field v-if="!data.videoUrl && !state.previewLoading"
+                   title="INFO: Here will be a preview"
+                   description="click on the button to generate video"
+                   style="padding-top: 4px; padding-bottom: 6px">
+
+            <sly-icon slot="icon" :options="{ color: '#13ce66', bgColor: '#e1f7eb', rounded: false }">
+                <i class="zmdi zmdi-info-outline"></i>
+            </sly-icon>
+        </sly-field>
+
+        <sly-field v-if="state.previewLoading"
+                   title="WARNING: Video generation in progress"
+                   description="do not turn off the power of the agent, it is processing data"
+                   style="padding-top: 4px; padding-bottom: 6px">
+
+            <sly-icon slot="icon" :options="{ color: '#fba607', bgColor: '#ffe9da', rounded: false }">
+                <i class="zmdi zmdi-alert-triangle"></i>
+            </sly-icon>
+        </sly-field>
+
+        <video v-if="data.videoUrl" controls style="max-height: 650px; max-width: 100%;">
+
+            <!--                <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">-->
+            <source :src="data.videoUrl" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div v-if=""></div>
+
+
+        <div v-if="data.progressPreviewTotal" class="mt10">
+            <div>{{ data.progressPreviewMessage }}: <b><span
+                    style="color: #20a0ff">{{ data.progressPreviewCurrent }}</span> /
+                {{ data.progressPreviewTotal }}</b></div>
+            <el-progress
+                    :percentage="data.progressPreviewPercent"></el-progress>
+
+        </div>
+    </sly-card>
+
+</div>

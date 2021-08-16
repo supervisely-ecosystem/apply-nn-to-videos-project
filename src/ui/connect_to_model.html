@@ -1,0 +1,59 @@
+<sly-card
+        title="Neural Network"
+        subtitle="Connect to deployed model"
+        :options="{collapsable: true}"
+        :collapsed.sync="state.collapsed2"
+        :disabled="{disabled: state.disabled2, message: 'complete stage 1'}"
+        ref="step2">
+    <div v-if="data.connected === false">
+        <div class="fflex">
+            <sly-select-app-session :group-id="data.teamId"
+                                    :app-session-id.sync="state.sessionId"
+                                    :options="data.ssOptions">
+            </sly-select-app-session>
+
+            <el-button
+                    style="margin-left: 10px"
+                    type="primary"
+                    class="regular"
+                    :loading="state.connectionLoading"
+                    :disabled="!state.sessionId"
+                    @click="state.connectionLoading=true; command('connect')"
+            >
+                <i class="zmdi zmdi-refresh mr10" v-if="!state.connectionLoading"></i>Connect
+            </el-button>
+
+        </div>
+        <sly-notification
+                v-if="data.connectionError.length > 0"
+                :options="{'name': 'Connection Error', 'type': 'error'}"
+                :content="data.connectionError">
+        </sly-notification>
+    </div>
+
+    <div v-if="data.connected === true">
+
+        <sly-field title="INFO: successfully connected to model"
+                   description="below are the parameters of the model"
+                   style="padding-top: 4px; padding-bottom: 6px">
+
+            <sly-icon slot="icon" :options="{ color: '#13ce66', bgColor: '#e1f7eb', rounded: false }">
+                <i class="zmdi zmdi-circle"></i>
+            </sly-icon>
+        </sly-field>
+        <div v-for="v,k in data.modelInfo" class="mb10" style="word-break: break-all;">
+            <div style="margin-bottom: 4px">
+                <b>{{k}}</b>: <span>{{v}}</span>
+            </div>
+        </div>
+
+
+        <el-button type="warning" class="regular mt10" :plain="true"
+                   @click="state.restartFrom = 2;"
+                   v-if="data.connected === true"
+                   :disabled="state.annotatingStarted">
+            <i class="zmdi zmdi-rotate-left mr5"></i> reselect
+        </el-button>
+    </div>
+</sly-card>
+</sly-card>

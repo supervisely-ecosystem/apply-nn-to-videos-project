@@ -1,0 +1,24 @@
+{
+  "name": "Apply NN to videos project",
+  "type": "app",
+  "categories": [
+    "neural network",
+    "video"
+  ],
+  "description": "NN Inference on videos in project or dataset",
+  "docker_image": "supervisely/base-py-sdk:6.1.93",
+  "main_script": "/src/main.py",
+  "gui_template": "/src/gui.html",
+
+  "task_location": "workspace_tasks",
+  "isolate": true,
+  "headless": false,
+
+  "icon": "https://i.imgur.com/KdCigmp.png",
+  "icon_background": "#FFFFFF",
+
+  "context_menu": {
+    "target": ["videos_project", "videos_dataset"],
+    "context_root": "Neural Networks"
+  }
+}
