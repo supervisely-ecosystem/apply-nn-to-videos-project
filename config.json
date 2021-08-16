@@ -1,5 +1,5 @@
 {
-  "name": "Apply NN to videos project",
+  "name": "Apply NN to Video Project",
   "type": "app",
   "categories": [
     "neural network",
@@ -14,7 +14,7 @@
   "isolate": true,
   "headless": false,
 
-  "icon": "https://i.imgur.com/KdCigmp.png",
+  "icon": "https://imgur.com/HPtoMih.png",
   "icon_background": "#FFFFFF",
 
   "context_menu": {

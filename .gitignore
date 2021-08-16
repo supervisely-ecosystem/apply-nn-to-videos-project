@@ -1,2 +1,6 @@
-/secret_debug.env
+secret_debug.env
 .DS_Store
+media
+__pycache__
+.idea
+authorized_keys
