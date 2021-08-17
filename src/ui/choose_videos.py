@@ -21,6 +21,9 @@ def init(data, state):
     data["done4"] = False
     state["collapsed4"] = True
     state["disabled4"] = True
+    
+    rows = generate_rows([g.project_id])  # hardcoded
+    fill_table(rows)  # hardcoded
 
 
 def restart(data, state):
