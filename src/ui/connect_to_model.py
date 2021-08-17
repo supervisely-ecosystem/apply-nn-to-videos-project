@@ -13,7 +13,7 @@ def init(data, state):
     data["connectionError"] = ""
 
     data["ssOptions"] = {
-        "sessionTags": ["deployed_nn_tracking", "deployed_nn_video"],
+        "sessionTags": ["deployed_nn_tracking", "deployed_nn"],
         "showLabel": False,
         "size": "small"
     }
