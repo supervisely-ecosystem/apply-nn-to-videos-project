@@ -9,18 +9,19 @@ from sly_progress import get_progress_cb, reset_progress, init_progress
 
 
 def init(data, state):
-    data["videosTable"] = []
+    pass ## hardcoded
+#     data["videosTable"] = []
+#     state["selectedVideos"] = []
+    
+#     state["statsLoaded"] = False
+#     state["loadingStats"] = False
 
-    state["statsLoaded"] = False
-    state["loadingStats"] = False
-    state["selectedVideos"] = []
+#     state['framesMin'] = {}
+#     state['framesMax'] = {}
 
-    state['framesMin'] = {}
-    state['framesMax'] = {}
-
-    data["done4"] = False
-    state["collapsed4"] = True
-    state["disabled4"] = True
+#     data["done4"] = False
+#     state["collapsed4"] = True
+#     state["disabled4"] = True
 
 
 
