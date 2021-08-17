@@ -24,6 +24,21 @@ def init(data, state):
     state["collapsed1"] = False
 
     data['videosData'] = []
+    
+    
+    
+    data["videosTable"] = []
+    state["selectedVideos"] = []
+    
+    state["statsLoaded"] = False
+    state["loadingStats"] = False
+
+    state['framesMin'] = {}
+    state['framesMax'] = {}
+
+    data["done4"] = False
+    state["collapsed4"] = True
+    state["disabled4"] = True
 
 
 @g.my_app.callback("select_projects_handler")
