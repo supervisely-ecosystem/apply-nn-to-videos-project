@@ -1,6 +1,6 @@
 <div align="center" markdown>
 
-<img src=""/>  
+<img src="https://imgur.com/bGER909.png"/>  
 
 # Apply NN to videos project
 
@@ -22,32 +22,30 @@
 
 # Overview
 
-.
+Apply served NN to Videos Project.
 
 Application key points:  
--
-
-
+- Connects to served in Supervisely models
+- Creates a new project with annotated data
 
 
 # How to Use
 
-`in developing`
-<!-- 1. Train your model using [Train FairMOT](https://ecosystem.supervise.ly/apps/supervisely-ecosystem%252Ffairmot%252Fsupervisely%252Ftrain).  
-After the end of the train, you get a folder with checkpoints available in [Supervisely Files](https://app.supervise.ly/files/) by `/FairMOT/train/{experiment_name}/checkpoints` path.
 
-<img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/FairMOT/supervisely/train" src="https://imgur.com/Mk1gpGJ.png" width="350px" style='padding-bottom: 10px'/>
+1. Launch Serve APP, designed for Videos Projects
+
+<img src="https://imgur.com/1v8EYKR.png" width="80%" style='padding-top: 10px'>  
 
 
-2. Add [Visualize FairMOT](https://ecosystem.supervise.ly/apps/supervisely-ecosystem%252Ffairmot%252Fsupervisely%252Fvisualize) from ecosystem to your team  
+2. Add [Apply NN to videos project](https://ecosystem.supervise.ly/apps/apply-nn-to-videos-project) from ecosystem to your team  
 
-<img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/FairMOT/supervisely/visualize" src="https://imgur.com/Ni9d1DE.png" width="350px" style='padding-bottom: 10px'/>
+<img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/apply-nn-to-videos-project" src="https://imgur.com/LDo8K1A.png" width="350px" style='padding-bottom: 10px'/>
 
 3. Run app from the context menu of **Video Project**:  
-<img src="https://imgur.com/08YUfgS.png" width="80%" style='padding-top: 10px'>  
 
+<img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/apply-nn-to-videos-project" src="https://imgur.com/b1TU1cC.png" width="350px" style='padding-bottom: 10px'/>
 
-4. Set the settings and start the visualization -->
+4. Set the settings and apply NN to Videos Project
 
 
 # Watch Demo Video
@@ -61,5 +59,4 @@ After the end of the train, you get a folder with checkpoints available in [Supe
 
 # Screenshots
 
-`in developing`
-<!-- <img src=".png" width="auto" style='padding-top: 10px'> -->
+<img src="https://imgur.com/3yVARK2.png" width="auto" style='padding-top: 10px'>
