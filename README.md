@@ -53,7 +53,7 @@ Application key points:
 
 
 <a data-key="sly-embeded-video-link" href="https://youtu.be/xfc835eMYQw" data-video-code="xfc835eMYQw">
-    <img src="https://https://imgur.com/sAyeToz.png" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:100%;">
+    <img src="https://imgur.com/sAyeToz.png" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:100%;">
 </a>
 
 
