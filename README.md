@@ -50,11 +50,11 @@ Application key points:
 
 # Watch Demo Video
 
-`in developing`
-<!--
-<a data-key="sly-embeded-video-link" href="https://youtu.be/yvWegId-edU" data-video-code="yvWegId-edU">
-    <img src="https://imgur.com/VRQdPXx.png" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:100%;">
-</a> -->
+
+
+<a data-key="sly-embeded-video-link" href="https://youtu.be/xfc835eMYQw" data-video-code="xfc835eMYQw">
+    <img src="https://https://imgur.com/sAyeToz.png" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:100%;">
+</a>
 
 
 # Screenshots
