@@ -1,6 +1,6 @@
 <div align="center" markdown>
 
-<img src="https://imgur.com/bGER909.png"/>  
+<img src="https://imgur.com/dE7nQl6.png"/>  
 
 # Apply NN to videos project
 
