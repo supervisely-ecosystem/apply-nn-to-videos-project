@@ -43,7 +43,7 @@ Application key points:
 
 3. Run app from the context menu of **Video Project**:  
 
-<img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/apply-nn-to-videos-project" src="https://imgur.com/b1TU1cC.png" width="350px" style='padding-bottom: 10px'/>
+<img src="https://imgur.com/b1TU1cC.png" width="80%" style='padding-top: 10px'>  
 
 4. Set the settings and apply NN to Videos Project
 
