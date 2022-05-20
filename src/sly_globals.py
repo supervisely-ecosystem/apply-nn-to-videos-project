@@ -1,11 +1,9 @@
 import os
 import sys
 import pathlib
-import supervisely_lib as sly
-from dotenv import load_dotenv  # pip install python-dotenv\
+import supervisely as sly
 
-load_dotenv("../debug.env")
-load_dotenv("../secret_debug.env", override=True)
+# _open_lnk_name = "open_app.lnk"
 
 
 my_app = sly.AppService()

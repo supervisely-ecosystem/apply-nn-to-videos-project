@@ -1,29 +1,4 @@
-import supervisely_lib as sly
-import sly_globals as g
-
-
-import os
-from functools import partial
-
-from sly_progress import get_progress_cb, reset_progress, init_progress
-
-
-def init(data, state):
-    pass ## hardcoded
-#     data["videosTable"] = []
-#     state["selectedVideos"] = []
-    
-#     state["statsLoaded"] = False
-#     state["loadingStats"] = False
-
-#     state['framesMin'] = {}
-#     state['framesMax'] = {}
-
-#     data["done4"] = False
-#     state["collapsed4"] = True
-#     state["disabled4"] = True
-
-
+### some card functional
 
 def restart(data, state):
     data['done4'] = False
@@ -82,23 +57,3 @@ def fill_table(table_rows):
     g.api.task.set_fields(g.task_id, fields)
 
     return 0
-
-
-@g.my_app.callback("load_videos_info")
-@sly.timeit
-# @g.my_app.ignore_errors_and_show_dialog_window()
-def load_videos_info(api: sly.api, task_id, context, state, app_logger):
-    rows = generate_rows([g.project_id])
-    fill_table(rows)
-
-
-@g.my_app.callback("choose_videos")
-@sly.timeit
-@g.my_app.ignore_errors_and_show_dialog_window()
-def choose_videos(api: sly.api, task_id, context, state, app_logger):
-    selected_count = len(state['selectedVideos'])
-
-    if selected_count == 0:
-        raise ValueError('No videos selected. Please select videos.')
-
-    g.finish_step(4)

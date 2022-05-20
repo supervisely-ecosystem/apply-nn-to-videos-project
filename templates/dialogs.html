@@ -1,0 +1,13 @@
+<el-dialog
+        title="Restart from this step"
+        :visible.sync="state.restartFrom"
+        size="tiny">
+    <span>This step and all next steps will be reseted</span>
+    <span slot="footer" class="dialog-footer">
+            <el-button @click="state.restartFrom = null">Cancel</el-button>
+            <el-button type="primary" class="regular"
+                       @click="command('restart');">
+                Confirm
+            </el-button>
+        </span>
+</el-dialog>

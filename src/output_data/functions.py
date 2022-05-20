@@ -1,25 +1,4 @@
-import supervisely_lib as sly
-import sly_globals as g
-
-from sly_progress import get_progress_cb, reset_progress, init_progress
-from sly_progress import _update_progress_ui
-
-_open_lnk_name = "open_app.lnk"
-
-
-def init(data, state):
-    init_progress("Videos", data)
-
-    data['dstProjectId'] = None
-    data['dstProjectName'] = None
-    data['dstProjectPreviewUrl'] = None
-
-    state["annotatingStarted"] = False
-
-    state["collapsed6"] = True
-    state["disabled6"] = True
-    data["done6"] = False
-
+### some card functional
 
 def restart(data, state):
     data["done6"] = False
@@ -103,16 +82,3 @@ def annotate_videos():
     g.api.task.set_fields(g.task_id, fields)
     g.api.task.set_output_project(g.task_id, res_project.id, res_project.name)
 
-
-@g.my_app.callback("start_annotation")
-@sly.timeit
-@g.my_app.ignore_errors_and_show_dialog_window()
-def start_annotation(api: sly.Api, task_id, context, state, app_logger):
-    annotate_videos()
-
-    fields = [
-        {"field": "data.done6", "payload": True},
-        {"field": "state.annotatingStarted", "payload": False},
-    ]
-
-    g.api.app.set_fields(g.task_id, fields)
