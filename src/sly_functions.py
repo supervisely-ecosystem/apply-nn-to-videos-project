@@ -1,16 +1,3 @@
-import supervisely_lib as sly
-import sly_globals as g
-
-
-import input_data as input_project
-import connect_to_model
-import choose_classes
-import choose_videos
-import parameters
-import output_data
-
-# import visualize
-
 
 @sly.timeit
 def init(data, state):
@@ -23,7 +10,6 @@ def init(data, state):
     choose_videos.init(data, state)  # 4 stage
     parameters.init(data, state)  # 5 stage
     output_data.init(data, state)  # 6 stage
-
 
 
 @g.my_app.callback("restart")
