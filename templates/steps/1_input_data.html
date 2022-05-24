@@ -11,6 +11,7 @@
             videos)</a>
         <sly-icon slot="icon" :options="{ imageUrl: `${data.projectPreviewUrl}` }"/>
     </sly-field>
+
     <el-button
             style="margin-top: 8px"
             type="primary"
@@ -33,14 +34,7 @@
     </sly-field>
 
 
-    <div v-if="data.progressInputProject && !data.done1" class="mb5" style="padding-top: 20px">
-        <div style="color: #20a0ff">{{data.progressInputProject}}: {{data.progressCurrentInputProject}} /
-            {{data.progressTotalInputProject}}
-        </div>
-        <el-progress :percentage="data.progressPercentInputProject"></el-progress>
-    </div>
-
-    <div v-if="data.done1" style="padding-top: 8px">
+    <div v-if="data.done1" style="margin: 10px 0 0">
         <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
         <span style="color: #5a6772;">Project has been successfully selected</span>
     </div>

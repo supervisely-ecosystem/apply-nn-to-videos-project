@@ -1,5 +1,10 @@
 ### some card functional
 
+import src.sly_globals as g
+from supervisely.app import DataJson
+from supervisely.app.fastapi import run_sync
+
+
 def restart(data, state):
     data['done4'] = False
 
@@ -30,30 +35,31 @@ def get_videos_info(project_id):
             frames_min[f"[{ds_id.name}] {video_info.name}"] = 0
             frames_max[f"[{ds_id.name}] {video_info.name}"] = video_info.frames_count - 1
 
-    fields = [
-        {"field": f"state.framesMin", "payload": frames_min},
-        {"field": f"state.framesMax", "payload": frames_max},
-    ]
-    g.api.task.set_fields(g.task_id, fields)
+    # fields = [
+    #     {"field": f"state.framesMin", "payload": frames_min},
+    #     {"field": f"state.framesMax", "payload": frames_max},
+    # ]
+    # g.api.task.set_fields(g.task_id, fields)
 
     return general_videos_info
 
 
-def generate_rows(project_ids):
+def generate_rows(project_ids) -> list:
     rows = []
+
     for project_id in project_ids:
         rows.extend(get_videos_info(project_id))
 
     return rows
 
 
-def fill_table(table_rows):
-    selected_videos = [row['name'] for row in table_rows if not row['isDisabled']] #@TODO: all selected in table
-    fields = [
-        {"field": f"state.statsLoaded", "payload": True},
-        {"field": f"state.selectedVideos", "payload": selected_videos},
-        {"field": f"data.videosTable", "payload": table_rows, "recursive": False},
-    ]
-    g.api.task.set_fields(g.task_id, fields)
+def fill_table(table_rows, state):
+    selected_videos = [row['name'] for row in table_rows if not row['isDisabled']]
 
-    return 0
+    state['statsLoaded'] = True
+    state['selectedVideos'] = selected_videos
+
+    DataJson()['videosTable'] = table_rows
+
+    run_sync(DataJson().synchronize_changes())
+    run_sync(state.synchronize_changes())

@@ -1,2 +1,3 @@
-from supervisely.app.widgets import NotificationBox
+from supervisely.app.widgets import NotificationBox, SlyTqdm
+
 

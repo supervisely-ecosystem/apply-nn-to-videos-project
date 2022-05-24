@@ -21,7 +21,7 @@
         <template v-slot="{ post, state, data }">
             <div id="apply-nn-to-video-project">
                 <sly-stepper :active="data.activeStep">
-                    <sly-stepper-item>{% include 'steps/input_data.html' %}</sly-stepper-item>
+                    <sly-stepper-item>{% include 'steps/1_input_data.html' %}</sly-stepper-item>
                     <sly-stepper-item>{% include 'steps/connect_to_model.html' %}</sly-stepper-item>
                     <sly-stepper-item>{% include 'steps/choose_classes.html' %}</sly-stepper-item>
                     <!--                    <sly-stepper-item>include 'steps/choose_videos.html'</sly-stepper-item>-->

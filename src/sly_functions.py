@@ -3,6 +3,8 @@ from fastapi import Depends
 import supervisely as sly
 
 import src.sly_globals as g
+from supervisely.app import DataJson
+from supervisely.app.fastapi import run_sync
 
 
 @g.app.post("restart")
@@ -60,13 +62,12 @@ def get_files_paths(src_dir, extensions):
     return files_paths
 
 
-def finish_step(step_num):
+def finish_step(step_num, state):
     next_step = step_num + 1
-    fields = [
-        {"field": f"data.done{step_num}", "payload": True},
-        {"field": f"state.collapsed{next_step}", "payload": False},
-        {"field": f"state.disabled{next_step}", "payload": False},
-        {"field": f"state.activeStep", "payload": next_step},
-    ]
-    api.app.set_field(task_id, "data.scrollIntoView", f"step{next_step}")
-    api.app.set_fields(task_id, fields)
+    DataJson()[f'done{step_num}'] = True
+    state[f'collapsed{next_step}'] = False
+    state[f'disabled{next_step}'] = False
+    state[f'activeStep'] = next_step
+
+    run_sync(DataJson().synchronize_changes())
+    run_sync(state.synchronize_changes())
