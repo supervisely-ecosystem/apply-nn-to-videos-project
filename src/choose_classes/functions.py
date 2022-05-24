@@ -1,3 +1,6 @@
+from supervisely.app import DataJson
+from supervisely.app.fastapi import run_sync
+
 
 def restart(data, state):
     data['done3'] = False
@@ -20,9 +23,6 @@ def generate_rows():
 
 
 def fill_table(table_rows):
-    fields = [
-        {"field": f"data.classesTable", "payload": table_rows, "recursive": False},
-    ]
-    g.api.task.set_fields(g.task_id, fields)
+    DataJson()['classesTable'] = table_rows
+    run_sync(DataJson().synchronize_changes())
 
-    return 0

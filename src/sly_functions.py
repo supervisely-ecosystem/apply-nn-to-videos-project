@@ -1,21 +1,13 @@
+from fastapi import Depends
 
+import supervisely as sly
+
+import src.sly_globals as g
+
+
+@g.app.post("restart")
 @sly.timeit
-def init(data, state):
-    state["activeStep"] = 1
-    state["restartFrom"] = None
-
-    input_project.init(data, state)  # 1 stage
-    connect_to_model.init(data, state)  # 2 stage
-    choose_classes.init(data, state)  # 3 stage
-    choose_videos.init(data, state)  # 4 stage
-    parameters.init(data, state)  # 5 stage
-    output_data.init(data, state)  # 6 stage
-
-
-@g.my_app.callback("restart")
-@sly.timeit
-@g.my_app.ignore_errors_and_show_dialog_window()
-def restart(api: sly.Api, task_id, context, state, app_logger):
+def restart(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
     restart_from_step = state["restartFrom"]
     data = {}
     state = {}
@@ -54,3 +46,27 @@ def restart(api: sly.Api, task_id, context, state, app_logger):
     ]
     g.api.app.set_fields(g.task_id, fields)
     g.api.app.set_field(task_id, "data.scrollIntoView", f"step{restart_from_step}")
+
+
+def get_files_paths(src_dir, extensions):
+    files_paths = []
+    for root, dirs, files in os.walk(src_dir):
+        for extension in extensions:
+            for file in files:
+                if file.endswith(extension):
+                    file_path = os.path.join(root, file)
+                    files_paths.append(file_path)
+
+    return files_paths
+
+
+def finish_step(step_num):
+    next_step = step_num + 1
+    fields = [
+        {"field": f"data.done{step_num}", "payload": True},
+        {"field": f"state.collapsed{next_step}", "payload": False},
+        {"field": f"state.disabled{next_step}", "payload": False},
+        {"field": f"state.activeStep", "payload": next_step},
+    ]
+    api.app.set_field(task_id, "data.scrollIntoView", f"step{next_step}")
+    api.app.set_fields(task_id, fields)

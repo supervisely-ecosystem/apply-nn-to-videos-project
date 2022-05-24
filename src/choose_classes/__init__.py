@@ -6,15 +6,15 @@ from supervisely.app import StateJson, DataJson
 
 import src.sly_globals as g
 
-from src.example_card.handlers import *
-from src.example_card.functions import *
-from src.example_card.widgets import *
+from src.choose_classes.handlers import *
+from src.choose_classes.functions import *
+from src.choose_classes.widgets import *
 
 
-data["classesTable"] = []
+DataJson()["classesTable"] = []
 
-state["selectedClasses"] = []
+StateJson()["selectedClasses"] = []
 
-data["done3"] = False
-state["collapsed3"] = True
-state["disabled3"] = True
+DataJson()["done3"] = False
+StateJson()["collapsed3"] = True
+StateJson()["disabled3"] = True

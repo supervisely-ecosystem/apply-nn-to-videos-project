@@ -19,38 +19,17 @@
 <div id="sly-app">
     <sly-app>
         <template v-slot="{ post, state, data }">
-
             <div id="apply-nn-to-video-project">
-
-                <sly-stepper :active="state.activeStep">
-
-
-                    <sly-stepper-item>
-                        {% include 'src/ui/input_data.html' %}
-                    </sly-stepper-item>
-                    <sly-stepper-item>
-                        {% include 'src/ui/connect_to_model.html' %}
-                    </sly-stepper-item>
-                    <sly-stepper-item>
-                        {% include 'src/ui/choose_classes.html' %}
-                    </sly-stepper-item>
-
-                    <!--        <sly-stepper-item>-->
-                    <!--            { include 'supervisely/ApplyNNtoVideo/src/ui/choose_videos.html' }-->
-                    <!--        </sly-stepper-item>-->
-
-                    <sly-stepper-item>
-                        {% include 'src/ui/parameters.html' %}
-                    </sly-stepper-item>
-                    <sly-stepper-item>
-                        {% include 'src/ui/output_data.html' %}
-                    </sly-stepper-item>
-
-
+                <sly-stepper :active="data.activeStep">
+                    <sly-stepper-item>{% include 'steps/input_data.html' %}</sly-stepper-item>
+                    <sly-stepper-item>{% include 'steps/connect_to_model.html' %}</sly-stepper-item>
+                    <sly-stepper-item>{% include 'steps/choose_classes.html' %}</sly-stepper-item>
+                    <!--                    <sly-stepper-item>include 'steps/choose_videos.html'</sly-stepper-item>-->
+                    <sly-stepper-item>{% include 'steps/parameters.html' %}</sly-stepper-item>
+                    <sly-stepper-item>{% include 'steps/output_data.html' %}</sly-stepper-item>
                 </sly-stepper>
+                {% include 'dialogs.html' %}
             </div>
-
-
         </template>
     </sly-app>
 </div>

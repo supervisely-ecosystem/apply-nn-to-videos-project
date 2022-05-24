@@ -1,20 +1,23 @@
 from fastapi import Depends
 
-import supervisely
+import supervisely as sly
 from supervisely import logger
 
+import src.choose_classes.functions as card_functions
+
+import src.sly_functions as f
+import src.sly_globals as g
 
 
-@g.my_app.callback("connect")
+@g.app.post("connect")
 @sly.timeit
-@g.my_app.ignore_errors_and_show_dialog_window()
-def connect(api: sly.Api, task_id, context, state, app_logger):
+def connect(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
     rc = get_model_info(state['sessionId'])
     if rc == 0:
-        classes_rows = choose_classes.generate_rows()
-        choose_classes.fill_table(classes_rows)
+        classes_rows = card_functions.generate_rows()
+        card_functions.fill_table(classes_rows)
         show_model_info()
-        g.finish_step(2)
+        f.finish_step(2)
     else:
         fields = [
             {"field": "state.connectionLoading", "payload": False},

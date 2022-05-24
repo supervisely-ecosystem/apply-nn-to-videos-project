@@ -1,13 +1,14 @@
 from fastapi import Depends
 
-import supervisely
+import supervisely as sly
 from supervisely import logger
 
+import src.sly_globals as g
 
-@g.my_app.callback("start_annotation")
+
+@g.app.post("start_annotation")
 @sly.timeit
-@g.my_app.ignore_errors_and_show_dialog_window()
-def start_annotation(api: sly.Api, task_id, context, state, app_logger):
+def start_annotation(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
     annotate_videos()
 
     fields = [

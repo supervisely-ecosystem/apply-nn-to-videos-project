@@ -1,3 +1,1 @@
-supervisely==6.1.94
-python-dotenv==0.19.0
-PyYAML==5.4.1
+git+https://github.com/supervisely/supervisely@widgets-pack-2#egg=supervisely[apps]

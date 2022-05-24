@@ -16,7 +16,7 @@
             type="primary"
             class="regular"
             :loading="state.inputLoading"
-            @click="state.inputLoading=true; command('select_projects_handler')"
+            @click="state.inputLoading=true; post('/select_projects_handler/')"
             v-if="!data.done1 && data.projectItemsCount > 0">
         Select
     </el-button>

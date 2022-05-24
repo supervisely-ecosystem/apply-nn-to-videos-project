@@ -1,12 +1,15 @@
 from fastapi import Depends
 
-import supervisely
+import supervisely as sly
 from supervisely import logger
 
 
-@g.my_app.post("choose_classes")
+import src.sly_globals as g
+
+
+@g.app.post("choose_classes")
 @sly.timeit
-def choose_videos(api: sly.api, task_id, context, state, app_logger):
+def choose_videos(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
     selected_count = len(state['selectedClasses'])
 
     if selected_count == 0:

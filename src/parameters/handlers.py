@@ -1,21 +1,20 @@
 from fastapi import Depends
 
-import supervisely
+import supervisely as sly
 from supervisely import logger
 
+import src.sly_globals as g
 
 
-@g.my_app.callback("apply_parameters")
+@g.app.post("apply_parameters")
 @sly.timeit
-@g.my_app.ignore_errors_and_show_dialog_window()
-def apply_parameters(api: sly.Api, task_id, context, state, app_logger):
+def apply_parameters(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
     g.finish_step(5)
 
 
-@g.my_app.callback("generate_annotation_example")
+@g.app.post("generate_annotation_example")
 @sly.timeit
-@g.my_app.ignore_errors_and_show_dialog_window()
-def generate_annotation_example(api: sly.Api, task_id, context, state, app_logger):
+def generate_annotation_example(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
     try:
         fields = [
             {"field": "data.videoUrl", "payload": None}

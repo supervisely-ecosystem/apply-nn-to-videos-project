@@ -6,37 +6,36 @@ from supervisely.app import StateJson, DataJson
 
 import src.sly_globals as g
 
-from src.example_card.handlers import *
-from src.example_card.functions import *
-from src.example_card.widgets import *
+from src.input_data.handlers import *
+from src.input_data.functions import *
+from src.input_data.widgets import *
 
 
 ##############
 # init fields
 ##############
-data["projectId"] = g.project_info.id
-data["projectName"] = g.project_info.name
-data["projectItemsCount"] = g.project_info.items_count if g.project_info.items_count else 0
-data["projectPreviewUrl"] = g.api.image.preview_url(g.project_info.reference_image_url, 100, 100)
+DataJson()["projectId"] = g.project_info.id
+DataJson()["projectName"] = g.project_info.name
+DataJson()["projectItemsCount"] = g.project_info.items_count if g.project_info.items_count else 0
+DataJson()["projectPreviewUrl"] = g.api.image.preview_url(g.project_info.reference_image_url, 100, 100)
 
-init_progress("InputProject", data)
 
-state['inputLoading'] = False
+StateJson()['inputLoading'] = False
 
-data["done1"] = False
-state["collapsed1"] = False
+DataJson()["done1"] = False
+StateJson()["collapsed1"] = False
 
-data['videosData'] = []
+DataJson()['videosDataJson()'] = []
 
-data["videosTable"] = []
-state["selectedVideos"] = []
+DataJson()["videosTable"] = []
+StateJson()["selectedVideos"] = []
 
-state["statsLoaded"] = False
-state["loadingStats"] = False
+StateJson()["statsLoaded"] = False
+StateJson()["loadingStats"] = False
 
-state['framesMin'] = {}
-state['framesMax'] = {}
+StateJson()['framesMin'] = {}
+StateJson()['framesMax'] = {}
 
-data["done4"] = False
-state["collapsed4"] = True
-state["disabled4"] = True
+DataJson()["done4"] = False
+StateJson()["collapsed4"] = True
+StateJson()["disabled4"] = True

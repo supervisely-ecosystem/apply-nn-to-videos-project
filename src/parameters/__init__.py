@@ -6,9 +6,9 @@ from supervisely.app import StateJson, DataJson
 
 import src.sly_globals as g
 
-from src.example_card.handlers import *
-from src.example_card.functions import *
-from src.example_card.widgets import *
+from src.parameters.handlers import *
+from src.parameters.functions import *
+from src.parameters.widgets import *
 
 
 ##############
@@ -16,13 +16,13 @@ from src.example_card.widgets import *
 ##############
 
 # system
-state["expId"] = f"{g.project_info.name}(inf)"
-state["confThres"] = 0.4
-state["previewLoading"] = False
+StateJson()["expId"] = f"{g.project_info.name}(inf)"
+StateJson()["confThres"] = 0.4
+StateJson()["previewLoading"] = False
 
 # stepper
-data["videoUrl"] = None
+DataJson()["videoUrl"] = None
 
-state["collapsed5"] = True
-state["disabled5"] = True
-data["done5"] = False
+StateJson()["collapsed5"] = True
+StateJson()["disabled5"] = True
+DataJson()["done5"] = False

@@ -1,4 +1,7 @@
 ### some card functional
+from supervisely.app import DataJson
+from supervisely.app.fastapi import run_sync
+
 
 def restart(data, state):
     data['done2'] = False
@@ -15,10 +18,7 @@ def get_model_info(session_id):
 
 
 def show_model_info():
-    fields = [
-        {"field": "data.connected", "payload": True},
-        {"field": "data.modelInfo", "payload": g.model_info},
-    ]
+    DataJson()['connected'] = True
+    DataJson()['modelInfo'] = g.model_info
 
-    g.api.app.set_fields(g.task_id, fields)
-
+    run_sync(DataJson().synchronize_changes())

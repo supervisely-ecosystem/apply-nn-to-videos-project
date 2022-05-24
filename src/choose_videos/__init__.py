@@ -1,31 +1,30 @@
 from pathlib import Path
 
 from jinja2 import Environment
-
-from supervisely.app import StateJson, DataJson
+from supervisely.app import DataJson, StateJson
 
 import src.sly_globals as g
 
-from src.example_card.handlers import *
-from src.example_card.functions import *
-from src.example_card.widgets import *
+from src.choose_videos.handlers import *
+from src.choose_videos.functions import *
+from src.choose_videos.widgets import *
 
 
 ##############
 # init fields
 ##############
-data["videosTable"] = []
-state["selectedVideos"] = []
+DataJson()["videosTable"] = []
+StateJson()["selectedVideos"] = []
 
-state["statsLoaded"] = False
-state["loadingStats"] = False
+StateJson()["statsLoaded"] = False
+StateJson()["loadingStats"] = False
 
-state['framesMin'] = {}
-state['framesMax'] = {}
+StateJson()['framesMin'] = {}
+StateJson()['framesMax'] = {}
 
-data["done4"] = False
-state["collapsed4"] = True
-state["disabled4"] = True
+DataJson()["done4"] = False
+StateJson()["collapsed4"] = True
+StateJson()["disabled4"] = True
 
 ##############
 # init routes

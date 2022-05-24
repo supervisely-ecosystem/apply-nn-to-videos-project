@@ -2,24 +2,26 @@
 import yaml
 
 import random
-import supervisely_lib as sly
-import ui.ui as ui
+import supervisely as sly
+from fastapi import Depends
+from starlette.requests import Request
+from supervisely.app import StateJson
 
-import sly_globals as g
-
-
-def main():
-    data = {}
-    state = {}
-    data["ownerId"] = g.owner_id
-    data["teamId"] = g.team_id
-
-    g.my_app.compile_template(g.root_source_path)
-
-    ui.init(data, state)
-
-    g.my_app.run(data=data, state=state)
+import src.sly_globals as g
 
 
-if __name__ == "__main__":
-    sly.main_wrapper("main", main)
+import src.input_data
+import src.connect_to_model
+import src.choose_classes
+import src.parameters
+import src.output_data
+
+
+@g.app.get("/")
+def read_index(request: Request):
+    return g.templates_env.TemplateResponse('index.html', {'request': request})
+
+
+@g.app.post("/apply_changes/")
+async def apply_changes(state: StateJson = Depends(StateJson.from_request)):
+    await state.synchronize_changes()
