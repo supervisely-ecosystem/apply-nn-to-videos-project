@@ -1,3 +1,5 @@
+import os
+
 from fastapi import Depends
 
 import supervisely as sly
@@ -46,8 +48,8 @@ def restart(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
         {"field": f"state.disabled{restart_from_step}", "payload": False},
         {"field": "state.activeStep", "payload": restart_from_step},
     ]
-    g.api.app.set_fields(g.task_id, fields)
-    g.api.app.set_field(task_id, "data.scrollIntoView", f"step{restart_from_step}")
+    # g.api.app.set_fields(, fields)
+    # g.api.app.set_field(task_id, "data.scrollIntoView", f"step{restart_from_step}")
 
 
 def get_files_paths(src_dir, extensions):
@@ -62,13 +64,14 @@ def get_files_paths(src_dir, extensions):
     return files_paths
 
 
-def finish_step(step_num, state):
-    next_step = step_num + 1
+def finish_step(step_num, state, next_step=None):
+    if next_step is None:
+        next_step = step_num + 1
+
     DataJson()[f'done{step_num}'] = True
     state[f'collapsed{next_step}'] = False
     state[f'disabled{next_step}'] = False
     state[f'activeStep'] = next_step
-    state[f'scrollIntoView'] = f'step{next_step}'
 
     run_sync(DataJson().synchronize_changes())
     run_sync(state.synchronize_changes())

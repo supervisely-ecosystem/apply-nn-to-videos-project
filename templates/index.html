@@ -11,7 +11,7 @@
 <script src="https://supervise.ly/sly-app-widgets-2.0.0.bundle.js"></script>
 <script
         type="module"
-        src="https://cdn.jsdelivr.net/gh/supervisely-ecosystem/supervisely-app-frontend-js@v0.0.12/SlyApp.js">
+        src="https://cdn.jsdelivr.net/gh/supervisely-ecosystem/supervisely-app-frontend-js@v0.0.13/SlyApp.js">
 </script>
 <!--        src="https://supervisely-ecosystem.github.io/supervisely-app-frontend-js/SlyApp.js">-->
 
@@ -23,7 +23,7 @@
                 <sly-stepper :active="data.activeStep">
                     <sly-stepper-item>{% include 'steps/1_input_data.html' %}</sly-stepper-item>
                     <sly-stepper-item>{% include 'steps/2_connect_to_model.html' %}</sly-stepper-item>
-                    <sly-stepper-item>{% include 'steps/choose_classes.html' %}</sly-stepper-item>
+                    <sly-stepper-item>{% include 'steps/3_choose_classes.html' %}</sly-stepper-item>
                     <!--                    <sly-stepper-item>include 'steps/choose_videos.html'</sly-stepper-item>-->
                     <sly-stepper-item>{% include 'steps/parameters.html' %}</sly-stepper-item>
                     <sly-stepper-item>{% include 'steps/output_data.html' %}</sly-stepper-item>
