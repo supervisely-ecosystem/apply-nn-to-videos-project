@@ -68,6 +68,7 @@ def finish_step(step_num, state):
     state[f'collapsed{next_step}'] = False
     state[f'disabled{next_step}'] = False
     state[f'activeStep'] = next_step
+    state[f'scrollIntoView'] = f'step{next_step}'
 
     run_sync(DataJson().synchronize_changes())
     run_sync(state.synchronize_changes())

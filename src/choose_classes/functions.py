@@ -1,6 +1,8 @@
 from supervisely.app import DataJson
 from supervisely.app.fastapi import run_sync
 
+import src.sly_globals as g
+
 
 def restart(data, state):
     data['done3'] = False
@@ -10,8 +12,6 @@ def generate_rows():
     rows = []
     obj_classes = g.model_meta.obj_classes
     for obj_class in obj_classes:
-
-
         rows.append(
             {
                 'label': f'{obj_class.name}',

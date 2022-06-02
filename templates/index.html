@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Application Name</title>
+    <title>Apply NN to Videos Project</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/svg.select.js@3.0.1/dist/svg.select.min.css"/>
     <link rel="stylesheet" href="./static/styles.css"/>
 </head>
@@ -22,7 +22,7 @@
             <div id="apply-nn-to-video-project">
                 <sly-stepper :active="data.activeStep">
                     <sly-stepper-item>{% include 'steps/1_input_data.html' %}</sly-stepper-item>
-                    <sly-stepper-item>{% include 'steps/connect_to_model.html' %}</sly-stepper-item>
+                    <sly-stepper-item>{% include 'steps/2_connect_to_model.html' %}</sly-stepper-item>
                     <sly-stepper-item>{% include 'steps/choose_classes.html' %}</sly-stepper-item>
                     <!--                    <sly-stepper-item>include 'steps/choose_videos.html'</sly-stepper-item>-->
                     <sly-stepper-item>{% include 'steps/parameters.html' %}</sly-stepper-item>

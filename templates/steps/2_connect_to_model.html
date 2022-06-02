@@ -1,4 +1,5 @@
 <sly-card
+        id="step2"
         title="Neural Network"
         subtitle="Connect to deployed model"
         :options="{collapsable: true}"
@@ -18,7 +19,7 @@
                     class="regular"
                     :loading="state.connectionLoading"
                     :disabled="!state.sessionId"
-                    @click="state.connectionLoading=true; command('connect')"
+                    @click="state.connectionLoading=true; post('/connect-to-model/')"
             >
                 <i class="zmdi zmdi-refresh mr10" v-if="!state.connectionLoading"></i>Connect
             </el-button>
