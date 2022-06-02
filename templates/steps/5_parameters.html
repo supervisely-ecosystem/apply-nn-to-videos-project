@@ -32,7 +32,7 @@
 
             <div>
                 <el-button type="primary" class="regular mt10"
-                           @click="command('apply_parameters')"
+                           @click="post('/apply-parameters/')"
                            v-if="!data.done5">
                     Apply settings
                 </el-button>
@@ -52,7 +52,7 @@
 
     </sly-card>
 
-    <sly-card title="Preview"
+    <sly-card title="Inference Preview"
               class="card-vertical-lifter"
               subtitle="Generate 5 frames preview"
               style="width: 100%;"
@@ -64,15 +64,15 @@
 
             <el-button
                     type="primary"
-                    @click="state.previewLoading = true; command('generate_annotation_example')"
-                    :loading="state.previewLoading"
+                    @click="post('/generate-annotation-example/')"
+                    :loading="data.previewLoading"
                     :disabled="data.done5 || state.disabled5">
-                <i v-if="!state.previewLoading" class="zmdi zmdi-slideshow" style="margin-right: 5px"></i> Preview
+                <i v-if="!data.previewLoading" class="zmdi zmdi-slideshow" style="margin-right: 5px"></i> Preview
             </el-button>
         </div>
 
 
-        <sly-field v-if="!data.videoUrl && !state.previewLoading"
+        <sly-field v-if="!data.videoUrl && !data.PreviewLoading"
                    title="INFO: Here will be a preview"
                    description="click on the button to generate video"
                    style="padding-top: 4px; padding-bottom: 6px">
@@ -82,7 +82,7 @@
             </sly-icon>
         </sly-field>
 
-        <sly-field v-if="state.previewLoading"
+        <sly-field v-if="data.PreviewLoading"
                    title="WARNING: Video generation in progress"
                    description="do not turn off the power of the agent, it is processing data"
                    style="padding-top: 4px; padding-bottom: 6px">

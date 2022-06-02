@@ -18,7 +18,7 @@ from src.parameters.widgets import *
 # system
 StateJson()["expId"] = f"{g.project_info.name}(inf)"
 StateJson()["confThres"] = 0.4
-StateJson()["previewLoading"] = False
+DataJson()["previewLoading"] = False
 
 # stepper
 DataJson()["videoUrl"] = None

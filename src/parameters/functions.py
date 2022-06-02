@@ -1,15 +1,19 @@
 ### some card functional
+import random
+import src.sly_globals as g
+from supervisely.app import DataJson
+
 
 def restart(data, state):
     data["done5"] = False
 
 
-def get_video_for_preview():
-    videos_table = g.api.app.get_field(g.task_id, 'data.videosTable')
-    selected_videos = g.api.app.get_field(g.task_id, 'state.selectedVideos')
+def get_video_for_preview(state):
+    videos_table = DataJson()["videosTable"]
+    selected_videos = state['selectedVideos']
 
-    frames_min = g.api.app.get_field(g.task_id, 'state.framesMin')
-    frames_max = g.api.app.get_field(g.task_id, 'state.framesMax')
+    frames_min = state['framesMin']
+    frames_max = state['framesMax']
 
     random.shuffle(selected_videos)
     video_name = selected_videos[0]

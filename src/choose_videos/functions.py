@@ -9,7 +9,7 @@ def restart(data, state):
     data['done4'] = False
 
 
-def get_videos_info(project_id):
+def get_videos_info(project_id, state):
     general_videos_info = []
     frames_min = {}
     frames_max = {}
@@ -35,20 +35,17 @@ def get_videos_info(project_id):
             frames_min[f"[{ds_id.name}] {video_info.name}"] = 0
             frames_max[f"[{ds_id.name}] {video_info.name}"] = video_info.frames_count - 1
 
-    # fields = [
-    #     {"field": f"state.framesMin", "payload": frames_min},
-    #     {"field": f"state.framesMax", "payload": frames_max},
-    # ]
-    # g.api.task.set_fields(g.task_id, fields)
+    state['framesMin'] = frames_min
+    state['framesMax'] = frames_max
 
     return general_videos_info
 
 
-def generate_rows(project_ids) -> list:
+def generate_rows(project_ids, state) -> list:
     rows = []
 
     for project_id in project_ids:
-        rows.extend(get_videos_info(project_id))
+        rows.extend(get_videos_info(project_id, state))
 
     return rows
 
