@@ -8,7 +8,7 @@
 >
     <sly-field title="" description="Project">
         <a slot="title" target="_blank"
-           :href="`/projects/${data.projectId}/datasets`">{{data.projectName}} ({{data.projectItemsCount}}
+           :href="`${data.instanceAddress}/projects/${data.projectId}/datasets`">{{data.projectName}} ({{data.projectItemsCount}}
             videos)</a>
         <sly-icon slot="icon" :options="{ imageUrl: `${data.projectPreviewUrl}` }"/>
     </sly-field>

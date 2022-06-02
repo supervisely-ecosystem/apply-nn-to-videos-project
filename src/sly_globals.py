@@ -38,8 +38,8 @@ model_meta: sly.ProjectMeta = None
 
 DataJson()["ownerId"] = owner_id
 DataJson()["teamId"] = team_id
+DataJson()['instanceAddress'] = os.getenv('SERVER_ADDRESS')
 
 StateJson()["activeStep"] = 1
 StateJson()["restartFrom"] = None
-
 
