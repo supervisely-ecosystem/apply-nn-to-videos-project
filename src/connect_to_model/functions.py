@@ -11,10 +11,25 @@ def restart(data, state):
     data['done2'] = False
 
 
-def get_model_info(session_id):
-    meta_json = g.api.task.send_request(session_id, "get_model_meta", data={}, timeout=3)
+def get_model_info(session_id, state):
     g.model_info = g.api.task.send_request(session_id, "get_session_info", data={}, timeout=3)
+    meta_json = g.api.task.send_request(session_id, "get_output_classes_and_tags", data={}, timeout=3)
     g.model_meta = sly.ProjectMeta.from_json(meta_json)
+
+    try:
+        state['modelSettings'] = g.api.task.send_request(session_id, "get_custom_inference_settings", data={}).get('settings', None)
+        if state['modelSettings'] is None or len(state['modelSettings']) == 0:
+            state['modelSettings'] = ''
+            sly.logger.info("Model doesn't support custom inference settings.")
+    except Exception as ex:
+        state['modelSettings'] = ''
+        sly.logger.info("Model doesn't support custom inference settings.\n"
+                        f"Reason: {repr(ex)}")
+
+
+
+
+
 
 
 def show_model_info():
@@ -22,3 +37,17 @@ def show_model_info():
     DataJson()['modelInfo'] = g.model_info
 
     run_sync(DataJson().synchronize_changes())
+
+
+def validate_model_type():
+    supported_model_types = ['Detector', 'Tracker']
+    if g.model_info.get('type', '') not in supported_model_types:
+        raise TypeError(f"Model type isn't in supported types list: {supported_model_types}")
+
+    model_types_without_tracking = ['Detector']
+    if g.model_info['type'] in model_types_without_tracking:
+        if g.model_info.get('videos_support', False) is True:
+            DataJson()['model_without_tracking'] = True
+
+        else:
+            raise TypeError(f"Model doesn't support videos processing")

@@ -12,7 +12,7 @@
                   class="ultra-table"
                   @selection-change="
                 (val) => {
-                    state.selectedClasses = val.map(x => x.name);
+                    state.selectedClasses = val.map(x => x.label);
                 }
                 ">
             <el-table-column type="selection" width="55"

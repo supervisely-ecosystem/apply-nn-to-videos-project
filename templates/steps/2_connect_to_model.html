@@ -31,29 +31,35 @@
         </sly-notification>
     </div>
 
-    <div v-if="data.connected === true">
+    <div v-if="data.connected === true" style="display: flex; flex-direction: row; justify-content: space-between">
+        <div>
+            <sly-field title="INFO: successfully connected to model"
+                       description="below are the parameters of the model"
+                       style="padding-top: 4px; padding-bottom: 6px">
 
-        <sly-field title="INFO: successfully connected to model"
-                   description="below are the parameters of the model"
-                   style="padding-top: 4px; padding-bottom: 6px">
+                <sly-icon slot="icon" :options="{ color: '#13ce66', bgColor: '#e1f7eb', rounded: false }">
+                    <i class="zmdi zmdi-circle"></i>
+                </sly-icon>
+            </sly-field>
 
-            <sly-icon slot="icon" :options="{ color: '#13ce66', bgColor: '#e1f7eb', rounded: false }">
-                <i class="zmdi zmdi-circle"></i>
-            </sly-icon>
-        </sly-field>
-        <div v-for="v,k in data.modelInfo" class="mb10" style="word-break: break-all;">
-            <div style="margin-bottom: 4px">
-                <b>{{k}}</b>: <span>{{v}}</span>
+            <div style="margin: 22px 5px">
+                <h3>Model Stats:</h3>
+                <div v-for="v,k in data.modelInfo" class="mb10" style="word-break: break-all;">
+                    <div style="margin-bottom: 4px">
+                        <b>{{k}}</b>: <span>{{v}}</span>
+                    </div>
+                </div>
             </div>
+
+
+            <el-button type="warning" class="regular mt10" :plain="true"
+                       @click="state.restartFrom = 2;"
+                       v-if="data.connected === true"
+                       :disabled="state.annotatingStarted">
+                <i class="zmdi zmdi-rotate-left mr5"></i> Connect to another model
+            </el-button>
         </div>
 
-
-        <el-button type="warning" class="regular mt10" :plain="true"
-                   @click="state.restartFrom = 2;"
-                   v-if="data.connected === true"
-                   :disabled="state.annotatingStarted">
-            <i class="zmdi zmdi-rotate-left mr5"></i> reselect
-        </el-button>
     </div>
 </sly-card>
 </sly-card>

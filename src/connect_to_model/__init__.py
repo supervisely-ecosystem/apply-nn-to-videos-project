@@ -32,3 +32,12 @@ StateJson()["collapsed2"] = True
 StateJson()["disabled2"] = True
 
 
+StateJson()["applyTrackingAlgorithm"] = True
+
+DataJson()['model_without_tracking'] = False
+
+StateJson()["selectedTrackingAlgorithm"] = 'deepsort'
+DataJson()["trackingAlgorithms"] = [
+    {'label': 'Deep Sort', 'value': 'deepsort'},
+]
+

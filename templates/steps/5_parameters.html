@@ -6,12 +6,39 @@
               :class="{'custom-full-height': !state.collapsed5}"
               :options="{collapsable: true}"
               :collapsed.sync="state.collapsed5"
-              :style="[!state.collapsed5 ? {minWidth: '310px', maxWidth: '310px'} : {width: '100%', margin: 0}]"
+              :style="[!state.collapsed5 ? {minWidth: '410px', maxWidth: '410px'} : {width: '100%', margin: 0}]"
               :disabled="{disabled: state.disabled5, message: 'complete stage 4'}"
               ref="step5">
-        <div class="fflex"
-             style="flex-direction: column; justify-content: space-between; align-items: flex-start; height: 100%;">
+        <div style="flex-direction: column; justify-content: space-between; align-items: flex-start; height: 100%; width: 100%; ">
             <div>
+                <div v-if="data.model_without_tracking" style="margin: 0 10px 0 0">
+
+                    <div class="field-with-checkbox-container">
+                        <el-checkbox v-model="state.applyTrackingAlgorithm"
+                                     :disabled="data.done2"
+                                     style="margin: 0 10px 0 0"></el-checkbox>
+
+                        <sly-field title="Apply Tracking Algorithm"
+                                   description="Process predictions with tracking algorithm"
+                                   style="margin: 10px 0">
+                        </sly-field>
+                    </div>
+
+                    <el-collapse-transition>
+                        <div v-show="state.applyTrackingAlgorithm" style="display: inline-block">
+
+                            <el-select style="margin: 0 0 10px 0; width: 140px"
+                                       :disabled="data.done2"
+                                       v-model="state.selectedTrackingAlgorithm">
+                                <el-option v-for="item in data.trackingAlgorithms"
+                                           :key="item.value"
+                                           :label="item.label"
+                                           :value="item.value"></el-option>
+                            </el-select>
+                        </div>
+                    </el-collapse-transition>
+                </div>
+
                 <sly-field title="Output project name"
                            description="folder name to save visualization result">
                     <el-input placeholder="visualization_0"
@@ -19,15 +46,13 @@
                               :disabled="data.done5"></el-input>
                 </sly-field>
 
-
-                <sly-field title="Confidence threshold"
-                           description="to filter predictions">
-                    <div class="fflex">
-                        <!--            <span class="mr5">Evaluate validation set every </span>-->
-                        <el-input-number v-model="state.confThres" :min="0" :max="1" :step="0.1"
-                                         :disabled="data.done5"></el-input-number>
-                    </div>
+                <sly-field title="Additional settings"
+                           description="Model specific inference settings in YAML format">
+                    <sly-editor v-model="state.modelSettings"
+                                :options="{height: '200px', mode: 'ace/mode/yaml'}"
+                                ></sly-editor>
                 </sly-field>
+
             </div>
 
             <div>

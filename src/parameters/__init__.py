@@ -20,9 +20,12 @@ StateJson()["expId"] = f"{g.project_info.name}(inf)"
 StateJson()["confThres"] = 0.4
 DataJson()["previewLoading"] = False
 
+StateJson()['modelSettings'] = ""
+
 # stepper
 DataJson()["videoUrl"] = None
 
 StateJson()["collapsed5"] = True
 StateJson()["disabled5"] = True
 DataJson()["done5"] = False
+

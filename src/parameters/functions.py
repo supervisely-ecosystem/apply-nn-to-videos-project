@@ -1,6 +1,8 @@
-### some card functional
+import supervisely as sly
+
 import random
 import src.sly_globals as g
+import src.sly_functions as f
 from supervisely.app import DataJson
 
 
@@ -27,3 +29,24 @@ def get_video_for_preview(state):
         end_frame = start_frame + 4
 
     return video_info['videoId'], (start_frame, end_frame)
+
+
+def apply_tracking_algorithm_to_predictions(predictions):
+
+    pass
+
+
+def frame_index_to_annotation(annotation_predictions, frames_range):
+    frame_index_to_annotation_dict = {}
+
+    for frame_index, annotation_json in zip(range(frames_range[0], frames_range[1] + 1), annotation_predictions):
+        frame_index_to_annotation_dict[frame_index] = sly.Annotation.from_json(annotation_json, g.model_meta)
+
+    return frame_index_to_annotation_dict
+
+
+def get_preview_video(video_id, frame_to_annotation, frames_range):
+    frames_to_image_path = f.download_frames_range(video_id, g.preview_frames_path, frames_range)
+    f.draw_labels_on_frames(frames_to_image_path, frame_to_annotation)
+    local_video_path = f.generate_video_from_frames(g.preview_frames_path)
+    return f.upload_video_to_sly(local_video_path).full_storage_url
