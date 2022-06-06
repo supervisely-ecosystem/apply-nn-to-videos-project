@@ -16,8 +16,8 @@ from src.parameters.widgets import *
 ##############
 
 # system
-StateJson()["expId"] = f"{g.project_info.name}(inf)"
-StateJson()["confThres"] = 0.4
+StateJson()["expId"] = f"{g.project_info.name}_NN"
+
 DataJson()["previewLoading"] = False
 
 StateJson()['modelSettings'] = ""

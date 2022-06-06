@@ -1,7 +1,10 @@
 ### some card functional
+import yaml
+
 import supervisely as sly
 
 import src.sly_globals as g
+import src.sly_functions as f
 
 import src.output_data.widgets as card_widgets
 from supervisely.app import DataJson
@@ -25,34 +28,30 @@ def init_project_remotely(project_name='ApplyNNtoVideoProject', ds_name='ds_0000
     return project.id, dataset.id
 
 
-def annotate_video(video_data, state):
-    session_id = state['sessionId']
-    conf_thres = state['confThres']
-
-    frames_min = state['framesMin']
-    frames_max = state['framesMax']
-
-    video_id = video_data['videoId']
-    frames_range = (frames_min[video_data['name']], frames_max[video_data['name']])
-
-    result = g.api.task.send_request(session_id, "inference_video_id",
-                                     data={'videoId': video_id,
-                                           'framesRange': frames_range,
-                                           'confThres': conf_thres,
-                                           'isPreview': False}, timeout=60 * 60 * 24)  # temp solution
-
-    return result['ann']
-
-
-def upload_to_project(video_data, annotations, dataset_id):
+def upload_to_project(video_data, annotation: sly.VideoAnnotation, dataset_id):
     video_hash = video_data['videoHash']
     video_name = video_data['name']
     file_info = g.api.video.upload_hash(dataset_id, video_name, video_hash)
 
-    annotations_sly = sly.VideoAnnotation.from_json(annotations, g.model_meta)
+    g.api.video.annotation.append(file_info.id, annotation)
 
-    g.api.video.annotation.append(file_info.id, annotations_sly)
-    return 0
+
+
+def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
+    frames_min = state['framesMin']
+    frames_max = state['framesMax']
+    frames_range = (frames_min[video_data['name']], frames_max[video_data['name']])
+
+    model_predictions = f.get_model_inference(state, video_id=video_data['videoId'], frames_range=frames_range)
+    frame_to_annotation = f.frame_index_to_annotation(model_predictions, frames_range)
+
+    if state['applyTrackingAlgorithm'] is True:
+        return f.apply_tracking_algorithm_to_predictions(state=state, video_id=video_data['videoId'],
+                                                         frames_range=frames_range,
+                                                         frame_to_annotation=frame_to_annotation)
+    else:
+        raise NotImplementedError
+        # return f.get_annotation_from_predictions(frame_to_annotation)
 
 
 def annotate_videos(state):
@@ -66,10 +65,11 @@ def annotate_videos(state):
 
     selected_videos_data = [row for row in videos_table if row['name'] in selected_videos_names]
 
-    for video_data in card_widgets.apply_nn_to_video_project_progress(selected_videos_data, message='Annotating Videos'):
+    for video_data in card_widgets.apply_nn_to_video_project_progress(selected_videos_data,
+                                                                      message='Annotating Videos'):
         try:
-            annotations = annotate_video(video_data, state)
-            upload_to_project(video_data, annotations, dataset_id)
+            annotation: sly.VideoAnnotation = get_video_annotation(video_data, state)
+            upload_to_project(video_data, annotation, dataset_id)
 
         except Exception as ex:
             raise RuntimeError(f'Error while processing: {video_data["name"]}:'
@@ -82,4 +82,3 @@ def annotate_videos(state):
         'dstProjectName': res_project.name,
         'dstProjectPreviewUrl': g.api.image.preview_url(res_project.reference_image_url, 100, 100),
     })
-

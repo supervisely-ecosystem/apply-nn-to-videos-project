@@ -1,6 +1,9 @@
 import os
 import sys
 import pathlib
+
+import torch.cuda
+
 import supervisely as sly
 
 from fastapi import FastAPI
@@ -44,6 +47,7 @@ project_meta: sly.ProjectMeta = sly.ProjectMeta.from_json(api.project.get_meta(p
 
 model_info = None
 model_meta: sly.ProjectMeta = None
+device = torch.device('cuda:0') if torch.cuda.is_available() and torch.cuda.device_count() > 0 else torch.device('cpu')
 
 
 DataJson()["ownerId"] = owner_id

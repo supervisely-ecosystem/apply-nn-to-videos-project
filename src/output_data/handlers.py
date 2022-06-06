@@ -1,3 +1,5 @@
+import traceback
+
 from fastapi import Depends, HTTPException
 from supervisely.app import DataJson
 from supervisely.app.fastapi import run_sync
@@ -22,6 +24,7 @@ def start_annotation(state: sly.app.StateJson = Depends(sly.app.StateJson.from_r
         DataJson()['done6'] = True
     except Exception as ex:
         logger.warn(f'Cannot apply NN to Videos Project: {repr(ex)}', exc_info=True)
+        print(traceback.format_exc())
         raise HTTPException(status_code=500, detail={'title': "Cannot apply NN to Videos Project",
                                                      'message': f'{ex}'})
 
