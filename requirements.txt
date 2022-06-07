@@ -24,3 +24,4 @@ ftfy==6.0.3
 regex
 
 git+https://github.com/supervisely-ecosystem/depends-CLIP.git
+ffmpeg==0.2.0
