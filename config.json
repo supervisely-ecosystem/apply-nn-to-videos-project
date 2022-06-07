@@ -12,6 +12,7 @@
   "task_location": "workspace_tasks",
   "isolate": true,
   "headless": false,
+  "need_gpu": true,
   "icon": "https://imgur.com/HPtoMih.png",
   "icon_background": "#FFFFFF",
   "context_menu": {
