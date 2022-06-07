@@ -25,3 +25,4 @@ regex
 
 git+https://github.com/supervisely-ecosystem/depends-CLIP.git
 ffmpeg==0.2.0
+PyYAML==5.4.1
