@@ -1,12 +1,13 @@
 {
   "name": "Apply NN to videos project",
   "type": "app",
+  "version": "2.0.0",
   "categories": [
     "neural network",
     "video"
   ],
   "entrypoint": "python -m uvicorn src.main:g.app --host 0.0.0.0 --port 8000",
-  "version": "2.0.0",
+  "port": 8000,
   "description": "NN Inference on videos in project or dataset",
   "docker_image": "supervisely/base-pytorch:latest",
   "main_script": "src/main.py",
