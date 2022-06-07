@@ -1,29 +1,25 @@
 {
-  "name": "Apply NN to videos project",
+  "name": "Apply NN to Videos Project",
   "type": "app",
   "version": "2.0.0",
   "categories": [
     "neural network",
-    "video"
+    "images",
+    "classification",
+    "inference interfaces"
   ],
+  "description": "label project images or objects using NN",
+  "docker_image": "supervisely/base-pytorch:latest",
   "entrypoint": "python -m uvicorn src.main:g.app --host 0.0.0.0 --port 8000",
   "port": 8000,
-  "description": "NN Inference on videos in project or dataset",
-  "docker_image": "supervisely/base-pytorch:latest",
-  "main_script": "src/main.py",
-  "gui_template": "src/gui.html",
   "task_location": "workspace_tasks",
-  "isolate": true,
-  "headless": false,
-  "need_gpu": true,
-  "icon": "https://imgur.com/HPtoMih.png",
   "icon_background": "#FFFFFF",
+  "icon": "https://github.com/supervisely-ecosystem/apply-classification-model-to-project/releases/download/v0.0.1/icon.png",
   "context_menu": {
     "target": [
-      "videos_project",
-      "videos_dataset"
+      "images_project"
     ],
     "context_root": "Neural Networks"
   },
-  "poster": "https://imgur.com/dE7nQl6.png"
+  "instance_version": "6.4.49"
 }
