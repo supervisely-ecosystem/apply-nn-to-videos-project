@@ -12,6 +12,7 @@
   "docker_image": "supervisely/base-pytorch:latest",
   "entrypoint": "python -m uvicorn src.main:g.app --host 0.0.0.0 --port 8000",
   "port": 8000,
+  "need_gpu": true,
   "task_location": "workspace_tasks",
   "icon_background": "#FFFFFF",
   "icon": "https://github.com/supervisely-ecosystem/apply-classification-model-to-project/releases/download/v0.0.1/icon.png",
