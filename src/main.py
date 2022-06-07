@@ -28,4 +28,4 @@ async def apply_changes(state: StateJson = Depends(StateJson.from_request)):
 
 
 if __name__ == '__main__':
-    uvicorn.run(g.app, host="0.0.0.0", port=5000, log_level="info")
+    uvicorn.run(g.app, host="0.0.0.0", port=8000, log_level="info")
