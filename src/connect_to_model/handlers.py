@@ -28,6 +28,8 @@ def connect(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
         choose_classes_functions.fill_table(classes_rows)
         card_functions.show_model_info()
 
+        state['selectedClasses'] = []
+
         f.finish_step(2, state)
     except Exception as ex:
         logger.warn(f'Cannot select preferences: {repr(ex)}', exc_info=True)
@@ -40,3 +42,8 @@ def connect(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
         run_sync(state.synchronize_changes())
         run_sync(DataJson().synchronize_changes())
 
+
+@g.app.post('/restart/2/')
+def restart(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
+    DataJson()['connected'] = False
+    f.finish_step(1, state)

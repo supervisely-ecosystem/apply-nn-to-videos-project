@@ -2,8 +2,8 @@
         title="Neural Network"
         subtitle="Connect to deployed model"
         :options="{collapsable: true}"
-        :collapsed.sync="state.collapsed2"
-        :disabled="{disabled: state.disabled2, message: 'complete stage 1'}"
+
+        :disabled="{disabled: state.activeStep < 2, message: 'complete previous step'}"
         ref="step2">
     <div v-if="data.connected === false">
         <div class="fflex">
@@ -20,7 +20,7 @@
                     :disabled="!state.sessionId"
                     @click="state.connectionLoading=true; post('/connect-to-model/')"
             >
-                <i class="zmdi zmdi-refresh mr10" v-if="!state.connectionLoading"></i>Connect
+                <i class="zmdi zmdi-refresh mr10" v-if="!state.connectionLoading"></i>Connect to model
             </el-button>
 
         </div>
@@ -55,7 +55,7 @@
             <el-button type="warning" class="regular mt10" :plain="true"
                        @click="state.restartFrom = 2;"
                        v-if="data.connected === true"
-                       :disabled="state.annotatingStarted">
+                       :disabled="data.annotatingStarted">
                 <i class="zmdi zmdi-rotate-left mr5"></i> Connect to another model
             </el-button>
         </div>

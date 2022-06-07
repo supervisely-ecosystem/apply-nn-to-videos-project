@@ -1,4 +1,3 @@
-from supervisely.app.widgets import NotificationBox
+from supervisely.app.widgets import NotificationBox, SlyTqdm
 
-simple_notification = NotificationBox(title='Widget Example',
-                                      description='i am simplest widget example')
+preview_progress = SlyTqdm()

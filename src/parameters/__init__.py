@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import torch
 from jinja2 import Environment
 
 from supervisely.app import StateJson, DataJson
@@ -20,7 +21,10 @@ StateJson()["expId"] = f"{g.project_info.name}_NN"
 
 DataJson()["previewLoading"] = False
 
+
 StateJson()['modelSettings'] = ""
+StateJson()['device'] = 'cuda:0' if torch.cuda.is_available() and torch.cuda.device_count() > 0 else 'cpu'
+
 
 # stepper
 DataJson()["videoUrl"] = None

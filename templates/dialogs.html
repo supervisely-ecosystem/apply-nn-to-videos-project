@@ -6,7 +6,7 @@
     <span slot="footer" class="dialog-footer">
             <el-button @click="state.restartFrom = null">Cancel</el-button>
             <el-button type="primary" class="regular"
-                       @click="post('/restart/');">
+                       @click='post(`/restart/${state.restartFrom}/`);'>
                 Confirm
             </el-button>
         </span>

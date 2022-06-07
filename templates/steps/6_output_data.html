@@ -2,8 +2,8 @@
           subtitle="track video processing"
           ref="step6"
           :options="{collapsable: true}"
-          :collapsed.sync="state.collapsed6"
-          :disabled="{disabled: state.disabled6, message: 'complete stage 5'}">
+
+          :disabled="{disabled: state.activeStep < 6, message: 'complete previous step'}">
     <sly-field v-if="data.annotatingStarted"
                title="WARNING: Tracking in progress"
                description="do not turn off the power of the agent, it is processing data"

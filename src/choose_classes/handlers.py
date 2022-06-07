@@ -24,5 +24,6 @@ def choose_classes(state: sly.app.StateJson = Depends(sly.app.StateJson.from_req
                                                      'message': f'{ex}'})
 
 
-
-
+@g.app.post('/restart/3')
+def restart(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
+    f.finish_step(2, state)

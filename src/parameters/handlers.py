@@ -11,6 +11,7 @@ import src.sly_globals as g
 import src.sly_functions as f
 
 import src.parameters.functions as card_functions
+import src.parameters.widgets as card_widgets
 
 
 @g.app.post("/apply-parameters/")
@@ -28,7 +29,10 @@ def generate_annotation_example(state: sly.app.StateJson = Depends(sly.app.State
         run_sync(DataJson().synchronize_changes())
 
         video_id, frames_range = card_functions.get_video_for_preview(state)
-        model_predictions = f.get_model_inference(state, video_id=video_id, frames_range=frames_range)
+
+        with card_widgets.preview_progress(message='Gathering Predictions from Model', total=1) as progress:
+            model_predictions = f.get_model_inference(state, video_id=video_id, frames_range=frames_range)
+
         frame_to_annotation = f.frame_index_to_annotation(model_predictions, frames_range)
 
         frame_to_annotation = f.filter_annotation_by_classes(frame_to_annotation, g.selected_classes)
@@ -43,3 +47,9 @@ def generate_annotation_example(state: sly.app.StateJson = Depends(sly.app.State
     finally:
         DataJson()['previewLoading'] = False
         run_sync(DataJson().synchronize_changes())
+
+
+@g.app.post('/restart/5')
+def restart(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
+    f.finish_step(3, state, 5)
+

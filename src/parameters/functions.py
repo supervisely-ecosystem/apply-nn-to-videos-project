@@ -5,6 +5,8 @@ import src.sly_globals as g
 import src.sly_functions as f
 from supervisely.app import DataJson
 
+import src.parameters.widgets as card_widgets
+
 
 def restart(data, state):
     data["done5"] = False
@@ -31,16 +33,17 @@ def get_video_for_preview(state):
     return video_info['videoId'], (start_frame, end_frame)
 
 
-def apply_tracking_algorithm_to_predictions(predictions):
-
-    pass
-
-
-
-
-
 def get_preview_video(video_id, frame_to_annotation, frames_range):
-    frames_to_image_path = f.download_frames_range(video_id, g.preview_frames_path, frames_range)
-    f.draw_labels_on_frames(frames_to_image_path, frame_to_annotation)
-    local_video_path = f.generate_video_from_frames(g.preview_frames_path)
-    return f.upload_video_to_sly(local_video_path).full_storage_url
+    with card_widgets.preview_progress(message='Downloading Frames', total=abs(frames_range[0] - frames_range[1]) + 1) as progress:
+        frames_to_image_path = f.download_frames_range(video_id, g.preview_frames_path, frames_range, pbar_cb=progress.update)
+
+    with card_widgets.preview_progress(message='Generating Preview', total=1) as progress:
+        f.draw_labels_on_frames(frames_to_image_path, frame_to_annotation)
+        local_video_path = f.generate_video_from_frames(g.preview_frames_path)
+        progress.update(1)
+
+    # with card_widgets.preview_progress(message='Uploading Video', total=f.get_video_size(local_video_path), unit='B', unit_scale=True) as progress:
+    with card_widgets.preview_progress(message='Uploading Video', total=1) as progress:
+        video_info = f.upload_video_to_sly(local_video_path)
+
+    return video_info.full_storage_url

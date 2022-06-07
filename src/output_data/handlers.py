@@ -7,6 +7,7 @@ from supervisely.app.fastapi import run_sync
 import supervisely as sly
 from supervisely import logger
 
+import src.sly_functions as f
 import src.sly_globals as g
 
 import src.output_data.functions as card_functions
@@ -31,4 +32,9 @@ def start_annotation(state: sly.app.StateJson = Depends(sly.app.StateJson.from_r
     finally:
         DataJson()['annotatingStarted'] = False
         run_sync(DataJson().synchronize_changes())
+
+
+@g.app.post('/restart/6')
+def restart(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
+    f.finish_step(5, state)
 

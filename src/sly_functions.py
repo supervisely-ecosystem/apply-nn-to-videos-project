@@ -32,12 +32,12 @@ def filter_annotation_by_classes(annotation_predictions: dict, selected_classes:
     return annotation_predictions
 
 
-def upload_video_to_sly(local_video_path):
+def upload_video_to_sly(local_video_path, pbar_cb=None):
     remote_video_path = os.path.join("ApplyNNtoVideosProject", "preview.mp4")
     if g.api.file.exists(g.team_id, remote_video_path):
         g.api.file.remove(g.team_id, remote_video_path)
 
-    file_info = g.api.file.upload(g.team_id, local_video_path, remote_video_path)
+    file_info = g.api.file.upload(g.team_id, local_video_path, remote_video_path, progress_cb=pbar_cb)
     return file_info
 
 
@@ -77,6 +77,8 @@ def finish_step(step_num, state, next_step=None):
     state[f'collapsed{next_step}'] = False
     state[f'disabled{next_step}'] = False
     state[f'activeStep'] = next_step
+
+    state[f'restartFrom'] = None
 
     run_sync(DataJson().synchronize_changes())
     run_sync(state.synchronize_changes())
@@ -145,19 +147,23 @@ def download_video(video_id, frames_range=None):
     return videos_to_frames(save_path, frames_range)
 
 
-def download_frames_range(video_id, frames_dir_path, frames_range):
+def download_frames_range(video_id, frames_dir_path, frames_range, pbar_cb=None):
     os.makedirs(frames_dir_path, exist_ok=True)
     sly.fs.clean_dir(frames_dir_path)
 
     frame_to_image_path = {}
 
-    for index, frame_index in tqdm(enumerate(range(frames_range[0], frames_range[1] + 1)), desc='Downloading frames'):
+    for index, frame_index in enumerate(range(frames_range[0], frames_range[1] + 1)):
         frame_path = os.path.join(f"{frames_dir_path}", f"frame{index:06d}.png")
 
         img_rgb = g.api.video.frame.download_np(video_id, frame_index)
         cv2.imwrite(frame_path, img_rgb)  # save frame as PNG file
 
         frame_to_image_path[frame_index] = frame_path
+
+        if pbar_cb is not None:
+            pbar_cb()
+
     return frame_to_image_path
 
 
@@ -229,3 +235,7 @@ def frame_index_to_annotation(annotation_predictions, frames_range):
         frame_index_to_annotation_dict[frame_index] = sly.Annotation.from_json(annotation_json, g.model_meta)
 
     return frame_index_to_annotation_dict
+
+
+def get_video_size(local_video_path):
+    return os.path.getsize(local_video_path)
