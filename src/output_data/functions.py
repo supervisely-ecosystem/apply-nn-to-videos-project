@@ -36,7 +36,6 @@ def upload_to_project(video_data, annotation: sly.VideoAnnotation, dataset_id):
     g.api.video.annotation.append(file_info.id, annotation)
 
 
-
 def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
     frames_min = state['framesMin']
     frames_max = state['framesMax']
