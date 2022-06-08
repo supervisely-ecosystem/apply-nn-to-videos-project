@@ -57,6 +57,7 @@ DataJson()['instanceAddress'] = os.getenv('SERVER_ADDRESS')
 StateJson()["activeStep"] = 1
 StateJson()["restartFrom"] = None
 
+selected_classes_list = []
+available_classes_names = []
 
-selected_classes = []
 

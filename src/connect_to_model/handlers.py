@@ -26,9 +26,10 @@ def connect(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
 
         classes_rows = choose_classes_functions.generate_rows()
         choose_classes_functions.fill_table(classes_rows)
-        card_functions.show_model_info()
+        state['selectedClasses'] = [False for _ in g.available_classes_names]
+        g.selected_classes_list = []
 
-        state['selectedClasses'] = []
+        card_functions.show_model_info()
 
         f.finish_step(2, state)
     except Exception as ex:

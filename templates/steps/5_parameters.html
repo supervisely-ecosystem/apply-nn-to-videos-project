@@ -40,7 +40,8 @@
                 </div>
 
 
-                <sly-field title="Tracking Algorithm Device" description="CUDA device number (i.e. 0, 1, 2 or 3) or CPU">
+                <sly-field title="Tracking Algorithm Device"
+                           description="CUDA device number (i.e. 0, 1, 2 or 3) or CPU">
                     <el-select v-model="state.device" :disabled="state.activeStep !== 5">
                         <el-option-group key="GPU" label="GPU">
                             <el-option key="0" label="0" value="cuda:0"></el-option>
@@ -114,25 +115,12 @@
         </div>
 
 
-        <sly-field v-if="!data.videoUrl && !data.PreviewLoading"
-                   title="INFO: Here will be a preview"
-                   description="click on the button to generate video"
-                   style="padding-top: 4px; padding-bottom: 6px">
+        <el-collapse-transition>
+            <div v-show='!(data.videoUrl || data.previewLoading)'>
+                {{{ here_will_be_preview_notification.to_html() }}}
+            </div>
+        </el-collapse-transition>
 
-            <sly-icon slot="icon" :options="{ color: '#13ce66', bgColor: '#e1f7eb', rounded: false }">
-                <i class="zmdi zmdi-info-outline"></i>
-            </sly-icon>
-        </sly-field>
-
-        <sly-field v-if="data.PreviewLoading"
-                   title="WARNING: Video generation in progress"
-                   description="do not turn off the power of the agent, it is processing data"
-                   style="padding-top: 4px; padding-bottom: 6px">
-
-            <sly-icon slot="icon" :options="{ color: '#fba607', bgColor: '#ffe9da', rounded: false }">
-                <i class="zmdi zmdi-alert-triangle"></i>
-            </sly-icon>
-        </sly-field>
 
         <video v-if="data.videoUrl" controls style="max-height: 650px; max-width: 100%;">
 
@@ -143,8 +131,6 @@
         <div v-else>
             {{{ preview_progress.to_html() }}}
         </div>
-
-
 
 
     </sly-card>
