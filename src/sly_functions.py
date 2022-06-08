@@ -168,11 +168,11 @@ def download_frames_range(video_id, frames_dir_path, frames_range, pbar_cb=None)
 
 
 def get_annotation_keeper(ann_data, video_frames_path, frames_count):
-    class_names_for_each_object = deep_sort_ann_keeper.get_class_names_for_each_object(ann_data)
+    obj_id_to_object_class = deep_sort_ann_keeper.get_obj_id_to_obj_class(ann_data)
     video_shape = deep_sort_ann_keeper.get_video_shape(video_frames_path)
 
     ann_keeper = deep_sort_ann_keeper.AnnotationKeeper(video_shape=(video_shape[1], video_shape[0]),
-                                                       class_names_for_each_object=class_names_for_each_object,
+                                                       obj_id_to_object_class=obj_id_to_object_class,
                                                        video_frames_count=frames_count)
 
     return ann_keeper
@@ -208,7 +208,7 @@ def get_model_inference(state, video_id, frames_range):
 
 
 def apply_tracking_algorithm_to_predictions(state, video_id, frames_range, frame_to_annotation,
-                                            tracking_algorithm='deepsort') -> sly.VideoAnnotation:
+                                            tracking_algorithm='deepsort', pbar_cb=None) -> sly.VideoAnnotation:
     sly.logger.info(f'Applying tracking algorithm to predictions')
 
     video_local_info = download_video(video_id=video_id, frames_range=frames_range)
@@ -217,7 +217,7 @@ def apply_tracking_algorithm_to_predictions(state, video_id, frames_range, frame
     if tracking_algorithm == 'deepsort':
         opt = deep_sort_tracker.init_opt(state, frames_path=video_local_info['frames_path'])
 
-        tracker_predictions = deep_sort_tracker.track(opt=opt, frame_to_annotation=frame_to_annotation)
+        tracker_predictions = deep_sort_tracker.track(opt=opt, frame_to_annotation=frame_to_annotation, pbar_cb=pbar_cb)
 
         ann_keeper = get_annotation_keeper(tracker_predictions,
                                            video_frames_path=video_local_info['frames_path'],
@@ -227,6 +227,7 @@ def apply_tracking_algorithm_to_predictions(state, video_id, frames_range, frame
         return annotations
     else:
         raise NotImplementedError(f'Tracking algorithm {tracking_algorithm} is not implemented yet')
+
 
 def frame_index_to_annotation(annotation_predictions, frames_range):
     frame_index_to_annotation_dict = {}

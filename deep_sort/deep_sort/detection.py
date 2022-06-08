@@ -28,11 +28,15 @@ class Detection(object):
 
     """
 
-    def __init__(self, tlwh, confidence, class_num, feature):
+    def __init__(self, tlwh, confidence, class_num, feature, sly_label):
         self.tlwh = np.asarray(tlwh, dtype=np.float)
         self.confidence = float(confidence)
         self.class_num = class_num
         self.feature = np.asarray(feature, dtype=np.float32)
+        self.sly_label = sly_label
+
+    def get_supervisely_label(self):
+        return self.sly_label
 
     def to_tlbr(self):
         """Convert bounding box to format `(min x, min y, max x, max y)`, i.e.,

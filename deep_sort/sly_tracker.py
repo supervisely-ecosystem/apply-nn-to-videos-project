@@ -57,14 +57,16 @@ def init_opt(state, frames_path):
 def convert_annotation(annotation_for_frame: sly.Annotation):
     formatted_predictions = []
     classes = []
+    sly_labels = []
 
     for label in annotation_for_frame.labels:
-        rectangle: sly.Rectangle = label.geometry.to_bbox()
-
         confidence = 1.0
-        # if label.tags.get('confidence', None) or label.tags.get('conf', None):
-            # confidence =
-        #  @TODO: check conf
+        if label.tags.get('confidence', None) is not None:
+            confidence = label.tags.get('confidence').value
+        elif label.tags.get('conf', None) is not None:
+            confidence = label.tags.get('conf').value
+
+        rectangle: sly.Rectangle = label.geometry.to_bbox()
         formatted_pred = [rectangle.left, rectangle.top, rectangle.right, rectangle.bottom, confidence]
 
         # convert to width / height
@@ -73,8 +75,9 @@ def convert_annotation(annotation_for_frame: sly.Annotation):
 
         formatted_predictions.append(formatted_pred)
         classes.append(label.obj_class.name)
+        sly_labels.append(label)
 
-    return formatted_predictions, classes
+    return formatted_predictions, classes, sly_labels
 
 
 def correct_figure(img_size, figure):  # img_size — height, width tuple
@@ -100,24 +103,23 @@ def update_track_data(tracks_data, tracks, frame_index, img_size):
         if not curr_track.is_confirmed() or curr_track.time_since_update > 1:
             continue
 
-        tl_br = curr_track.to_tlbr()  # (!!!) LTRB
+        # tl_br = curr_track.to_tlbr()  # (!!!) LTRB
         # class_name = curr_track.class_num
         track_id = curr_track.track_id - 1  # tracks in deepsort started from 1
         # bbox = xyxy
 
-        potential_rectangle = sly.Rectangle(top=int(round(tl_br[1])),
-                                            left=int(round(tl_br[0])),
-                                            bottom=int(round(tl_br[3])),
-                                            right=int(round(tl_br[2])))
+        # potential_rectangle = sly.Rectangle(top=int(round(tl_br[1])),
+        #                                     left=int(round(tl_br[0])),
+        #                                     bottom=int(round(tl_br[3])),
+        #                                     right=int(round(tl_br[2])))
+        #
+        # tested_rectangle = correct_figure(img_size, potential_rectangle)
+        # if tested_rectangle:
+        # coordinates_data.append(tested_rectangle)
+        track_id_data.append(track_id)
+        labels_data.append(curr_track.get_sly_label())
 
-        tested_rectangle = correct_figure(img_size, potential_rectangle)
-        if tested_rectangle:
-            coordinates_data.append(tested_rectangle)
-            track_id_data.append(track_id)
-            labels_data.append(curr_track.class_num)
-
-    tracks_data[frame_index] = {'coords': coordinates_data,
-                                'ids': track_id_data,
+    tracks_data[frame_index] = {'ids': track_id_data,
                                 'labels': labels_data}
 
     return tracks_data
@@ -141,7 +143,7 @@ def clear_empty_ids(tracker_annotations):
     return tracker_annotations
 
 
-def track(opt, frame_to_annotation):
+def track(opt, frame_to_annotation, pbar_cb=None):
     # @TODO: add save original geometry, not bbox only
 
     tracks_data = {}
@@ -167,10 +169,10 @@ def track(opt, frame_to_annotation):
     image_paths = sorted(f.get_files_paths(source_path, ['.png', '.jpg', '.jpeg']))
 
     # frame_index = 0
-    for frame_index in tqdm(frame_to_annotation.keys(), desc='Deepsort Tracking', total=len(frame_to_annotation)):
+    for frame_index in frame_to_annotation.keys():
         im0 = cv2.imread(image_paths[frame_index])
 
-        pred, classes = convert_annotation(frame_to_annotation[frame_index])
+        pred, classes, sly_labels = convert_annotation(frame_to_annotation[frame_index])
         det = torch.tensor(pred)
 
         # Process detections
@@ -179,8 +181,8 @@ def track(opt, frame_to_annotation):
 
         # encode yolo detections and feed to tracker
         features = encoder(im0, bboxes)
-        detections = [Detection(bbox, conf, class_num, feature) for bbox, conf, class_num, feature in zip(
-            bboxes, confs, classes, features)]
+        detections = [Detection(bbox, conf, class_num, feature, sly_label) for bbox, conf, class_num, feature, sly_label in zip(
+            bboxes, confs, classes, features, sly_labels)]
 
         # run non-maxima supression
         boxs = np.array([d.tlwh for d in detections])
@@ -197,6 +199,9 @@ def track(opt, frame_to_annotation):
                           tracks=tracker.tracks,
                           frame_index=frame_index,
                           img_size=im0.shape[:2])
+
+        if pbar_cb is not None:
+            pbar_cb()
 
     tracks_data = clear_empty_ids(tracker_annotations=tracks_data)
 

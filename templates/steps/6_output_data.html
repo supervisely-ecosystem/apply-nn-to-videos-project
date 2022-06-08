@@ -4,19 +4,17 @@
           :options="{collapsable: true}"
 
           :disabled="{disabled: state.activeStep < 6, message: 'complete previous step'}">
-    <sly-field v-if="data.annotatingStarted"
-               title="WARNING: Tracking in progress"
-               description="do not turn off the power of the agent, it is processing data"
-               style="margin: 10px 0">
 
-        <sly-icon slot="icon" :options="{ color: '#fba607', bgColor: '#ffe9da', rounded: false }">
-            <i class="zmdi zmdi-alert-triangle"></i>
-        </sly-icon>
-    </sly-field>
 
     <el-collapse-transition>
         <div v-show='!data.dstProjectName && data.annotatingStarted' style="margin: 0 5px 15px 2px">
+            <div style="margin: 10px 0">
+                {{{ apply_nn_notification_box.to_html() }}}
+            </div>
             {{{ apply_nn_to_video_project_progress.to_html() }}}
+            <div style="margin-top: 10px">
+                {{{ current_video_progress.to_html() }}}
+            </div>
         </div>
     </el-collapse-transition>
     <el-button v-if="!data.dstProjectName"
@@ -27,13 +25,14 @@
         <i class="zmdi zmdi-play mr5" v-if="!data.annotatingStarted"></i> apply NN to videos project
     </el-button>
 
-    <div v-if="data.dstProjectName" >
+    <div v-if="data.dstProjectName">
         <sly-field style="margin: 0 0"
                    title="Output Project"
                    description="">
             <sly-field title="" description="Project">
                 <a slot="title" target="_blank"
-                   :href="`${data.instanceAddress}/projects/${data.dstProjectId}/datasets`">{{ data.dstProjectName }}</a>
+                   :href="`${data.instanceAddress}/projects/${data.dstProjectId}/datasets`">{{ data.dstProjectName
+                    }}</a>
                 <sly-icon slot="icon" :options="{ imageUrl: `${data.dstProjectPreviewUrl}` }"/>
             </sly-field>
         </sly-field>

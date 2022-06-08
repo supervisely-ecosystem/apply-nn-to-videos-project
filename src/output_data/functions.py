@@ -41,13 +41,22 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
     frames_max = state['framesMax']
     frames_range = (frames_min[video_data['name']], frames_max[video_data['name']])
 
-    model_predictions = f.get_model_inference(state, video_id=video_data['videoId'], frames_range=frames_range)
+    with card_widgets.current_video_progress(message='Gathering Annotations from Model', total=1) as progress:
+        model_predictions = f.get_model_inference(state, video_id=video_data['videoId'], frames_range=frames_range)
+        progress.update(1)
+
     frame_to_annotation = f.frame_index_to_annotation(model_predictions, frames_range)
 
     if state['applyTrackingAlgorithm'] is True:
-        return f.apply_tracking_algorithm_to_predictions(state=state, video_id=video_data['videoId'],
-                                                         frames_range=frames_range,
-                                                         frame_to_annotation=frame_to_annotation)
+        with card_widgets.current_video_progress(
+                message=f'Applying tracking algorithm ({state["selectedTrackingAlgorithm"]})',
+                total=abs(frames_range[0] - frames_range[1]) + 1) as progress:
+
+            return f.apply_tracking_algorithm_to_predictions(state=state, video_id=video_data['videoId'],
+                                                             frames_range=frames_range,
+                                                             frame_to_annotation=frame_to_annotation,
+                                                             tracking_algorithm=state["selectedTrackingAlgorithm"],
+                                                             pbar_cb=progress.update)
     else:
         raise NotImplementedError
         # return f.get_annotation_from_predictions(frame_to_annotation)

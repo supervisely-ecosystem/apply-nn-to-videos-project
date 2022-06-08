@@ -17,6 +17,7 @@ import src.parameters.widgets as card_widgets
 @g.app.post("/apply-parameters/")
 @sly.timeit
 def apply_parameters(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
+    DataJson()['dstProjectName'] = None
     f.finish_step(5, state)
 
 

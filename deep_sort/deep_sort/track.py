@@ -81,6 +81,8 @@ class Track:
         self._max_age = max_age
         self.class_num = class_num
 
+        self._sly_label = None
+
     def to_tlwh(self):
         """Get current position in bounding box format `(top left x, top left y,
         width, height)`.
@@ -145,6 +147,8 @@ class Track:
         if self.state == TrackState.Tentative and self.hits >= self._n_init:
             self.state = TrackState.Confirmed
 
+        self._sly_label = detection.get_supervisely_label()
+
     def mark_missed(self):
         """Mark this track as missed (no association at the current time step).
         """
@@ -165,3 +169,6 @@ class Track:
     def is_deleted(self):
         """Returns True if this track is dead and should be deleted."""
         return self.state == TrackState.Deleted
+
+    def get_sly_label(self):
+        return self._sly_label
