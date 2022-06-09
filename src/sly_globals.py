@@ -22,6 +22,7 @@ api: sly.Api = sly.Api.from_env()
 app = FastAPI()
 sly_app = create()
 
+
 app_root_directory = str(pathlib.Path(__file__).parent.absolute().parents[0])
 sly.logger.info(f"Root source directory: {app_root_directory}")
 
@@ -32,6 +33,9 @@ app.mount("/sly", sly_app)
 app.mount("/static", StaticFiles(directory=os.path.join(app_root_directory, 'static')), name="static")
 
 templates_env = Jinja2Templates(directory=os.path.join(app_root_directory, 'templates'))
+
+supported_model_types = ['Semantic Segmentation', 'Object Detection', 'Instance Segmentation', 'Tracking']
+model_types_without_tracking = ['Semantic Segmentation', 'Object Detection', 'Instance Segmentation']
 
 DataJson()['current_step'] = 1
 DataJson()['mode'] = AnnotatorModes.DIRECT

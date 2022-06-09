@@ -40,12 +40,10 @@ def show_model_info():
 
 
 def validate_model_type():
-    supported_model_types = ['Detector', 'Instance Segmentator', 'Tracker']
-    if g.model_info.get('type', '') not in supported_model_types:
-        raise TypeError(f"Model type isn't in supported types list: {supported_model_types}")
+    if g.model_info.get('type', '') not in g.supported_model_types:
+        raise TypeError(f"Model type isn't in supported types list: {g.supported_model_types}")
 
-    model_types_without_tracking = ['Detector', 'Instance Segmentator']
-    if g.model_info['type'] in model_types_without_tracking:
+    if g.model_info['type'] in g.model_types_without_tracking:
         if g.model_info.get('videos_support', False) is True:
             DataJson()['model_without_tracking'] = True
 

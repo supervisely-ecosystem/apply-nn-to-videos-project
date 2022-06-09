@@ -128,7 +128,7 @@
             <source :src="data.videoUrl" type="video/mp4">
             Your browser does not support the video tag.
         </video>
-        <div v-else>
+        <div v-else v-if="data.previewLoading">
             {{{ preview_progress.to_html() }}}
         </div>
 

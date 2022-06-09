@@ -41,7 +41,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
     frames_max = state['framesMax']
     frames_range = (frames_min[video_data['name']], frames_max[video_data['name']])
 
-    with card_widgets.current_video_progress(message='Gathering Annotations from Model', total=1) as progress:
+    with card_widgets.current_video_progress(message='Gathering Predictions from Model', total=1) as progress:
         model_predictions = f.get_model_inference(state, video_id=video_data['videoId'], frames_range=frames_range)
         progress.update(1)
 
@@ -74,7 +74,7 @@ def annotate_videos(state):
     selected_videos_data = [row for row in videos_table if row['name'] in selected_videos_names]
 
     for video_data in card_widgets.apply_nn_to_video_project_progress(selected_videos_data,
-                                                                      message='Annotating Videos'):
+                                                                      message='Inference Videos'):
         try:
             annotation: sly.VideoAnnotation = get_video_annotation(video_data, state)
             upload_to_project(video_data, annotation, dataset_id)
