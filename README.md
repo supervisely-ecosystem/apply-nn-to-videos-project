@@ -42,24 +42,24 @@ Application supports next models:
 - Object Detection:
   - [Serve YOLOv5](https://ecosystem.supervise.ly/apps/supervisely-ecosystem%252Fyolov5%252Fsupervisely%252Fserve)   
    
-      <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem%252Fyolov5%252Fsupervisely%252Fserve" src=".png" width="350px"/> 
+      <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem%252Fyolov5%252Fsupervisely%252Fserve" src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/yoloV5.png" width="350px"/> 
   - [Serve MMDetection](https://ecosystem.supervise.ly/apps/supervisely-ecosystem%252Fmmdetection%252Fserve)   
    
-      <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem%252Fmmdetection%252Fserve" src=".png" width="350px"/>
+      <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem%252Fmmdetection%252Fserve" src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/mmDet.png" width="350px"/>
     
 - Instance Segmentation:
   
   - [Serve Detectron2](https://ecosystem.supervise.ly/apps/supervisely-ecosystem%252Fdetectron2%252Fsupervisely%252Finstance_segmentation%252Fserve)  
-        <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem%252Fdetectron2%252Fsupervisely%252Finstance_segmentation%252Fserve" src=".png" width="350px"/>
+        <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem%252Fdetectron2%252Fsupervisely%252Finstance_segmentation%252Fserve" src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/detectron2.png" width="350px"/>
   - [Serve MMDetection](https://ecosystem.supervise.ly/apps/supervisely-ecosystem%252Fmmdetection%252Fserve)    
-        <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem%252Fmmdetection%252Fserve" src=".png" width="350px"/>
+        <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem%252Fmmdetection%252Fserve" src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/mmDet.png" width="350px"/>
     
 - Semantic Segmentation:
 
   - [Serve UNet](https://ecosystem.supervise.ly/apps/supervisely-ecosystem%252Funet%252Fsupervisely%252Fserve)  
-         <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem%252Funet%252Fsupervisely%252Fserve" src=".png" width="350px"/>
+         <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem%252Funet%252Fsupervisely%252Fserve" src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/unet.png" width="350px"/>
   - [Serve MMSegmentation](https://ecosystem.supervise.ly/apps/supervisely-ecosystem%252Fmmsegmentation%252Fserve)  
-       <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem%252Fmmsegmentation%252Fserve" src=".png" width="350px"/>
+       <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem%252Fmmsegmentation%252Fserve" src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/mmSeg.png" width="350px"/>
       
 
 
@@ -95,4 +95,4 @@ Application supports next models:
 
 # Screenshot
 
-<img src=".png" width="auto" style='padding-top: 10px'>
+<img src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/screenshot.png" width="auto" style='padding-top: 10px'>
