@@ -41,7 +41,7 @@ Application key points:
 
 <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/apply-nn-to-videos-project" src="https://imgur.com/LDo8K1A.png" width="350px" style='padding-bottom: 10px'/>
 
-3. Run app from the context menu of **Video Project**:  
+3. Run app from the context menu of **Videos Project**:  
 
 <img src="https://imgur.com/b1TU1cC.png" width="80%" style='padding-top: 10px'>  
 

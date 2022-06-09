@@ -1,0 +1,75 @@
+<sly-card title="Select the classes to be used"
+          subtitle="annotations will only be saved for the selected classes"
+          :options="{collapsable: true}"
+
+          :disabled="{disabled: state.activeStep < 3, message: 'complete previous step'}"
+          ref="step3">
+
+
+    <div class="fflex mt5" style="flex-direction: column; justify-content: flex-start">
+        <el-table v-if="data.classesTable"
+                  :data="data.classesTable"
+                  class="ultra-table"
+                  @selection-change="
+                (val) => {
+                    state.selectedClasses = val.map(x => x.label);
+                }
+                ">
+            <el-table-column type="selection" width="55">
+<!--                             :selectable="r => state.activeStep === 3">-->
+
+            </el-table-column>
+
+            <el-table-column label="label" align="center">
+                <template scope="scope">
+                    <div>
+                        {{scope.row.label}}
+                    </div>
+                </template>
+            </el-table-column>
+
+
+            <el-table-column label="shape" align="center">
+                <template scope="scope">
+                    <i class="zmdi zmdi-shape mr5"></i>{{scope.row.shapeType}}
+                </template>
+            </el-table-column>
+
+            <el-table-column label="color" align="center">
+                <template scope="scope">
+                    <i class="zmdi zmdi-circle mr5" :style="{color: scope.row.color}"></i>{{scope.row.color}}
+                </template>
+            </el-table-column>
+
+
+        </el-table>
+
+        <div style="width: 100%">
+            <el-button
+                    v-if="state.activeStep < 4"
+                    type="primary"
+                    style="margin-top: 20px; align-self: flex-start"
+                    class="regular"
+                    @click="post('/choose_classes/')">
+                SELECT classes
+            </el-button>
+            <div v-else class="mt10">
+                <div>
+                    <i class="zmdi zmdi-check-circle mr5"
+                       style="color: #13ce66; margin-top: 5px; margin-bottom: 5px"></i>
+                    <span style="color: #5a6772;">
+                Class(-es) successfully selected
+            </span>
+                </div>
+                <el-button type="warning" class="regular mt10" :plain="true"
+                           @click="state.restartFrom = 3;"
+
+                           :disabled="data.annotatingStarted">
+                    <i class="zmdi zmdi-rotate-left mr5"></i> reselect classes
+                </el-button>
+            </div>
+        </div>
+    </div>
+
+
+</sly-card>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Apply NN to Videos Project</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/svg.select.js@3.0.1/dist/svg.select.min.css"/>
+    <link rel="stylesheet" href="./static/styles.css"/>
+</head>
+
+<body>
+
+<script src="https://supervise.ly/sly-app-widgets-2.0.0.bundle.js"></script>
+<script
+        type="module"
+        src="https://cdn.jsdelivr.net/gh/supervisely-ecosystem/supervisely-app-frontend-js@v0.0.13/SlyApp.js">
+</script>
+<!--        src="https://supervisely-ecosystem.github.io/supervisely-app-frontend-js/SlyApp.js">-->
+
+
+<div id="sly-app">
+    <sly-app>
+        <template v-slot="{ post, state, data }">
+            <div id="apply-nn-to-video-project">
+                <sly-stepper :active="data.activeStep">
+                    <sly-stepper-item>{% include 'steps/1_input_data.html' %}</sly-stepper-item>
+                    <sly-stepper-item>{% include 'steps/2_connect_to_model.html' %}</sly-stepper-item>
+                    <sly-stepper-item>{% include 'steps/3_choose_classes_hotfix.html' %}</sly-stepper-item>
+                    <!--                    <sly-stepper-item>include 'steps/choose_videos.html'</sly-stepper-item>-->
+                    <sly-stepper-item>{% include 'steps/5_parameters.html' %}</sly-stepper-item>
+                    <sly-stepper-item>{% include 'steps/6_output_data.html' %}</sly-stepper-item>
+                </sly-stepper>
+                {% include 'dialogs.html' %}
+            </div>
+        </template>
+    </sly-app>
+</div>
+
+</body>
+</html>
+
+

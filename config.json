@@ -1,17 +1,20 @@
 {
   "name": "Apply NN to videos project",
   "type": "app",
+  "version": "2.0.0",
   "categories": [
     "neural network",
     "video"
   ],
+  "entrypoint": "python -m uvicorn src.main:g.app --host 0.0.0.0 --port 8000",
+  "port": 8000,
   "description": "NN Inference on videos in project or dataset",
-  "docker_image": "supervisely/base-py-sdk:6.1.94",
-  "main_script": "src/main.py",
-  "gui_template": "src/gui.html",
+  "docker_image": "supervisely/apply-nn-to-videos-project:1.0.0",
+
   "task_location": "workspace_tasks",
   "isolate": true,
   "headless": false,
+  "need_gpu": true,
   "icon": "https://imgur.com/HPtoMih.png",
   "icon_background": "#FFFFFF",
   "context_menu": {

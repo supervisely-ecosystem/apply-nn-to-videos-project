@@ -1,0 +1,45 @@
+.example-style {
+    color: white;
+}
+
+#apply-nn-to-video-project .ultra-table .our-custom-leaf {
+    border: 0;
+    height: 50px;
+    text-transform: uppercase;
+    background: #f6fafd;
+
+    border-bottom: 1px solid #ebebeb;
+
+}
+
+#apply-nn-to-video-project .ultra-table .our-custom-leaf div {
+    color: rgba(0, 0, 0, 0.5);
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+#apply-nn-to-video-project .card-vertical-lifter .content-wrapper {
+    height: 100%;
+}
+
+#apply-nn-to-video-project .custom-full-height .content-wrapper {
+    height: 100%;
+}
+
+#apply-nn-to-video-project .custom-full-height .input-label .field-description {
+    flex: none;
+}
+
+#apply-nn-to-video-project .field-with-checkbox-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+
+}
+
+#apply-nn-to-video-project .pretty-hr {
+    border: 0;
+    border-bottom: 2px dashed #e9e9e9;
+    background: #fdfdfd;
+}

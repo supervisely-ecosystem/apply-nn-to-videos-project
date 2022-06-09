@@ -1,3 +1,28 @@
-supervisely==6.1.94
-python-dotenv==0.19.0
+
+supervisely[apps]==6.18.1
+
+# base ----------------------------------------
+Cython
+matplotlib>=3.2.2
+numpy>=1.18.5
+opencv-python>=3.4.10.35
+
+Pillow
+PyYAML>=5.3
+scipy>=1.4.1
+tensorboard>=2.2
+torch>=1.7.0
+torchvision>=0.8.1
+tqdm>=4.41.0
+
+# plotting ------------------------------------
+seaborn>=0.11.0
+pandas
+
+# clip
+ftfy==6.0.3
+regex
+
+git+https://github.com/supervisely-ecosystem/depends-CLIP.git
+ffmpeg-python==0.2.0
 PyYAML==5.4.1

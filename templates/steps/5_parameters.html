@@ -1,0 +1,138 @@
+<div class="fflex" style="align-items: stretch;">
+
+    <sly-card title="Parameters"
+              subtitle="set visualization parameters"
+              class="mr15 "
+              :class="{'custom-full-height': !state.collapsed5}"
+              :options="{collapsable: true}"
+
+              :style="[!state.collapsed5 ? {minWidth: '410px', maxWidth: '410px'} : {width: '100%', margin: 0}]"
+              :disabled="{disabled: state.activeStep < 5, message: 'complete previous step'}"
+              ref="step5">
+        <div style="flex-direction: column; justify-content: space-between; align-items: flex-start; height: 100%; width: 100%; ">
+            <div>
+                <div v-if="data.model_without_tracking" style="margin: 0 10px 0 0">
+
+                    <div class="field-with-checkbox-container">
+                        <el-checkbox v-model="state.applyTrackingAlgorithm"
+                                     :disabled="true"
+                                     style="margin: 0 10px 0 0"></el-checkbox>
+
+                        <sly-field title="Apply Tracking Algorithm"
+                                   description="Process predictions with tracking algorithm"
+                                   style="margin: 10px 0">
+                        </sly-field>
+                    </div>
+
+                    <el-collapse-transition>
+                        <div v-show="state.applyTrackingAlgorithm" style="display: inline-block">
+
+                            <el-select style="margin: 0 0 10px 0; width: 140px"
+                                       :disabled="true"
+                                       v-model="state.selectedTrackingAlgorithm">
+                                <el-option v-for="item in data.trackingAlgorithms"
+                                           :key="item.value"
+                                           :label="item.label"
+                                           :value="item.value"></el-option>
+                            </el-select>
+                        </div>
+                    </el-collapse-transition>
+                </div>
+
+
+                <sly-field title="Tracking Algorithm Device"
+                           description="CUDA device number (i.e. 0, 1, 2 or 3) or CPU">
+                    <el-select v-model="state.device" :disabled="state.activeStep !== 5">
+                        <el-option-group key="GPU" label="GPU">
+                            <el-option key="0" label="0" value="cuda:0"></el-option>
+                            <el-option key="1" label="1" value="cuda:1"></el-option>
+                            <el-option key="2" label="2" value="cuda:2"></el-option>
+                            <el-option key="3" label="3" value="cuda:3"></el-option>
+                        </el-option-group>
+                        <el-option-group key="CPU" label="CPU">
+                            <el-option key="cpu" label="CPU" value="cpu"/>
+                        </el-option-group>
+                    </el-select>
+
+                </sly-field>
+
+                <sly-field title="Output project name"
+                           description="folder name to save visualization result">
+                    <el-input placeholder="visualization_0"
+                              v-model="state.expId"
+                              :disabled="state.activeStep !== 5"></el-input>
+                </sly-field>
+
+                <sly-field title="Additional settings"
+                           description="Model specific inference settings in YAML format">
+                    <sly-editor v-model="state.modelSettings"
+                                :options="{height: '200px', mode: 'ace/mode/yaml'}"
+                    ></sly-editor>
+                </sly-field>
+
+            </div>
+
+            <div>
+                <el-button type="primary" class="regular mt10"
+                           @click="post('/apply-parameters/')"
+                           v-if="state.activeStep < 6">
+                    Apply settings
+                </el-button>
+                <div v-else>
+                    <div>
+                        <i class="zmdi zmdi-check-circle mr5 mt5 mb5" style="color: #13ce66"></i>
+                        <span style="color: #5a6772;">Parameters defined</span>
+                    </div>
+                    <el-button type="warning" class="regular mt10" :plain="true"
+                               @click="state.restartFrom = 5;"
+                               :disabled="data.annotatingStarted">
+                        <i class="zmdi zmdi-rotate-left mr5"></i> reselect settings
+                    </el-button>
+                </div>
+            </div>
+        </div>
+
+
+    </sly-card>
+
+    <sly-card title="Inference Preview"
+              class="card-vertical-lifter"
+              subtitle="Generate 30 frames preview"
+              style="width: 100%;"
+              :collapsed.sync="state.collapsed5"
+              :disabled="{disabled: state.activeStep < 5, message: 'complete previous step'}"
+              v-if="!state.collapsed5"
+              ref="step5">
+        <div slot="header" class="mb10">
+
+            <el-button
+                    type="primary"
+                    @click="post('/generate-annotation-example/')"
+                    :loading="data.previewLoading"
+                    :disabled="state.activeStep !== 5">
+                <i v-if="!data.previewLoading" class="zmdi zmdi-slideshow" style="margin-right: 5px"></i> Preview
+            </el-button>
+        </div>
+
+
+        <el-collapse-transition>
+            <div v-show='!(data.videoUrl || data.previewLoading)'>
+                {{{ here_will_be_preview_notification.to_html() }}}
+            </div>
+        </el-collapse-transition>
+
+
+        <video v-if="data.videoUrl" controls style="max-height: 650px; max-width: 100%;">
+
+            <!--                <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">-->
+            <source :src="data.videoUrl" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div v-else v-if="data.previewLoading">
+            {{{ preview_progress.to_html() }}}
+        </div>
+
+
+    </sly-card>
+
+</div>
