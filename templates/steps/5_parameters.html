@@ -1,7 +1,7 @@
 <div class="fflex" style="align-items: stretch;">
 
     <sly-card title="Parameters"
-              subtitle="set visualization parameters"
+              subtitle="Set visualization parameters"
               class="mr15 "
               :class="{'custom-full-height': !state.collapsed5}"
               :options="{collapsable: true}"
@@ -57,7 +57,7 @@
                 </sly-field>
 
                 <sly-field title="Output project name"
-                           description="folder name to save visualization result">
+                           description="Folder name to save visualization result">
                     <el-input placeholder="visualization_0"
                               v-model="state.expId"
                               :disabled="state.activeStep !== 5"></el-input>

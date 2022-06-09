@@ -6,9 +6,10 @@
 
 <p align="center">
   <a href="#Overview">Overview</a> •
-  <a href="#How-To-Use">How To Use</a> •
-  <a href="#Watch-Demo-Video">Demo</a> •
-    <a href="#Screenshots">Screenshots</a>
+  <a href="#Demo">Demo</a> •
+  <a href="#Common-Apps">Common Apps</a> •
+  <a href="#How-To-Run">How To Run</a> •
+    <a href="#Screenshot">Screenshot</a>
 </p>
 
 [![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](https://ecosystem.supervise.ly/apps/supervisely-ecosystem/apply-nn-to-videos-project)
@@ -22,14 +23,57 @@
 
 # Overview
 
-Apply served NN to Videos Project.
+Application allows you to apply a served neural network to a video.
 
 Application key points:  
-- Connects to served in Supervisely models
-- Creates a new project with annotated data
+- Connects to Served models in Supervisely
+- Supports Object Detection Models
+- Supports Instance Segmentation Models
+- Supports Semantic Segmentation Models
+- Applies Deep Sort (tracking algorithm) to model Predictions 
+- Creates a new project with Labeled Videos
 
 
-# How to Use
+
+# Common apps
+
+Application supports next models: 
+
+- Object Detection:
+  - [Serve YOLOv5](https://ecosystem.supervise.ly/apps/supervisely-ecosystem%252Fyolov5%252Fsupervisely%252Fserve)   
+   
+      <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem%252Fyolov5%252Fsupervisely%252Fserve" src=".png" width="350px"/> 
+  - [Serve MMDetection](https://ecosystem.supervise.ly/apps/supervisely-ecosystem%252Fmmdetection%252Fserve)   
+   
+      <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem%252Fmmdetection%252Fserve" src=".png" width="350px"/>
+    
+- Instance Segmentation:
+  
+  - [Serve Detectron2](https://ecosystem.supervise.ly/apps/supervisely-ecosystem%252Fdetectron2%252Fsupervisely%252Finstance_segmentation%252Fserve)  
+        <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem%252Fdetectron2%252Fsupervisely%252Finstance_segmentation%252Fserve" src=".png" width="350px"/>
+  - [Serve MMDetection](https://ecosystem.supervise.ly/apps/supervisely-ecosystem%252Fmmdetection%252Fserve)    
+        <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem%252Fmmdetection%252Fserve" src=".png" width="350px"/>
+    
+- Semantic Segmentation:
+
+  - [Serve UNet](https://ecosystem.supervise.ly/apps/supervisely-ecosystem%252Funet%252Fsupervisely%252Fserve)  
+         <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem%252Funet%252Fsupervisely%252Fserve" src=".png" width="350px"/>
+  - [Serve MMSegmentation](https://ecosystem.supervise.ly/apps/supervisely-ecosystem%252Fmmsegmentation%252Fserve)  
+       <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem%252Fmmsegmentation%252Fserve" src=".png" width="350px"/>
+      
+
+
+# Demo
+
+
+
+<a data-key="sly-embeded-video-link" href="https://youtu.be/xfc835eMYQw" data-video-code="xfc835eMYQw">
+    <img src="https://imgur.com/sAyeToz.png" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:100%;">
+</a>
+
+
+
+# How to Run
 
 
 1. Launch Serve APP, designed for Videos Projects
@@ -48,15 +92,7 @@ Application key points:
 4. Set the settings and apply NN to Videos Project
 
 
-# Watch Demo Video
 
+# Screenshot
 
-
-<a data-key="sly-embeded-video-link" href="https://youtu.be/xfc835eMYQw" data-video-code="xfc835eMYQw">
-    <img src="https://imgur.com/sAyeToz.png" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:100%;">
-</a>
-
-
-# Screenshots
-
-<img src="https://imgur.com/3yVARK2.png" width="auto" style='padding-top: 10px'>
+<img src=".png" width="auto" style='padding-top: 10px'>
