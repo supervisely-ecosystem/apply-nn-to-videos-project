@@ -2,7 +2,7 @@
 
 <img src="https://imgur.com/dE7nQl6.png"/>  
 
-# Apply NN to videos project
+# Apply NN to Videos Project
 
 <p align="center">
   <a href="#Overview">Overview</a> •
