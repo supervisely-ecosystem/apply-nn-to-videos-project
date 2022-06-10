@@ -34,6 +34,14 @@ Application key points:
 - Creates a new project with Labeled Videos
 
 
+# Demo
+
+<a data-key="sly-embeded-video-link" href="https://youtu.be/BeFJV8T2xGc" data-video-code="BeFJV8T2xGc">
+    <img src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/thumbnail.jpg" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:100%;">
+</a>
+
+
+
 
 # Common apps
 
@@ -60,14 +68,6 @@ Application supports next models:
      <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/mmsegmentation/serve" src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/mmSeg.png" width="350px"/>
       
 
-
-# Demo
-
-
-
-<a data-key="sly-embeded-video-link" href="https://youtu.be/BeFJV8T2xGc" data-video-code="BeFJV8T2xGc">
-    <img src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/thumbnail.jpg" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:100%;">
-</a>
 
 
 
