@@ -6,8 +6,7 @@
     "neural network",
     "videos",
     "detection & tracking",
-    "semantic segmentation & tracking",
-    "instance segmentation & tracking",
+    "segmentation & tracking",
     "inference interfaces"
   ],
   "entrypoint": "python -m uvicorn src.main:g.app --host 0.0.0.0 --port 8000",
