@@ -67,8 +67,8 @@ Application supports next models:
 
 
 
-<a data-key="sly-embeded-video-link" href="https://youtu.be/xfc835eMYQw" data-video-code="xfc835eMYQw">
-    <img src="https://imgur.com/sAyeToz.png" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:100%;">
+<a data-key="sly-embeded-video-link" href="https://youtu.be/BeFJV8T2xGc" data-video-code="BeFJV8T2xGc">
+    <img src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/thumbnail.jpg" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:100%;">
 </a>
 
 
