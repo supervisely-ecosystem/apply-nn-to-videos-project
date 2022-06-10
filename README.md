@@ -40,11 +40,9 @@ Application key points:
 Application supports next models: 
 
 ### Object Detection:  
-  - [Serve YOLOv5](https://ecosystem.supervise.ly/apps/supervisely-ecosystem/yolov5/supervisely/serve)   
-   
+  - [Serve YOLOv5](https://ecosystem.supervise.ly/apps/supervisely-ecosystem/yolov5/supervisely/serve)  
       <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/yolov5/supervisely/serve" src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/yoloV5.png" width="350px"/> 
-  - [Serve MMDetection](https://ecosystem.supervise.ly/apps/supervisely-ecosystem/mmdetection/serve)   
-   
+  - [Serve MMDetection](https://ecosystem.supervise.ly/apps/supervisely-ecosystem/mmdetection/serve)  
     <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/mmdetection/serve" src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/mmDet.png" width="350px"/>
     
 ### Instance Segmentation:  
