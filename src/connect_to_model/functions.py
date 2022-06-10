@@ -27,11 +27,6 @@ def get_model_info(session_id, state):
                         f"Reason: {repr(ex)}")
 
 
-
-
-
-
-
 def show_model_info():
     DataJson()['connected'] = True
     DataJson()['modelInfo'] = g.model_info
@@ -40,12 +35,13 @@ def show_model_info():
 
 
 def validate_model_type():
-    if g.model_info.get('type', '') not in g.supported_model_types:
-        raise TypeError(f"Model type isn't in supported types list: {g.supported_model_types}")
+    # DataJson()['model_without_tracking'] = True
+    # if g.model_info.get('type', '') not in g.supported_model_types:
+    #     raise TypeError(f"Model type isn't in supported types list: {g.supported_model_types}")
+    #
+    # if g.model_info['type'] in g.model_types_without_tracking:
+    if g.model_info.get('videos_support', True) is True:
+        DataJson()['model_without_tracking'] = True
 
-    if g.model_info['type'] in g.model_types_without_tracking:
-        if g.model_info.get('videos_support', False) is True:
-            DataJson()['model_without_tracking'] = True
-
-        else:
-            raise TypeError(f"Model doesn't support videos processing")
+    else:
+        raise TypeError(f"Model doesn't support videos processing")

@@ -4,7 +4,11 @@
   "version": "2.0.0",
   "categories": [
     "neural network",
-    "video"
+    "videos",
+    "detection & tracking",
+    "semantic segmentation & tracking",
+    "instance segmentation  & tracking",
+    "inference interfaces"
   ],
   "entrypoint": "python -m uvicorn src.main:g.app --host 0.0.0.0 --port 8000",
   "port": 8000,
@@ -19,8 +23,7 @@
   "icon_background": "#FFFFFF",
   "context_menu": {
     "target": [
-      "videos_project",
-      "videos_dataset"
+      "videos_project"
     ],
     "context_root": "Neural Networks"
   },

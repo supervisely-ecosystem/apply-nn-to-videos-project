@@ -7,7 +7,7 @@
 <p align="center">
   <a href="#Overview">Overview</a> •
   <a href="#Demo">Demo</a> •
-  <a href="#Common-Apps">Common Apps</a> •
+  <a href="#Related-Apps">Related Apps</a> •
   <a href="#How-To-Run">How To Run</a> •
     <a href="#Screenshot">Screenshot</a>
 </p>
@@ -43,7 +43,7 @@ Application key points:
 
 
 
-# Common apps
+# Related Apps
 
 Application supports next models: 
 
