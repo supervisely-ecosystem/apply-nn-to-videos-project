@@ -46,4 +46,4 @@ def get_preview_video(video_id, frame_to_annotation, frames_range):
     with card_widgets.preview_progress(message='Uploading Video', total=1) as progress:
         video_info = f.upload_video_to_sly(local_video_path)
 
-    return video_info.full_storage_url
+    return video_info.path_original
