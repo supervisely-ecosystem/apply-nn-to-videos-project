@@ -170,27 +170,31 @@ def track(opt, frame_to_annotation, pbar_cb=None):
 
     # frame_index = 0
     for frame_index in frame_to_annotation.keys():
+        detections = []
         im0 = cv2.imread(image_paths[frame_index])
+        
+        try:
+            pred, classes, sly_labels = convert_annotation(frame_to_annotation[frame_index])
+            det = torch.tensor(pred)
 
-        pred, classes, sly_labels = convert_annotation(frame_to_annotation[frame_index])
-        det = torch.tensor(pred)
+            # Process detections
+            bboxes = det[:, :4].clone().cpu()
+            confs = det[:, 4]
 
-        # Process detections
-        bboxes = det[:, :4].clone().cpu()
-        confs = det[:, 4]
+            # encode yolo detections and feed to tracker
+            features = encoder(im0, bboxes)
+            detections = [Detection(bbox, conf, class_num, feature, sly_label) for bbox, conf, class_num, feature, sly_label in zip(
+                bboxes, confs, classes, features, sly_labels)]
 
-        # encode yolo detections and feed to tracker
-        features = encoder(im0, bboxes)
-        detections = [Detection(bbox, conf, class_num, feature, sly_label) for bbox, conf, class_num, feature, sly_label in zip(
-            bboxes, confs, classes, features, sly_labels)]
-
-        # run non-maxima supression
-        boxs = np.array([d.tlwh for d in detections])
-        scores = np.array([d.confidence for d in detections])
-        class_nums = np.array([d.class_num for d in detections])
-        indices_of_alive_labels = preprocessing.non_max_suppression(boxs, class_nums, nms_max_overlap, scores)
-        detections = [detections[i] for i in indices_of_alive_labels]
-
+            # run non-maxima supression
+            boxs = np.array([d.tlwh for d in detections])
+            scores = np.array([d.confidence for d in detections])
+            class_nums = np.array([d.class_num for d in detections])
+            indices_of_alive_labels = preprocessing.non_max_suppression(boxs, class_nums, nms_max_overlap, scores)
+            detections = [detections[i] for i in indices_of_alive_labels]
+        except Exception as ex:
+            sly.logger.info(f'frame {frame_index} skipped on tracking')
+        
         # Call the tracker
         tracker.predict()
         tracker.update(detections)
