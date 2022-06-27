@@ -172,3 +172,6 @@ class Track:
 
     def get_sly_label(self):
         return self._sly_label
+
+    def clean_sly_label(self):
+        self._sly_label = None

@@ -8,6 +8,7 @@ import src.sly_functions as f
 
 import src.output_data.widgets as card_widgets
 from supervisely.app import DataJson
+from supervisely.app.fastapi import run_sync
 
 
 def restart(data, state):
@@ -46,6 +47,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
         progress.update(1)
 
     frame_to_annotation = f.frame_index_to_annotation(model_predictions, frames_range)
+    frame_to_annotation = f.filter_annotation_by_classes(frame_to_annotation, g.selected_classes_list)
 
     if state['applyTrackingAlgorithm'] is True:
         with card_widgets.current_video_progress(
@@ -90,3 +92,8 @@ def annotate_videos(state):
         'dstProjectName': res_project.name,
         'dstProjectPreviewUrl': g.api.image.preview_url(res_project.reference_image_url, 100, 100),
     })
+
+    DataJson()['done6'] = True
+    DataJson()['annotatingStarted'] = False
+
+    run_sync(DataJson().synchronize_changes())

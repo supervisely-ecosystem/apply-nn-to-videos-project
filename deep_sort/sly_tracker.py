@@ -116,8 +116,10 @@ def update_track_data(tracks_data, tracks, frame_index, img_size):
         # tested_rectangle = correct_figure(img_size, potential_rectangle)
         # if tested_rectangle:
         # coordinates_data.append(tested_rectangle)
-        track_id_data.append(track_id)
-        labels_data.append(curr_track.get_sly_label())
+
+        if curr_track.get_sly_label() is not None:
+            track_id_data.append(track_id)
+            labels_data.append(curr_track.get_sly_label())
 
     tracks_data[frame_index] = {'ids': track_id_data,
                                 'labels': labels_data}

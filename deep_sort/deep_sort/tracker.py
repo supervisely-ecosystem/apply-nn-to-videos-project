@@ -64,6 +64,10 @@ class Tracker:
             A list of detections at the current time step.
 
         """
+        # Clean up all previous labels
+        for track in self.tracks:
+            track.clean_sly_label()
+
         # Run matching cascade.
         matches, unmatched_tracks, unmatched_detections = \
             self._match(detections)
