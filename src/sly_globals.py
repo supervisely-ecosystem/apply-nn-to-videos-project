@@ -11,16 +11,10 @@ from starlette.staticfiles import StaticFiles
 from supervisely.app import DataJson, StateJson
 from supervisely.app.fastapi import create, Jinja2Templates
 
-
+# from dotenv import load_dotenv
 class AnnotatorModes:
     DIRECT = 'direct'
     DEEPSORT = 'deepsort'
-
-
-api: sly.Api = sly.Api.from_env()
-
-app = FastAPI()
-sly_app = create()
 
 
 app_root_directory = str(pathlib.Path(__file__).parent.absolute().parents[0])
@@ -28,6 +22,14 @@ sly.logger.info(f"Root source directory: {app_root_directory}")
 
 temp_dir = os.path.join(app_root_directory, 'temp')
 preview_frames_path = os.path.join(temp_dir, 'preview_frames')
+
+# load_dotenv(os.path.join(app_root_directory, 'debug.env'))
+# load_dotenv(os.path.join(app_root_directory, 'secret_debug.env'), override=True)
+
+api: sly.Api = sly.Api.from_env()
+
+app = FastAPI()
+sly_app = create()
 
 app.mount("/sly", sly_app)
 app.mount("/static", StaticFiles(directory=os.path.join(app_root_directory, 'static')), name="static")
