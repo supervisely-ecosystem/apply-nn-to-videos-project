@@ -164,7 +164,7 @@ def track(opt, frame_to_annotation, pbar_cb=None):
     metric = nn_matching.NearestNeighborDistanceMetric(  # calculate cosine distance metric
         "cosine", max_cosine_distance, nn_budget)
 
-    tracker = Tracker(metric)  # initialize tracker
+    tracker = Tracker(metric, n_init=1)  # initialize tracker
 
     source_path = opt.source_path
 
