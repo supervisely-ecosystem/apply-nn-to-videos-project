@@ -50,7 +50,7 @@ def deselect_all_classes_button_clicked(state: sly.app.StateJson = Depends(sly.a
     card_functions.selected_classes_event(state)
 
 
-@g.app.post('/restart/3')
+@g.app.post('/restart/3/')
 def restart(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
     f.finish_step(2, state)
 
