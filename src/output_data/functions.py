@@ -15,18 +15,15 @@ def restart(data, state):
     data["done6"] = False
 
 
-def init_project_remotely(project_name='ApplyNNtoVideoProject', ds_name='ds_0000'):
+def init_project_remotely(project_name='ApplyNNtoVideoProject'):
     project = g.api.project.create(g.workspace_id, project_name, type=sly.ProjectType.VIDEOS,
-                                   change_name_if_conflict=True)
-
-    dataset = g.api.dataset.create(project.id, f'{ds_name}',
                                    change_name_if_conflict=True)
 
     meta = g.model_meta  # @TODO generate meta for multiclass
 
     g.api.project.update_meta(project.id, meta.to_json())
 
-    return project.id, dataset.id
+    return project.id
 
 
 def upload_to_project(video_data, annotation: sly.VideoAnnotation, dataset_id):
@@ -68,25 +65,27 @@ def annotate_videos(state):
     selected_videos_names = state['selectedVideos']
 
     output_project_name = state['expId']
-    project_id, dataset_id = init_project_remotely(project_name=f'{output_project_name}',
-                                                   ds_name=f'{g.model_info["app"]}')
+    project_id = init_project_remotely(project_name=output_project_name)
 
-    videos_table = DataJson()['videosTable']
 
-    selected_videos_data = [row for row in videos_table if row['name'] in selected_videos_names]
+    for ds_name in g.ds_video_map:
+        dataset = g.api.dataset.create(project_id, f'{ds_name}', change_name_if_conflict=True)
 
-    for video_data in card_widgets.apply_nn_to_video_project_progress(selected_videos_data,
-                                                                      message='Inference Videos'):
-        try:
-            annotation: sly.VideoAnnotation = get_video_annotation(video_data, state)
-            upload_to_project(video_data, annotation, dataset_id)
+        videos_table = DataJson()['videosTable']
 
-        except Exception as ex:
-            raise RuntimeError(f'Error while processing: {video_data["name"]}:'
-                               f'{ex}')
+        selected_videos_data = [row for row in videos_table if row['name'] in selected_videos_names and row["name"] in g.ds_video_map[ds_name]]
+
+        for video_data in card_widgets.apply_nn_to_video_project_progress(selected_videos_data,
+                                                                          message='Inference Videos'):
+            try:
+                annotation: sly.VideoAnnotation = get_video_annotation(video_data, state)
+                upload_to_project(video_data, annotation, dataset.id)
+
+            except Exception as ex:
+                raise RuntimeError(f'Error while processing: {video_data["name"]}:'
+                                   f'{ex}')
 
     res_project = g.api.project.get_info_by_id(project_id)
-
     DataJson().update({
         'dstProjectId': res_project.id,
         'dstProjectName': res_project.name,
