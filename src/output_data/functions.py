@@ -14,7 +14,12 @@ from supervisely.app.fastapi import run_sync
 def restart(data, state):
     data["done6"] = False
 
-
+def shutdown_app():
+    try:
+        sly.app.fastapi.shutdown()
+    except KeyboardInterrupt:
+        sly.logger.info("Application shutdown successfully")
+        
 def init_project_remotely(project_name='ApplyNNtoVideoProject'):
     project = g.api.project.create(g.workspace_id, project_name, type=sly.ProjectType.VIDEOS,
                                    change_name_if_conflict=True)
@@ -69,7 +74,7 @@ def annotate_videos(state):
 
 
     for ds_name in g.ds_video_map:
-        dataset = g.api.dataset.create(project_id, f'{ds_name}', change_name_if_conflict=True)
+        dataset = g.api.dataset.create(project_id, ds_name, change_name_if_conflict=True)
 
         videos_table = DataJson()['videosTable']
 
@@ -96,3 +101,4 @@ def annotate_videos(state):
     DataJson()['annotatingStarted'] = False
 
     run_sync(DataJson().synchronize_changes())
+    shutdown_app()
