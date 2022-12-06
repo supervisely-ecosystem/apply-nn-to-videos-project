@@ -68,8 +68,7 @@ def annotate_videos(state):
     selected_videos_names = state['selectedVideos']
 
     output_project_name = state['expId']
-    project_id, dataset_id = init_project_remotely(project_name=f'{output_project_name}',
-                                                   ds_name=f'{g.model_info["app"]}')
+    project_id, dataset_id = init_project_remotely(project_name=output_project_name)
 
     videos_table = DataJson()['videosTable']
 
