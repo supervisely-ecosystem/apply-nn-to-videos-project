@@ -25,4 +25,3 @@ def read_index(request: Request):
 @g.app.post("/apply_changes/")
 async def apply_changes(state: StateJson = Depends(StateJson.from_request)):
     await state.synchronize_changes()
-

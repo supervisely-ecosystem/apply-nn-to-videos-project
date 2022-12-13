@@ -42,12 +42,12 @@ def upload_video_to_sly(local_video_path, pbar_cb=None):
 
 
 def generate_video_from_frames(preview_frames_path):
-    local_preview_video_path = os.path.join(g.preview_frames_path, f'preview.mp4')
+    local_preview_video_path = os.path.join(g.preview_frames_path, 'preview.mp4')
     if os.path.isfile(local_preview_video_path) is True:
         os.remove(local_preview_video_path)
 
-    cmd_str = 'ffmpeg -f image2 -i {}/frame%06d.png -c:v libx264 {}'.format(preview_frames_path,
-                                                                            local_preview_video_path)
+    cmd_str = f'ffmpeg -f image2 -i {preview_frames_path}/frame%06d.png -c:v libx264 {local_preview_video_path}'
+
     os.system(cmd_str)
 
     for file in os.listdir(preview_frames_path):
@@ -76,9 +76,9 @@ def finish_step(step_num, state, next_step=None):
     DataJson()[f'done{step_num}'] = True
     state[f'collapsed{next_step}'] = False
     state[f'disabled{next_step}'] = False
-    state[f'activeStep'] = next_step
+    state['activeStep'] = next_step
 
-    state[f'restartFrom'] = None
+    state['restartFrom'] = None
 
     run_sync(DataJson().synchronize_changes())
     run_sync(state.synchronize_changes())

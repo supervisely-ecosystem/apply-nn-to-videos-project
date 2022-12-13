@@ -10,6 +10,7 @@ __pycache__
 .idea
 authorized_keys
 venv
+.venv
 media
 
 supervisely

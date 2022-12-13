@@ -51,7 +51,7 @@ def generate_annotation_example(state: sly.app.StateJson = Depends(sly.app.State
         run_sync(DataJson().synchronize_changes())
 
 
-@g.app.post('/restart/5')
+@g.app.post('/restart/5/')
 def restart(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
     f.finish_step(3, state, 5)
 

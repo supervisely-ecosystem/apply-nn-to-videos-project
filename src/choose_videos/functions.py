@@ -14,14 +14,17 @@ def get_videos_info(project_id, state):
     frames_min = {}
     frames_max = {}
 
-    ds_ids = g.api.dataset.get_list(project_id)
-    for ds_id in ds_ids:
-        videos_info = g.api.video.get_list(ds_id.id)
+    datasets = g.api.dataset.get_list(project_id)
+    g.ds_video_map = {}
+    for ds in datasets:
+        videos_info = g.api.video.get_list(ds.id)
+        g.ds_video_map[ds.name] = []
 
         for video_info in videos_info:
+            g.ds_video_map[ds.name].append(video_info.name)
             general_videos_info.append(
-                {'name': f"[{ds_id.name}] {video_info.name}",
-                 "dataset": ds_id.name,
+                {'name': video_info.name,
+                 "dataset": ds.name,
                  "framesCount": video_info.frames_count,
                  "framesRange": "-",
 
@@ -32,8 +35,8 @@ def get_videos_info(project_id, state):
                  }
             )
 
-            frames_min[f"[{ds_id.name}] {video_info.name}"] = 0
-            frames_max[f"[{ds_id.name}] {video_info.name}"] = video_info.frames_count - 1
+            frames_min[video_info.name] = 0
+            frames_max[video_info.name] = video_info.frames_count - 1
 
     state['framesMin'] = frames_min
     state['framesMax'] = frames_max
@@ -41,13 +44,8 @@ def get_videos_info(project_id, state):
     return general_videos_info
 
 
-def generate_rows(project_ids, state) -> list:
-    rows = []
-
-    for project_id in project_ids:
-        rows.extend(get_videos_info(project_id, state))
-
-    return rows
+def generate_rows(project_id, state) -> list:
+    return get_videos_info(project_id, state)
 
 
 def fill_table(table_rows, state):
