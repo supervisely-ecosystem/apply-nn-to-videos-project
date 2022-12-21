@@ -197,14 +197,29 @@ def get_model_inference(state, video_id, frames_range):
         inf_setting = {}
         sly.logger.warn(f'Model Inference launched without additional settings. \n'
                         f'Reason: {e}', exc_info=True)
-
-    return g.api.task.send_request(state['sessionId'], "inference_video_id",
-                                   data={
-                                       'videoId': video_id,
-                                       'startFrameIndex': frames_range[0],
-                                       'framesCount': frames_range[1] - frames_range[0] + 1,
-                                       'settings': inf_setting
-                                   }, timeout=60 * 60 * 24)['ann']
+    try:
+        result = g.api.task.send_request(
+            state['sessionId'], 
+            "inference_video_id",
+            data={
+                'videoId': video_id,
+                'startFrameIndex': frames_range[0],
+                'framesCount': frames_range[1] - frames_range[0] + 1,
+                'settings': inf_setting
+            }, timeout=60 * 60 * 24
+        )
+    except Exception as e:
+        sly.logger.error("INFERENCE ERROR", extra={
+            "nnSessionId": state['sessionId'],
+            "videoId": video_id,
+            "startFrameIndex": frames_range[0],
+            "framesCount": frames_range[1] - frames_range[0] + 1,
+            "settings": str(inf_setting)
+        })
+        raise RuntimeError()
+    if isinstance(result, dict) and 'ann' in result.keys():
+        result = result["ann"]
+    return result
 
 
 def apply_tracking_algorithm_to_predictions(state, video_id, frames_range, frame_to_annotation,
@@ -233,6 +248,8 @@ def frame_index_to_annotation(annotation_predictions, frames_range):
     frame_index_to_annotation_dict = {}
 
     for frame_index, annotation_json in zip(range(frames_range[0], frames_range[1] + 1), annotation_predictions):
+        if isinstance(annotation_json, dict) and "annotation" in annotation_json.keys():
+            annotation_json = annotation_json["annotation"]
         frame_index_to_annotation_dict[frame_index] = sly.Annotation.from_json(annotation_json, g.model_meta)
 
     return frame_index_to_annotation_dict
