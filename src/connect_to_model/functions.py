@@ -5,6 +5,7 @@ from supervisely.app import DataJson
 from supervisely.app.fastapi import run_sync
 
 import src.sly_globals as g
+import yaml
 
 
 def restart(data, state):
@@ -13,14 +14,19 @@ def restart(data, state):
 
 def get_model_info(session_id, state):
     g.model_info = g.api.task.send_request(session_id, "get_session_info", data={}, timeout=3)
+    sly.logger.info('Model info', extra=g.model_info)
+
     meta_json = g.api.task.send_request(session_id, "get_output_classes_and_tags", data={}, timeout=3)
+    sly.logger.info(f'Model meta: {meta_json}')
     g.model_meta = sly.ProjectMeta.from_json(meta_json)
 
     try:
         state['modelSettings'] = g.api.task.send_request(session_id, "get_custom_inference_settings", data={}).get('settings', None)
         if state['modelSettings'] is None or len(state['modelSettings']) == 0:
-            state['modelSettings'] = ''
-            sly.logger.info("Model doesn't support custom inference settings.")
+            raise ValueError()
+        elif isinstance(state["modelSettings"], dict):
+            state["modelSettings"] = yaml.dump(state["modelSettings"], allow_unicode=True)
+        sly.logger.info(f'Custom inference settings: {state["modelSettings"]}')
     except Exception as ex:
         state['modelSettings'] = ''
         sly.logger.info("Model doesn't support custom inference settings.\n"
