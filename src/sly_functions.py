@@ -150,6 +150,7 @@ def download_frames_range(video_info, frames_dir_path, frames_range, pbar_cb=Non
         if index in range(frames_range[0], frames_range[1] + 1):
             print('index: ', index)
             cv2.imwrite(frame_path, frame)
+            frame_to_image_path[index] = frame_path
             if pbar_cb is not None:
                 pbar_cb()
 
