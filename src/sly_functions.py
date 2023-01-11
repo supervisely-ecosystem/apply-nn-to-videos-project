@@ -153,7 +153,7 @@ def download_frames_range(video_info, frames_dir_path, frames_range, pbar_cb=Non
     vidcap.release()
     cv2.destroyAllWindows()
 
-    sly.fs.clead_dir(dst_path)
+    sly.fs.clean_dir(dst_path)
 
     return frame_to_image_path
 
