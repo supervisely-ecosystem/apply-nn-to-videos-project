@@ -32,7 +32,7 @@ def generate_annotation_example(state: sly.app.StateJson = Depends(sly.app.State
         video_info, frames_range = card_functions.get_video_for_preview(state)
 
         with card_widgets.preview_progress(message='Gathering Predictions from Model', total=1) as progress:
-            model_predictions = f.get_model_inference(state, video_id=video_info["id"], frames_range=frames_range)
+            model_predictions = f.get_model_inference(state, video_id=video_info["videoId"], frames_range=frames_range)
             progress.update()
 
         frame_to_annotation = f.frame_index_to_annotation(model_predictions, frames_range)

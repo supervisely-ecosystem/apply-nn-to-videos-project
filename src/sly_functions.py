@@ -127,7 +127,7 @@ def download_frames_range(video_info, frames_dir_path, frames_range, pbar_cb=Non
     sly.fs.clean_dir(frames_dir_path)
 
     frame_to_image_path = {}
-    video_id = video_info["id"]
+    video_id = video_info["videoId"]
 
     dst_path = os.path.join(g.temp_dir, "/preview-video/")
     save_path = os.path.join(dst_path, f'{video_info["name"]}')
