@@ -29,16 +29,16 @@ def generate_annotation_example(state: sly.app.StateJson = Depends(sly.app.State
         DataJson()['previewLoading'] = True
         run_sync(DataJson().synchronize_changes())
 
-        video_id, frames_range = card_functions.get_video_for_preview(state)
+        video_info, frames_range = card_functions.get_video_for_preview(state)
 
         with card_widgets.preview_progress(message='Gathering Predictions from Model', total=1) as progress:
-            model_predictions = f.get_model_inference(state, video_id=video_id, frames_range=frames_range)
+            model_predictions = f.get_model_inference(state, video_id=video_info["id"], frames_range=frames_range)
             progress.update()
 
         frame_to_annotation = f.frame_index_to_annotation(model_predictions, frames_range)
 
         frame_to_annotation = f.filter_annotation_by_classes(frame_to_annotation, g.selected_classes_list)
-        preview_url = card_functions.get_preview_video(video_id, frame_to_annotation, frames_range)
+        preview_url = card_functions.get_preview_video(video_info, frame_to_annotation, frames_range)
 
         DataJson()['videoUrl'] = preview_url
 

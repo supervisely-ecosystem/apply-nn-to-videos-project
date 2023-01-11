@@ -92,7 +92,7 @@ def videos_to_frames(video_path, frames_range=None):
     os.makedirs(output_path, exist_ok=True)
 
     vidcap = cv2.VideoCapture(video_path)
-    vidcap.set(cv2.CAP_PROP_ORIENTATION_AUTO, 1) # set auto orientation flag
+    vidcap.set(cv2.CAP_PROP_ORIENTATION_AUTO, 0) # set auto orientation flag
     success, image = vidcap.read()
     count = 0
 
@@ -122,22 +122,38 @@ def download_video(video_id, frames_range=None):
     return videos_to_frames(save_path, frames_range)
 
 
-def download_frames_range(video_id, frames_dir_path, frames_range, pbar_cb=None):
+def download_frames_range(video_info, frames_dir_path, frames_range, pbar_cb=None):
     os.makedirs(frames_dir_path, exist_ok=True)
     sly.fs.clean_dir(frames_dir_path)
 
     frame_to_image_path = {}
+    video_id = video_info["id"]
 
-    for index, frame_index in enumerate(range(frames_range[0], frames_range[1] + 1)):
+    dst_path = os.path.join(g.temp_dir, "/preview-video/")
+    save_path = os.path.join(dst_path, f'{video_info["name"]}')
+
+    g.api.video.download_path(video_id, save_path)
+    vidcap = cv2.VideoCapture(save_path)
+    vidcap.set(cv2.CAP_PROP_ORIENTATION_AUTO, 0)
+
+
+    index = 0
+    while vidcap.isOpened():
+        index += 1
         frame_path = os.path.join(f"{frames_dir_path}", f"frame{index:06d}.png")
-
-        img_rgb = g.api.video.frame.download_np(video_id, frame_index)
-        cv2.imwrite(frame_path, img_rgb)  # save frame as PNG file
-
-        frame_to_image_path[frame_index] = frame_path
+        success, frame = vidcap.read()
+        if not success:
+            print("Can't receive frame (stream end?). Exiting ...")
+            break
+        if index in range(frames_range[0], frames_range[1] + 1):
+            cv2.imwrite(frame_path, frame)
 
         if pbar_cb is not None:
             pbar_cb()
+    vidcap.release()
+    cv2.destroyAllWindows()
+
+    sly.fs.clead_dir(dst_path)
 
     return frame_to_image_path
 

@@ -1,5 +1,7 @@
 import supervisely as sly
 
+import cv2
+import os
 import random
 import src.sly_globals as g
 import src.sly_functions as f
@@ -33,12 +35,20 @@ def get_video_for_preview(state):
             start_frame = random.randint(frames_min[video_info['name']], frames_max[video_info['name']])
             end_frame = start_frame + 29
 
-    return video_info['videoId'], (start_frame, end_frame)
+
+    dst_path = '/apply-nn-to-videos/preveiw-video/'
+    if g.api.file.dir_exists(g.team_id, dst_path):
+        g.api.file.remove(g.team_id, dst_path)
+    
+
+    return video_info, (start_frame, end_frame)
 
 
-def get_preview_video(video_id, frame_to_annotation, frames_range):
+def get_preview_video(video_info, frame_to_annotation, frames_range):
+
     with card_widgets.preview_progress(message='Downloading Frames', total=abs(frames_range[0] - frames_range[1]) + 1) as progress:
-        frames_to_image_path = f.download_frames_range(video_id, g.preview_frames_path, frames_range, pbar_cb=progress.update)
+        frames_to_image_path = f.download_frames_range(video_info, g.preview_frames_path, frames_range, pbar_cb=progress.update)
+
 
     with card_widgets.preview_progress(message='Generating Preview', total=1) as progress:
         f.draw_labels_on_frames(frames_to_image_path, frame_to_annotation)
@@ -47,6 +57,6 @@ def get_preview_video(video_id, frame_to_annotation, frames_range):
 
     # with card_widgets.preview_progress(message='Uploading Video', total=f.get_video_size(local_video_path), unit='B', unit_scale=True) as progress:
     with card_widgets.preview_progress(message='Uploading Video', total=1) as progress:
-        video_info = f.upload_video_to_sly(local_video_path)
+        preview_video_info = f.upload_video_to_sly(local_video_path)
 
-    return video_info.storage_path
+    return preview_video_info.storage_path
