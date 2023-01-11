@@ -1,3 +1,3 @@
 from supervisely.app.widgets import NotificationBox
 
-additional_tracking_required = NotificationBox(title="Tracking Enabled", description="All predictions will be processed with tracking algorithm")
+additional_tracking_required = NotificationBox(title="Tracking Enabled", description="All predictions will be processed with tracking algorithm", widget_id='additional_tracking_required')
