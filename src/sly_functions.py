@@ -137,19 +137,22 @@ def download_frames_range(video_info, frames_dir_path, frames_range, pbar_cb=Non
     vidcap.set(cv2.CAP_PROP_ORIENTATION_AUTO, 0)
 
 
+    print(frames_range)
     index = 0
     while vidcap.isOpened():
         index += 1
         frame_path = os.path.join(f"{frames_dir_path}", f"frame{index:06d}.png")
+        print('frame_path: ', frame_path)
         success, frame = vidcap.read()
         if not success:
             print("Can't receive frame (stream end?). Exiting ...")
             break
         if index in range(frames_range[0], frames_range[1] + 1):
+            print('index: ', index)
             cv2.imwrite(frame_path, frame)
+            if pbar_cb is not None:
+                pbar_cb()
 
-        if pbar_cb is not None:
-            pbar_cb()
     vidcap.release()
     cv2.destroyAllWindows()
 
