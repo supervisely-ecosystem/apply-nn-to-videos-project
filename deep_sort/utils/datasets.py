@@ -191,7 +191,7 @@ class LoadImages:  # for inference
     def new_video(self, path):
         self.frame = 0
         self.cap = cv2.VideoCapture(path)
-        self.cap.set(cv2.CAP_PROP_ORIENTATION_AUTO, 0) # set auto orientation flag
+        self.cap.set(cv2.CAP_PROP_ORIENTATION_AUTO, 1) # set auto orientation flag
         self.nframes = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
     def __len__(self):
@@ -210,7 +210,7 @@ class LoadWebcam:  # for inference
 
         self.pipe = pipe
         self.cap = cv2.VideoCapture(pipe)  # video capture object
-        self.cap.set(cv2.CAP_PROP_ORIENTATION_AUTO, 0) # set auto orientation flag
+        self.cap.set(cv2.CAP_PROP_ORIENTATION_AUTO, 1) # set auto orientation flag
         self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 3)  # set buffer size
 
     def __iter__(self):
@@ -274,7 +274,7 @@ class LoadStreams:  # multiple IP or RTSP cameras
             # Start the thread to read frames from the video stream
             print('%g/%g: %s... ' % (i + 1, n, s), end='')
             cap = cv2.VideoCapture(eval(s) if s.isnumeric() else s)
-            cap.set(cv2.CAP_PROP_ORIENTATION_AUTO, 0) # set auto orientation flag
+            cap.set(cv2.CAP_PROP_ORIENTATION_AUTO, 1) # set auto orientation flag
             assert cap.isOpened(), 'Failed to open %s' % s
             w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
             h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
