@@ -1,5 +1,4 @@
 supervisely==6.68.107
-supervisely[apps]==6.36.0
 
 # base ----------------------------------------
 Cython
