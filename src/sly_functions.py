@@ -113,6 +113,7 @@ def videos_to_frames(video_path, frames_range=None):
     os.makedirs(output_path, exist_ok=True)
 
     vidcap = cv2.VideoCapture(video_path)
+    vidcap.set(cv2.CAP_PROP_ORIENTATION_AUTO, 1)
     success, image = vidcap.read()
     count = 0
     rotateCode = check_rotation(video_path)
