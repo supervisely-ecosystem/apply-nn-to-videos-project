@@ -85,27 +85,27 @@ def finish_step(step_num, state, next_step=None):
 
 
 def videos_to_frames(video_path, frames_range=None):
-    def check_rotation(path_video_file):
-        # this returns meta-data of the video file in form of a dictionary
-        meta_dict = ffmpeg.probe(path_video_file)
+    # def check_rotation(path_video_file):
+    #     # this returns meta-data of the video file in form of a dictionary
+    #     meta_dict = ffmpeg.probe(path_video_file)
 
-        # from the dictionary, meta_dict['streams'][0]['tags']['rotate'] is the key
-        # we are looking for
-        rotate_code = None
-        try:
-            if int(meta_dict['streams'][0]['tags']['rotate']) == 90:
-                rotate_code = cv2.ROTATE_90_CLOCKWISE
-            elif int(meta_dict['streams'][0]['tags']['rotate']) == 180:
-                rotate_code = cv2.ROTATE_180
-            elif int(meta_dict['streams'][0]['tags']['rotate']) == 270:
-                rotate_code = cv2.ROTATE_90_COUNTERCLOCKWISE
-        except Exception as ex:
-            pass
+    #     # from the dictionary, meta_dict['streams'][0]['tags']['rotate'] is the key
+    #     # we are looking for
+    #     rotate_code = None
+    #     try:
+    #         if int(meta_dict['streams'][0]['tags']['rotate']) == 90:
+    #             rotate_code = cv2.ROTATE_90_CLOCKWISE
+    #         elif int(meta_dict['streams'][0]['tags']['rotate']) == 180:
+    #             rotate_code = cv2.ROTATE_180
+    #         elif int(meta_dict['streams'][0]['tags']['rotate']) == 270:
+    #             rotate_code = cv2.ROTATE_90_COUNTERCLOCKWISE
+    #     except Exception as ex:
+    #         pass
 
-        return rotate_code
+    #     return rotate_code
 
-    def correct_rotation(frame, rotate_code):
-        return cv2.rotate(frame, rotate_code)
+    # def correct_rotation(frame, rotate_code):
+    #     return cv2.rotate(frame, rotate_code)
 
     video_name = (video_path.split('/')[-1]).split('.mp4')[0]
     output_path = os.path.join(g.temp_dir, f'converted_{time.time_ns()}_{video_name}')
@@ -113,19 +113,20 @@ def videos_to_frames(video_path, frames_range=None):
     os.makedirs(output_path, exist_ok=True)
 
     vidcap = cv2.VideoCapture(video_path)
+    vidcap.set(cv2.CAP_PROP_ORIENTATION_AUTO, 1)
     success, image = vidcap.read()
     count = 0
-    rotateCode = check_rotation(video_path)
+    # rotateCode = check_rotation(video_path)
 
     while success:
         if frames_range:
             if frames_range[0] <= count <= frames_range[1]:
-                if rotateCode is not None:
-                    image = correct_rotation(image, rotateCode)
+                # if rotateCode is not None:
+                #     image = correct_rotation(image, rotateCode)
                 cv2.imwrite(f"{output_path}/frame{count:06d}.jpg", image)  # save frame as JPEG file
         else:
-            if rotateCode is not None:
-                image = correct_rotation(image, rotateCode)
+            # if rotateCode is not None:
+            #     image = correct_rotation(image, rotateCode)
             cv2.imwrite(f"{output_path}/frame{count:06d}.jpg", image)  # save frame as JPEG file
 
         success, image = vidcap.read()
