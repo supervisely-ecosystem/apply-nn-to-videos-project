@@ -1,6 +1,7 @@
 import os
 import time
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
 
 import cv2
 import yaml
@@ -86,7 +87,8 @@ def finish_step(step_num, state, next_step=None):
 
 
 def videos_to_frames(video_path, frames_range=None):
-    video_name = (video_path.split('/')[-1]).split('.mp4')[0]
+    # video_name = (video_path.split('/')[-1]).split('.mp4')[0]
+    video_name = os.path.basename(video_path).split('.')[0]
     output_path = os.path.join(g.temp_dir, f'converted_{time.time_ns()}_{video_name}')
 
     os.makedirs(output_path, exist_ok=True)
@@ -172,25 +174,17 @@ def get_model_inference(state, video_id, frames_range):
         inf_setting = {}
         sly.logger.warn(f'Model Inference launched without additional settings. \n'
                         f'Reason: {e}', exc_info=True)
-    try:        
-        async def infer_main():
-            print("running infer_main...")
-            task = asyncio.create_task(inference_task())
-            is_cancelled = False
-            while not is_cancelled and not task.done():
-                status = await get_inferring_status()
-                print("done:", task.done())
-                await asyncio.sleep(1)
-            print("While done!")
-        
-        async def get_inferring_status():
-            print("sending get_inferring_status...")
-            status = g.api.task.send_request(state['sessionId'], "get_inferring_status", data={})
-            return status
+    try:
 
-        async def inference_task():
+        def get_inference_progress():
+            print("sending get_inference_progress...")
+            result = g.api.task.send_request(state['sessionId'], "get_inference_progress", data={})
+            return result
+
+        def inference_task():
+            nonlocal inference_task_result
             print("sending inference_video_id...")
-            result = g.api.task.send_request(
+            inference_task_result = g.api.task.send_request(
                     state['sessionId'], 
                     "inference_video_id",
                     data={
@@ -200,12 +194,25 @@ def get_model_inference(state, video_id, frames_range):
                         'settings': inf_setting
                     }, timeout=60 * 60 * 24
                 )
-            return result
+            return inference_task_result
 
+        inference_task_result = None
+        executor = ThreadPoolExecutor()
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        loop.run_until_complete(infer_main())
-        print("loop has Done!")
+        my_future = loop.run_in_executor(executor, inference_task)
+        task = asyncio.ensure_future(my_future, loop=loop)
+        is_inferring = True
+        while inference_task_result is None:
+            progress = get_inference_progress()
+            is_inferring = progress["is_inferring"]
+            print(progress)
+            time.sleep(1)
+        result = inference_task_result
+        print("While done!")
+
+        # loop.run_until_complete(infer_main())
+        # print("loop has Done!")
 
     except Exception as e:
         sly.logger.error("INFERENCE ERROR", extra={
