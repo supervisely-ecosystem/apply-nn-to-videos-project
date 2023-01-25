@@ -87,8 +87,8 @@ def finish_step(step_num, state, next_step=None):
 
 
 def videos_to_frames(video_path, frames_range=None):
-    # video_name = (video_path.split('/')[-1]).split('.mp4')[0]
-    video_name = os.path.basename(video_path).split('.')[0]
+    video_name = (video_path.split('/')[-1]).split('.mp4')[0]
+    # video_name = os.path.basename(video_path).split('.')[0]
     output_path = os.path.join(g.temp_dir, f'converted_{time.time_ns()}_{video_name}')
 
     os.makedirs(output_path, exist_ok=True)
@@ -181,34 +181,29 @@ def get_model_inference(state, video_id, frames_range):
             result = g.api.task.send_request(state['sessionId'], "get_inference_progress", data={})
             return result
 
-        def inference_task():
-            nonlocal inference_task_result
-            print("sending inference_video_id...")
-            inference_task_result = g.api.task.send_request(
-                    state['sessionId'], 
-                    "inference_video_id",
-                    data={
-                        'videoId': video_id,
-                        'startFrameIndex': frames_range[0],
-                        'framesCount': frames_range[1] - frames_range[0] + 1,
-                        'settings': inf_setting
-                    }, timeout=60 * 60 * 24
-                )
-            return inference_task_result
+        msg = g.api.task.send_request(
+            state['sessionId'], 
+            "inference_video_id",
+            data={
+                'videoId': video_id,
+                'startFrameIndex': frames_range[0],
+                'framesCount': frames_range[1] - frames_range[0] + 1,
+                'settings': inf_setting
+            }
+        )
+        print(msg["message"])
 
-        inference_task_result = None
-        executor = ThreadPoolExecutor()
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        my_future = loop.run_in_executor(executor, inference_task)
-        task = asyncio.ensure_future(my_future, loop=loop)
+        from supervisely.app import DataJson, StateJson
+        StateJson()["canStop"] = True
+        StateJson().send_changes()
+
         is_inferring = True
-        while inference_task_result is None:
+        while is_inferring:
             progress = get_inference_progress()
             is_inferring = progress["is_inferring"]
-            print(progress)
+            print(progress["is_inferring"], progress["done"], progress["total"])
             time.sleep(1)
-        result = inference_task_result
+        result = progress["result"]
         print("While done!")
 
         # loop.run_until_complete(infer_main())
@@ -223,6 +218,8 @@ def get_model_inference(state, video_id, frames_range):
             "settings": str(inf_setting)
         })
         raise RuntimeError()
+    if result is None:
+        raise RuntimeError("The inference has been stopped or result was not received from serving app")
     if isinstance(result, dict) and 'ann' in result.keys():
         result = result["ann"]
     return result

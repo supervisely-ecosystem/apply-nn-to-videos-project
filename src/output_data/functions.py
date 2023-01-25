@@ -133,3 +133,8 @@ def annotate_videos(state):
 
     run_sync(DataJson().synchronize_changes())
     shutdown_app()
+
+
+def stop_annotate_videos(state):
+    sly.logger.info("Stopping inference...")
+    g.api.task.send_request(state['sessionId'], "stop_inference", data={})

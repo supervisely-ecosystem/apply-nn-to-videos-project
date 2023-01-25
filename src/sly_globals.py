@@ -18,9 +18,9 @@ temp_dir = os.path.join(app_root_directory, "temp")
 preview_frames_path = os.path.join(temp_dir, "preview_frames")
 
 # for debug
-# from dotenv import load_dotenv
-# load_dotenv(os.path.join(app_root_directory, "debug.env"))
-# load_dotenv(os.path.expanduser("~/supervisely.env"))
+from dotenv import load_dotenv
+load_dotenv(os.path.join(app_root_directory, "debug.env"))
+load_dotenv(os.path.expanduser("~/supervisely.env"))
 
 
 class AnnotatorModes:
