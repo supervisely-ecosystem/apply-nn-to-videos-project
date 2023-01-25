@@ -1,5 +1,6 @@
 import os
 import time
+import asyncio
 
 import cv2
 import yaml
@@ -171,17 +172,41 @@ def get_model_inference(state, video_id, frames_range):
         inf_setting = {}
         sly.logger.warn(f'Model Inference launched without additional settings. \n'
                         f'Reason: {e}', exc_info=True)
-    try:
-        result = g.api.task.send_request(
-            state['sessionId'], 
-            "inference_video_id",
-            data={
-                'videoId': video_id,
-                'startFrameIndex': frames_range[0],
-                'framesCount': frames_range[1] - frames_range[0] + 1,
-                'settings': inf_setting
-            }, timeout=60 * 60 * 24
-        )
+    try:        
+        async def infer_main():
+            print("running infer_main...")
+            task = asyncio.create_task(inference_task())
+            is_cancelled = False
+            while not is_cancelled and not task.done():
+                status = await get_inferring_status()
+                print("done:", task.done())
+                await asyncio.sleep(1)
+            print("While done!")
+        
+        async def get_inferring_status():
+            print("sending get_inferring_status...")
+            status = g.api.task.send_request(state['sessionId'], "get_inferring_status", data={})
+            return status
+
+        async def inference_task():
+            print("sending inference_video_id...")
+            result = g.api.task.send_request(
+                    state['sessionId'], 
+                    "inference_video_id",
+                    data={
+                        'videoId': video_id,
+                        'startFrameIndex': frames_range[0],
+                        'framesCount': frames_range[1] - frames_range[0] + 1,
+                        'settings': inf_setting
+                    }, timeout=60 * 60 * 24
+                )
+            return result
+
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(infer_main())
+        print("loop has Done!")
+
     except Exception as e:
         sly.logger.error("INFERENCE ERROR", extra={
             "nnSessionId": state['sessionId'],
