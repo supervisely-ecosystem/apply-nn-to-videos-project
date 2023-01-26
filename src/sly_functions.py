@@ -204,11 +204,11 @@ def get_model_inference(state, video_id, frames_range):
             p_done, p_total = progress['progress']['done'], progress['progress']['total']
             is_inferring = progress["is_inferring"]
             sly.logger.info(f"Inferring... {p_done} / {p_total}")
-            pbar.total = p_total
+            if pbar.total == 1:
+                pbar.reset(p_total)
             pbar.update(p_done - pbar.n)
             time.sleep(1)
         result = progress["result"]
-        sly.logger.info(f"Inference done! Result has {len(result)} items")
 
         StateJson()["canStop"] = False
         StateJson().send_changes()
@@ -222,10 +222,14 @@ def get_model_inference(state, video_id, frames_range):
             "settings": str(inf_setting)
         })
         raise RuntimeError()
+
     if result is None:
         raise RuntimeError("The inference has been stopped or result was not received from serving app")
+
     if isinstance(result, dict) and 'ann' in result.keys():
         result = result["ann"]
+
+    sly.logger.info(f"Inference done! Result has {len(result)} items")
     return result
 
 
