@@ -176,42 +176,59 @@ def get_model_inference(state, video_id, frames_range):
         sly.logger.warn(f'Model Inference launched without additional settings. \n'
                         f'Reason: {e}', exc_info=True)
     try:
-
-        def get_inference_progress():
-            sly.logger.debug("Requesting inference progress...")
-            result = g.api.task.send_request(state['sessionId'], "get_inference_progress", data={})
-            return result
-
         sly.logger.debug("Starting inference...")
-
-        g.api.task.send_request(
-            state['sessionId'], 
-            "inference_video_id_async",
-            data={
-                'videoId': video_id,
-                'startFrameIndex': frames_range[0],
-                'framesCount': frames_range[1] - frames_range[0] + 1,
-                'settings': inf_setting
-            }
-        )
-
-        StateJson()["canStop"] = True
-        StateJson().send_changes()
-        
         pbar = None
-        is_inferring = True
-        while is_inferring:
-            progress = get_inference_progress()
-            p_done, p_total = progress['progress']['done'], progress['progress']['total']
-            is_inferring = progress["is_inferring"]
-            sly.logger.info(f"Inferring model... {p_done} / {p_total}")
-            if pbar is None and p_total > 1:
-                # The first time when we got `total`
-                pbar = card_widgets.current_video_progress(message="Inferring...", total=p_total)
-            if pbar:
-                pbar.update(p_done - pbar.n)
-            time.sleep(1)
-        result = progress["result"]
+
+        if g.model_info.get("async_video_inference_support") is True:
+
+            # Running async inference
+            def get_inference_progress():
+                sly.logger.debug("Requesting inference progress...")
+                result = g.api.task.send_request(state['sessionId'], "get_inference_progress", data={})
+                return result
+
+            g.api.task.send_request(
+                state['sessionId'], 
+                "inference_video_id_async",
+                data={
+                    'videoId': video_id,
+                    'startFrameIndex': frames_range[0],
+                    'framesCount': frames_range[1] - frames_range[0] + 1,
+                    'settings': inf_setting
+                }
+            )
+
+            StateJson()["canStop"] = True
+            StateJson().send_changes()
+            
+            is_inferring = True
+            while is_inferring:
+                progress = get_inference_progress()
+                p_done, p_total = progress['progress']['done'], progress['progress']['total']
+                is_inferring = progress["is_inferring"]
+                sly.logger.info(f"Inferring model... {p_done} / {p_total}")
+                if pbar is None and p_total > 1:
+                    # The first time when we got `total`
+                    pbar = card_widgets.current_video_progress(message="Inferring...", total=p_total)
+                if pbar:
+                    pbar.update(p_done - pbar.n)
+                time.sleep(1)
+            result = progress["result"]
+        
+        else:
+            # Fallback to sync inference version
+            pbar = card_widgets.current_video_progress(message="Gathering Predictions from Model", total=1)
+            result = g.api.task.send_request(
+                state['sessionId'], 
+                "inference_video_id",
+                data={
+                    'videoId': video_id,
+                    'startFrameIndex': frames_range[0],
+                    'framesCount': frames_range[1] - frames_range[0] + 1,
+                    'settings': inf_setting
+                }, timeout=60 * 60 * 24
+            )
+            pbar.update(1)
 
     except Exception as e:
         sly.logger.error("INFERENCE ERROR", extra={
@@ -228,7 +245,6 @@ def get_model_inference(state, video_id, frames_range):
         StateJson().send_changes()
         if pbar:
             pbar.close()
-
 
     if result is None:
         raise RuntimeError("The inference has been stopped or result was not received from serving app")
@@ -250,7 +266,6 @@ def apply_tracking_algorithm_to_predictions(state, video_id, frames_range, frame
     if tracking_algorithm == 'deepsort':
         opt = deep_sort_tracker.init_opt(state, frames_path=video_local_info['frames_path'])
 
-        print("deep_sort_tracker.track")
         tracker_predictions = deep_sort_tracker.track(opt=opt, frame_to_annotation=frame_to_annotation, pbar_cb=pbar_cb)
 
         ann_keeper = get_annotation_keeper(tracker_predictions,

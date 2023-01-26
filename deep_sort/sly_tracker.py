@@ -158,7 +158,7 @@ def track(opt, frame_to_annotation, pbar_cb=None):
     # frame_index_mapping = opt.frame_indexes
 
     model_filename = "ViT-B/32"  # initialize deep sort
-    print("Loading CLIP...")
+    sly.logger.info("Loading CLIP...")
     model, transform = clip.load(model_filename, device=device)
     encoder = gdet.create_box_encoder(model, transform, batch_size=1, device=device)
 
@@ -171,7 +171,7 @@ def track(opt, frame_to_annotation, pbar_cb=None):
 
     image_paths = sorted(f.get_files_paths(source_path, ['.png', '.jpg', '.jpeg']))
 
-    print("Starting CLIP tracking...")
+    sly.logger.info("Starting CLIP tracking...")
     # frame_index = 0
     for frame_index in frame_to_annotation.keys():
         detections = []
