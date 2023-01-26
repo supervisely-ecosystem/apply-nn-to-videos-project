@@ -183,6 +183,7 @@ def get_model_inference(state, video_id, frames_range):
             return result
 
         sly.logger.debug("Starting inference...")
+
         g.api.task.send_request(
             state['sessionId'], 
             "inference_video_id_async",
@@ -203,10 +204,12 @@ def get_model_inference(state, video_id, frames_range):
             progress = get_inference_progress()
             p_done, p_total = progress['progress']['done'], progress['progress']['total']
             is_inferring = progress["is_inferring"]
-            sly.logger.info(f"Inferring... {p_done} / {p_total}")
-            if pbar is None:
+            sly.logger.info(f"Inferring model... {p_done} / {p_total}")
+            if pbar is None and p_total > 1:
+                # The first time when we got `total`
                 pbar = card_widgets.current_video_progress(message="Inferring...", total=p_total)
-            pbar.update(p_done - pbar.n)
+            if pbar:
+                pbar.update(p_done - pbar.n)
             time.sleep(1)
         result = progress["result"]
 
@@ -223,6 +226,8 @@ def get_model_inference(state, video_id, frames_range):
     finally:
         StateJson()["canStop"] = False
         StateJson().send_changes()
+        if pbar:
+            pbar.close()
 
 
     if result is None:
