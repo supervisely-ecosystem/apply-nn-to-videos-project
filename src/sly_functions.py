@@ -15,7 +15,7 @@ import supervisely as sly
 import deep_sort.sly_tracker as deep_sort_tracker
 import deep_sort.sly_ann_keeper as deep_sort_ann_keeper
 
-from supervisely.app import DataJson
+from supervisely.app import DataJson, StateJson
 from supervisely.app.fastapi import run_sync
 
 import src.sly_globals as g
@@ -177,11 +177,11 @@ def get_model_inference(state, video_id, frames_range):
     try:
 
         def get_inference_progress():
-            print("sending get_inference_progress...")
+            sly.logger.debug("Requesting inference progress...")
             result = g.api.task.send_request(state['sessionId'], "get_inference_progress", data={})
             return result
 
-        msg = g.api.task.send_request(
+        g.api.task.send_request(
             state['sessionId'], 
             "inference_video_id",
             data={
@@ -191,23 +191,27 @@ def get_model_inference(state, video_id, frames_range):
                 'settings': inf_setting
             }
         )
-        print(msg["message"])
 
-        from supervisely.app import DataJson, StateJson
         StateJson()["canStop"] = True
         StateJson().send_changes()
+        
+        import src.output_data.widgets as card_widgets
 
+        pbar = card_widgets.current_video_progress(message="Inferring...", total=1)
         is_inferring = True
         while is_inferring:
             progress = get_inference_progress()
+            p_done, p_total = progress['progress']['done'], progress['progress']['total']
             is_inferring = progress["is_inferring"]
-            print(progress["is_inferring"], progress["done"], progress["total"])
+            sly.logger.info(f"Inferring... {p_done} / {p_total}")
+            pbar.total = p_total
+            pbar.update(p_done - pbar.n)
             time.sleep(1)
         result = progress["result"]
-        print("While done! result=", result)
+        sly.logger.info(f"Inference done! Result has {len(result)} items")
 
-        # loop.run_until_complete(infer_main())
-        # print("loop has Done!")
+        StateJson()["canStop"] = False
+        StateJson().send_changes()
 
     except Exception as e:
         sly.logger.error("INFERENCE ERROR", extra={
