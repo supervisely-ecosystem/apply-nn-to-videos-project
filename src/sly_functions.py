@@ -182,6 +182,7 @@ def get_model_inference(state, video_id, frames_range):
             result = g.api.task.send_request(state['sessionId'], "get_inference_progress", data={})
             return result
 
+        sly.logger.debug("Starting inference...")
         g.api.task.send_request(
             state['sessionId'], 
             "inference_video_id_async",
@@ -209,9 +210,6 @@ def get_model_inference(state, video_id, frames_range):
             time.sleep(1)
         result = progress["result"]
 
-        StateJson()["canStop"] = False
-        StateJson().send_changes()
-
     except Exception as e:
         sly.logger.error("INFERENCE ERROR", extra={
             "nnSessionId": state['sessionId'],
@@ -221,6 +219,11 @@ def get_model_inference(state, video_id, frames_range):
             "settings": str(inf_setting)
         })
         raise RuntimeError()
+    
+    finally:
+        StateJson()["canStop"] = False
+        StateJson().send_changes()
+
 
     if result is None:
         raise RuntimeError("The inference has been stopped or result was not received from serving app")
