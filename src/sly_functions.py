@@ -204,7 +204,7 @@ def get_model_inference(state, video_id, frames_range):
             print(progress["is_inferring"], progress["done"], progress["total"])
             time.sleep(1)
         result = progress["result"]
-        print("While done!")
+        print("While done! result=", result)
 
         # loop.run_until_complete(infer_main())
         # print("loop has Done!")
@@ -235,6 +235,7 @@ def apply_tracking_algorithm_to_predictions(state, video_id, frames_range, frame
     if tracking_algorithm == 'deepsort':
         opt = deep_sort_tracker.init_opt(state, frames_path=video_local_info['frames_path'])
 
+        print("deep_sort_tracker.track")
         tracker_predictions = deep_sort_tracker.track(opt=opt, frame_to_annotation=frame_to_annotation, pbar_cb=pbar_cb)
 
         ann_keeper = get_annotation_keeper(tracker_predictions,
