@@ -184,7 +184,7 @@ def get_model_inference(state, video_id, frames_range):
 
         g.api.task.send_request(
             state['sessionId'], 
-            "inference_video_id",
+            "inference_video_id_async",
             data={
                 'videoId': video_id,
                 'startFrameIndex': frames_range[0],
