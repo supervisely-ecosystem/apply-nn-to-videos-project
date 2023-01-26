@@ -209,7 +209,7 @@ def get_model_inference(state, video_id, frames_range):
                 sly.logger.info(f"Inferring model... {p_done} / {p_total}")
                 if pbar is None and p_total > 1:
                     # The first time when we got `total`
-                    pbar = card_widgets.current_video_progress(message="Inferring...", total=p_total)
+                    pbar = card_widgets.current_video_progress(message="Inferring model...", total=p_total)
                 if pbar:
                     pbar.update(p_done - pbar.n)
                 time.sleep(1)
@@ -217,7 +217,7 @@ def get_model_inference(state, video_id, frames_range):
         
         else:
             # Fallback to sync inference version
-            pbar = card_widgets.current_video_progress(message="Gathering Predictions from Model", total=1)
+            pbar = card_widgets.current_video_progress(message="Gathering Predictions from Model...", total=1)
             result = g.api.task.send_request(
                 state['sessionId'], 
                 "inference_video_id",

@@ -171,7 +171,7 @@ def track(opt, frame_to_annotation, pbar_cb=None):
 
     image_paths = sorted(f.get_files_paths(source_path, ['.png', '.jpg', '.jpeg']))
 
-    sly.logger.info("Starting CLIP tracking...")
+    sly.logger.info("Starting deep_sort tracking with CLIP...")
     # frame_index = 0
     for frame_index in frame_to_annotation.keys():
         detections = []
