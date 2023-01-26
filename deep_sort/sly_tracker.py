@@ -157,9 +157,8 @@ def track(opt, frame_to_annotation, pbar_cb=None):
     nn_budget = opt.nn_budget
     # frame_index_mapping = opt.frame_indexes
 
-    # model_filename = "ViT-B/32"  # initialize deep sort
-    model_filename = "RN50"
-    print("clip.load...")
+    model_filename = "ViT-B/32"  # initialize deep sort
+    print("Loading CLIP...")
     model, transform = clip.load(model_filename, device=device)
     encoder = gdet.create_box_encoder(model, transform, batch_size=1, device=device)
 
@@ -198,7 +197,9 @@ def track(opt, frame_to_annotation, pbar_cb=None):
             indices_of_alive_labels = preprocessing.non_max_suppression(boxs, class_nums, nms_max_overlap, scores)
             detections = [detections[i] for i in indices_of_alive_labels]
         except Exception as ex:
+            import traceback
             sly.logger.info(f'frame {frame_index} skipped on tracking')
+            sly.logger.debug(traceback.format_exc())
         
         # Call the tracker
         tracker.predict()

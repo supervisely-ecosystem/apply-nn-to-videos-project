@@ -19,6 +19,7 @@ from supervisely.app import DataJson, StateJson
 from supervisely.app.fastapi import run_sync
 
 import src.sly_globals as g
+import src.output_data.widgets as card_widgets
 
 
 def filter_annotation_by_classes(annotation_predictions: dict, selected_classes: list) -> dict:
@@ -195,17 +196,15 @@ def get_model_inference(state, video_id, frames_range):
         StateJson()["canStop"] = True
         StateJson().send_changes()
         
-        import src.output_data.widgets as card_widgets
-
-        pbar = card_widgets.current_video_progress(message="Inferring...", total=1)
+        pbar = None
         is_inferring = True
         while is_inferring:
             progress = get_inference_progress()
             p_done, p_total = progress['progress']['done'], progress['progress']['total']
             is_inferring = progress["is_inferring"]
             sly.logger.info(f"Inferring... {p_done} / {p_total}")
-            if pbar.total == 1:
-                pbar.reset(p_total)
+            if pbar is None:
+                pbar = card_widgets.current_video_progress(message="Inferring...", total=p_total)
             pbar.update(p_done - pbar.n)
             time.sleep(1)
         result = progress["result"]
