@@ -157,16 +157,15 @@ def track(opt, frame_to_annotation, pbar_cb=None):
     nn_budget = opt.nn_budget
     # frame_index_mapping = opt.frame_indexes
 
-    model_filename = "ViT-B/32"  # initialize deep sort
+    # model_filename = "ViT-B/32"  # initialize deep sort
+    model_filename = "RN50"
     print("clip.load...")
     model, transform = clip.load(model_filename, device=device)
     encoder = gdet.create_box_encoder(model, transform, batch_size=1, device=device)
 
-    print("NearestNeighborDistanceMetric...")
     metric = nn_matching.NearestNeighborDistanceMetric(  # calculate cosine distance metric
         "cosine", max_cosine_distance, nn_budget)
 
-    print("Tracker...")
     tracker = Tracker(metric, n_init=1)  # initialize tracker
 
     source_path = opt.source_path
