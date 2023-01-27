@@ -76,7 +76,7 @@ device = (
     if torch.cuda.is_available() and torch.cuda.device_count() > 0
     else torch.device("cpu")
 )
-
+inference_request_uuid = None
 
 DataJson()["ownerId"] = owner_id
 DataJson()["teamId"] = team_id

@@ -182,12 +182,16 @@ def get_model_inference(state, video_id, frames_range):
         if g.model_info.get("async_video_inference_support") is True:
 
             # Running async inference
-            def get_inference_progress():
+            def get_inference_progress(inference_request_uuid):
                 sly.logger.debug("Requesting inference progress...")
-                result = g.api.task.send_request(state['sessionId'], "get_inference_progress", data={})
+                result = g.api.task.send_request(
+                    state['sessionId'],
+                    "get_inference_progress",
+                    data={"inference_request_uuid": inference_request_uuid}
+                )
                 return result
 
-            g.api.task.send_request(
+            resp = g.api.task.send_request(
                 state['sessionId'], 
                 "inference_video_id_async",
                 data={
@@ -197,21 +201,22 @@ def get_model_inference(state, video_id, frames_range):
                     'settings': inf_setting
                 }
             )
+            g.inference_request_uuid = resp["inference_request_uuid"]
 
             StateJson()["canStop"] = True
             StateJson().send_changes()
             
             is_inferring = True
             while is_inferring:
-                progress = get_inference_progress()
-                p_done, p_total = progress['progress']['done'], progress['progress']['total']
+                progress = get_inference_progress(g.inference_request_uuid)
+                current, total = progress['progress']['current'], progress['progress']['total']
                 is_inferring = progress["is_inferring"]
-                sly.logger.info(f"Inferring model... {p_done} / {p_total}")
-                if pbar is None and p_total > 1:
+                sly.logger.info(f"Inferring model... {current} / {total}")
+                if pbar is None and total > 1:
                     # The first time when we got `total`
-                    pbar = card_widgets.current_video_progress(message="Inferring model...", total=p_total)
+                    pbar = card_widgets.current_video_progress(message="Inferring model...", total=total, initial=0)
                 if pbar:
-                    pbar.update(p_done - pbar.n)
+                    pbar.update(current - pbar.n)
                 time.sleep(1)
             result = progress["result"]
         

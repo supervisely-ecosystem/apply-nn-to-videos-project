@@ -132,5 +132,6 @@ def annotate_videos(state):
 
 
 def stop_annotate_videos(state):
-    sly.logger.info("Stopping inference...")
-    g.api.task.send_request(state['sessionId'], "stop_inference", data={})
+    if g.inference_request_uuid:
+        sly.logger.info("Stopping inference...")
+        g.api.task.send_request(state['sessionId'], "stop_inference", data={"inference_request_uuid": g.inference_request_uuid})
