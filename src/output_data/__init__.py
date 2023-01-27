@@ -25,3 +25,5 @@ StateJson()["annotatingStarted"] = False
 StateJson()["collapsed6"] = True
 StateJson()["disabled6"] = True
 DataJson()["done6"] = False
+
+StateJson()["canStop"] = False

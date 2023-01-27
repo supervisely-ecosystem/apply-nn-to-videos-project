@@ -25,6 +25,14 @@
         <i class="zmdi zmdi-play mr5" v-if="!data.annotatingStarted"></i> apply NN to videos project
     </el-button>
 
+    <el-button v-if="!data.dstProjectName && data.annotatingStarted === true"
+               type="danger" class="regular"
+               @click="post('/stop-annotation/')"
+               :disabled="state.canStop === false"
+    >
+    <i class="zmdi zmdi-stop mr5"></i> Stop
+    </el-button>
+
     <div v-if="data.dstProjectName">
         <sly-field style="margin: 0 0"
                    title="Output Project"

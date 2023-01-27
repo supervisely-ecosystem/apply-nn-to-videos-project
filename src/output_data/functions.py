@@ -50,13 +50,9 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
     frames_max = state["framesMax"]
     frames_range = (frames_min[video_data["name"]], frames_max[video_data["name"]])
 
-    with card_widgets.current_video_progress(
-        message="Gathering Predictions from Model", total=1
-    ) as progress:
-        model_predictions = f.get_model_inference(
-            state, video_id=video_data["videoId"], frames_range=frames_range
-        )
-        progress.update(1)
+    model_predictions = f.get_model_inference(
+        state, video_id=video_data["videoId"], frames_range=frames_range
+    )
 
     frame_to_annotation = f.frame_index_to_annotation(model_predictions, frames_range)
     frame_to_annotation = f.filter_annotation_by_classes(
@@ -133,3 +129,9 @@ def annotate_videos(state):
 
     run_sync(DataJson().synchronize_changes())
     shutdown_app()
+
+
+def stop_annotate_videos(state):
+    if g.inference_request_uuid:
+        sly.logger.info("Stopping inference...")
+        g.api.task.send_request(state['sessionId'], "stop_inference", data={"inference_request_uuid": g.inference_request_uuid})
