@@ -249,6 +249,7 @@ def get_model_inference(state, video_id, frames_range):
         StateJson()["canStop"] = False
         StateJson().send_changes()
         if pbar:
+            pbar.n = 0
             pbar.close()
 
     if result is None:
