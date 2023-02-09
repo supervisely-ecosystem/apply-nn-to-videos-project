@@ -102,9 +102,9 @@ def videos_to_frames(video_path, frames_range=None):
     while success:
         if frames_range:
             if frames_range[0] <= count <= frames_range[1]:
-                sly.image.write(f"{output_path}/frame{count:06d}.jpg", image)  # save frame as JPEG file
+                cv2.imwrite(f"{output_path}/frame{count:06d}.jpg", image)  # save frame as JPEG file
         else:
-            sly.image.write(f"{output_path}/frame{count:06d}.jpg", image)  # save frame as JPEG file
+            cv2.imwrite(f"{output_path}/frame{count:06d}.jpg", image)  # save frame as JPEG file
 
         success, image = vidcap.read()
         count += 1
