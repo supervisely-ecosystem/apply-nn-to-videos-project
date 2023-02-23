@@ -209,6 +209,9 @@ def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm 
             progress_widget(message="Preparing video...", total=1)
             iterator = session.inference_video_id_async(video_id, startFrameIndex, framesCount)
             result = list(progress_widget(iterator, message="Inferring model..."))
+            if g.inference_canceled:
+                g.inference_canceled = False
+                raise RuntimeError("The inference has been stopped by user.")
         except Exception as exc:
             # Fallback to sync inference version
             sly.logger.warn("Error in async video inference.", exc_info=True)
