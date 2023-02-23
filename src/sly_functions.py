@@ -15,8 +15,10 @@ import supervisely as sly
 import deep_sort.sly_tracker as deep_sort_tracker
 import deep_sort.sly_ann_keeper as deep_sort_ann_keeper
 
+from supervisely.app.widgets import SlyTqdm
 from supervisely.app import DataJson, StateJson
 from supervisely.app.fastapi import run_sync
+from supervisely.nn.inference import SessionJSON
 
 import src.sly_globals as g
 import src.output_data.widgets as card_widgets
@@ -88,8 +90,7 @@ def finish_step(step_num, state, next_step=None):
 
 
 def videos_to_frames(video_path, frames_range=None):
-    video_name = (video_path.split('/')[-1]).split('.mp4')[0]
-    # video_name = os.path.basename(video_path).split('.')[0]
+    video_name = os.path.splitext(os.path.basename(video_path))[0]
     output_path = os.path.join(g.temp_dir, f'converted_{time.time_ns()}_{video_name}')
 
     os.makedirs(output_path, exist_ok=True)
@@ -168,7 +169,7 @@ def draw_labels_on_frames(frames_to_image_path, frame_to_annotation):
         sly.image.write(frames_to_image_path[frame_index], img_rgb)
 
 
-def get_model_inference(state, video_id, frames_range):
+def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm = None):
     try:
         inf_setting = yaml.safe_load(state["modelSettings"])
     except Exception as e:
@@ -180,49 +181,21 @@ def get_model_inference(state, video_id, frames_range):
         pbar = None
 
         if g.model_info.get("async_video_inference_support") is True:
-
             # Running async inference
-            def get_inference_progress(inference_request_uuid):
-                sly.logger.debug("Requesting inference progress...")
-                result = g.api.task.send_request(
-                    state['sessionId'],
-                    "get_inference_progress",
-                    data={"inference_request_uuid": inference_request_uuid}
-                )
-                return result
-
-            resp = g.api.task.send_request(
-                state['sessionId'], 
-                "inference_video_id_async",
-                data={
-                    'videoId': video_id,
-                    'startFrameIndex': frames_range[0],
-                    'framesCount': frames_range[1] - frames_range[0] + 1,
-                    'settings': inf_setting
-                }
-            )
-            g.inference_request_uuid = resp["inference_request_uuid"]
+            session = SessionJSON(g.api, state['sessionId'], inference_settings=inf_setting)
+            
+            g.inference_session = session
 
             StateJson()["canStop"] = True
             StateJson().send_changes()
             
-            is_inferring = True
-            while is_inferring:
-                progress = get_inference_progress(g.inference_request_uuid)
-                current, total = progress['progress']['current'], progress['progress']['total']
-                is_inferring = progress["is_inferring"]
-                sly.logger.info(f"Inferring model... {current} / {total}")
-                if pbar is None and total > 1:
-                    # The first time when we got `total`
-                    pbar = card_widgets.current_video_progress(message="Inferring model...", total=total, initial=0)
-                if pbar:
-                    pbar.update(current - pbar.n)
-                time.sleep(1)
-            result = progress["result"]
+            progress_widget(message="Preparing video...", total=1)
+            iterator = session.inference_video_id_async(video_id, frames_range[0], frames_range[1] - frames_range[0] + 1)
+            result = list(progress_widget(iterator, message="Inferring model..."))
         
         else:
             # Fallback to sync inference version
-            pbar = card_widgets.current_video_progress(message="Gathering Predictions from Model...", total=1)
+            pbar = progress_widget(message="Gathering Predictions from Model...", total=1)
             result = g.api.task.send_request(
                 state['sessionId'], 
                 "inference_video_id",
