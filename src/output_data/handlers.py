@@ -44,9 +44,6 @@ def restart(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
 def stop_annotation(background_tasks: BackgroundTasks,
                      state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
     try:
-        DataJson()['annotatingStarted'] = False
-        run_sync(DataJson().synchronize_changes())
-
         background_tasks.add_task(card_functions.stop_annotate_videos, state=state)
     except Exception as ex:
         DataJson()['annotatingStarted'] = True

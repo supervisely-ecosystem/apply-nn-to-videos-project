@@ -1,13 +1,9 @@
 import os
 import time
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 
 import cv2
 import yaml
-from fastapi import Depends
-from tqdm import tqdm
-
 import ffmpeg
 
 import supervisely as sly
@@ -183,6 +179,21 @@ def legacy_inference_video(task_id, video_id, startFrameIndex, framesCount, infe
     return result
 
 
+@contextmanager
+def can_stop():
+    StateJson()["canStop"] = True
+    StateJson().send_changes()
+    yield
+    StateJson()["canStop"] = False
+    StateJson().send_changes()
+
+
+def on_inference_stop():
+    # reverting UI to starting state
+    DataJson()['annotatingStarted'] = False
+    run_sync(DataJson().synchronize_changes())
+
+
 def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm = None):
     try:
         inf_setting = yaml.safe_load(state["modelSettings"])
@@ -196,40 +207,36 @@ def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm 
     framesCount = frames_range[1] - frames_range[0] + 1
     
     sly.logger.debug("Starting inference...")
+    result = None
 
     if g.model_info.get("async_video_inference_support") is True:
-        # Running async inference
-        try:
-            session = SessionJSON(g.api, task_id, inference_settings=inf_setting)
-            g.inference_session = session
-
-            StateJson()["canStop"] = True
-            StateJson().send_changes()
-            
-            progress_widget(message="Preparing video...", total=1)
-            iterator = session.inference_video_id_async(video_id, startFrameIndex, framesCount)
-            result = list(progress_widget(iterator, message="Inferring model..."))
-            if g.inference_canceled:
-                g.inference_canceled = False
-                raise RuntimeError("The inference has been stopped by user.")
+        try:  # for legacy support
+            with can_stop():
+                # Running async inference
+                g.inference_session = SessionJSON(g.api, task_id, inference_settings=inf_setting)
+                progress_widget(message="Preparing video...", total=1)
+                iterator = g.inference_session.inference_video_id_async(video_id, startFrameIndex, framesCount)
+                result = list(progress_widget(iterator, message="Inferring model..."))
         except Exception as exc:
             # Fallback to sync inference version
             sly.logger.warn("Error in async video inference.", exc_info=True)
             sly.logger.warn("Trying legacy method...")
             with progress_widget(message="Gathering Predictions from Model...", total=1) as pbar:
-                legacy_inference_video(task_id, video_id, startFrameIndex, framesCount, inf_setting)
+                result = legacy_inference_video(task_id, video_id, startFrameIndex, framesCount, inf_setting)
                 pbar.update(1)
-        finally:
-            StateJson()["canStop"] = False
-            StateJson().send_changes()
     else:
         # Fallback to sync inference version
         with progress_widget(message="Gathering Predictions from Model...", total=1) as pbar:
-            legacy_inference_video(task_id, video_id, startFrameIndex, framesCount, inf_setting)
+            result = legacy_inference_video(task_id, video_id, startFrameIndex, framesCount, inf_setting)
             pbar.update(1)
 
-    if result is None:
-        raise RuntimeError("The inference has been stopped or result was not received from serving app")
+    if g.inference_canceled:
+        g.inference_canceled = False
+        on_inference_stop()
+        raise RuntimeError("The inference has been stopped by user.")
+    
+    if not result:
+        raise RuntimeError(f"Empty result: {result}")
 
     if isinstance(result, dict) and 'ann' in result.keys():
         result = result["ann"]
