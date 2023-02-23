@@ -233,6 +233,7 @@ def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm 
     if g.inference_canceled:
         g.inference_canceled = False
         on_inference_stop()
+        progress_widget(message="", total=1)
         raise RuntimeError("The inference has been stopped by user.")
     
     if not result:
