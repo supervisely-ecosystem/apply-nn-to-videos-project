@@ -22,6 +22,7 @@ def start_annotation(background_tasks: BackgroundTasks,
         run_sync(DataJson().synchronize_changes())
         StateJson()["canStop"] = False
         StateJson().send_changes()
+        g.inference_cancelled = False
 
         background_tasks.add_task(card_functions.annotate_videos, state=state)
     except Exception as ex:
@@ -42,4 +43,6 @@ def restart(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
 
 @g.app.post("/stop-annotation/")
 def stop_annotation(background_tasks: BackgroundTasks, state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
-        background_tasks.add_task(card_functions.stop_annotate_videos, state=state)
+    StateJson()["canStop"] = False
+    StateJson().send_changes()
+    background_tasks.add_task(card_functions.stop_annotate_videos, state=state)

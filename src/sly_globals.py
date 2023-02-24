@@ -88,4 +88,4 @@ selected_classes_list = []
 available_classes_names = []
 
 inference_session = None
-inference_canceled = False
+inference_cancelled = False

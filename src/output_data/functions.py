@@ -124,7 +124,7 @@ def annotate_videos(state):
 
 
 def stop_annotate_videos(state):
-    if g.inference_session and g.inference_canceled is False:
+    if g.inference_session:
         sly.logger.info("Stopping inference...")
-        g.inference_canceled = True
+        g.inference_cancelled = True
         g.inference_session.stop_async_inference()
