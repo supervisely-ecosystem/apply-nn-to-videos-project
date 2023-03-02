@@ -210,7 +210,7 @@ def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm 
     result = None
 
     if g.model_info.get("async_video_inference_support") is True:
-        try:  # for legacy support
+        try:  # for supporting serving versions in range [v6.69.47 - v6.69.53)
             with can_stop():
                 # Running async inference
                 g.inference_session = SessionJSON(g.api, task_id, inference_settings=inf_setting)
