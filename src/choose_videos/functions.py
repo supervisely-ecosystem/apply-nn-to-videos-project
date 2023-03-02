@@ -31,7 +31,8 @@ def get_videos_info(project_id, state):
                  "isDisabled": True if video_info.frames_count < 5 else False,
 
                  'videoId': video_info.id,
-                 'videoHash': video_info.hash
+                 'videoHash': video_info.hash,
+                 "frame_shape": (video_info.frame_height, video_info.frame_width)
                  }
             )
 

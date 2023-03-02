@@ -15,7 +15,7 @@
 
                     <div class="field-with-checkbox-container">
                         <el-checkbox v-model="state.applyTrackingAlgorithm"
-                                     :disabled="true"
+                                     :disabled="!state.canApplyTrackingAlgorithm || state.activeStep !== 5"
                                      style="margin: 0 10px 0 0"></el-checkbox>
 
                         <sly-field title="Apply Tracking Algorithm"
@@ -40,9 +40,9 @@
                 </div>
 
 
-                <sly-field title="Tracking Algorithm Device"
+                <sly-field v-show="state.applyTrackingAlgorithm" title="Tracking Algorithm Device"
                            description="CUDA device number (i.e. 0, 1, 2 or 3) or CPU">
-                    <el-select v-model="state.device" :disabled="state.activeStep !== 5">
+                    <el-select v-model="state.device" :disabled="state.activeStep !== 5 || !state.canApplyTrackingAlgorithm">
                         <el-option-group key="GPU" label="GPU">
                             <el-option key="0" label="0" value="cuda:0"></el-option>
                             <el-option key="1" label="1" value="cuda:1"></el-option>
