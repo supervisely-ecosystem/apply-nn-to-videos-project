@@ -28,6 +28,7 @@ def generate_annotation_example(state: sly.app.StateJson = Depends(sly.app.State
         DataJson()['videoUrl'] = None
         DataJson()['previewLoading'] = True
         run_sync(DataJson().synchronize_changes())
+        g.inference_cancelled = False
 
         video_id, frames_range = card_functions.get_video_for_preview(state)
 
