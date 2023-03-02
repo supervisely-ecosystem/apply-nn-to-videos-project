@@ -89,3 +89,5 @@ available_classes_names = []
 
 inference_session = None
 inference_cancelled = False
+
+deepsort_clip_encoder = None
