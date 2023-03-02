@@ -51,7 +51,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
     frames_range = (frames_min[video_data["name"]], frames_max[video_data["name"]])
 
     model_predictions = f.get_model_inference(
-        state, video_id=video_data["videoId"], frames_range=frames_range
+        state, video_id=video_data["videoId"], frames_range=frames_range, progress_widget=card_widgets.current_video_progress
     )
 
     frame_to_annotation = f.frame_index_to_annotation(model_predictions, frames_range)
@@ -102,16 +102,8 @@ def annotate_videos(state):
         for video_data in card_widgets.apply_nn_to_video_project_progress(
             selected_videos_data, message=f"Inference Videos in dataset: {ds_name}"
         ):
-            try:
-                annotation: sly.VideoAnnotation = get_video_annotation(
-                    video_data, state
-                )
-                upload_to_project(video_data, annotation, dataset.id)
-
-            except Exception as ex:
-                raise RuntimeError(
-                    f'Error while processing: {video_data["name"]}:' f"{ex}"
-                )
+            annotation: sly.VideoAnnotation = get_video_annotation(video_data, state)
+            upload_to_project(video_data, annotation, dataset.id)
 
     res_project = g.api.project.get_info_by_id(project_id)
     DataJson().update(
@@ -132,9 +124,10 @@ def annotate_videos(state):
 
 
 def stop_annotate_videos(state):
-    if g.inference_request_uuid:
-        sly.logger.info("Stopping inference...")
-        g.api.task.send_request(state['sessionId'], "stop_inference", data={"inference_request_uuid": g.inference_request_uuid})
+    if g.inference_session:
+        sly.logger.info("Stopping the inference...")
+        g.inference_cancelled = True
+        g.inference_session.stop_async_inference()
 
 
 def annotations_to_video_annotation(frame_to_annotation: dict, obj_classes: sly.ObjClassCollection, video_shape: tuple):
