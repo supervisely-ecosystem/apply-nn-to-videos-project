@@ -102,16 +102,16 @@ def annotate_videos(state):
         for video_data in card_widgets.apply_nn_to_video_project_progress(
             selected_videos_data, message=f"Inference Videos in dataset: {ds_name}"
         ):
-            # try:
+            try:
                 annotation: sly.VideoAnnotation = get_video_annotation(
                     video_data, state
                 )
                 upload_to_project(video_data, annotation, dataset.id)
 
-            # except Exception as ex:
-            #     raise RuntimeError(
-            #         f'Error while processing: {video_data["name"]}:' f"{ex}"
-            #     )
+            except Exception as ex:
+                raise RuntimeError(
+                    f'Error while processing: {video_data["name"]}:' f"{ex}"
+                )
 
     res_project = g.api.project.get_info_by_id(project_id)
     DataJson().update(
