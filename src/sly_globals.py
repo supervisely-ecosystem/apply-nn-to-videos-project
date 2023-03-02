@@ -87,5 +87,3 @@ StateJson()["restartFrom"] = None
 
 selected_classes_list = []
 available_classes_names = []
-
-test_mode = os.environ.get("test_mode", False)

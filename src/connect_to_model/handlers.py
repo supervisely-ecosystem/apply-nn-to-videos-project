@@ -23,7 +23,7 @@ def connect(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
     try:
         card_functions.get_model_info(state['sessionId'], state)
         card_functions.validate_model_type()
-        state['canApplyTrackingAlgorithm'] = bool(g.model_info.get("tracking_on_videos_support")) if not g.test_mode else True
+        state['canApplyTrackingAlgorithm'] = bool(g.model_info.get("tracking_on_videos_support"))
         if not state['canApplyTrackingAlgorithm']:
             state['applyTrackingAlgorithm'] = False
 
