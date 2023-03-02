@@ -35,26 +35,25 @@
                                            :label="item.label"
                                            :value="item.value"></el-option>
                             </el-select>
+
+                            <sly-field title="Tracking Algorithm Device"
+                            description="CUDA device number (i.e. 0, 1, 2 or 3) or CPU">
+                                <el-select v-model="state.device" :disabled="state.activeStep !== 5 || !state.canApplyTrackingAlgorithm">
+                                    <el-option-group key="GPU" label="GPU">
+                                        <el-option key="0" label="0" value="cuda:0"></el-option>
+                                        <el-option key="1" label="1" value="cuda:1"></el-option>
+                                        <el-option key="2" label="2" value="cuda:2"></el-option>
+                                        <el-option key="3" label="3" value="cuda:3"></el-option>
+                                    </el-option-group>
+                                    <el-option-group key="CPU" label="CPU">
+                                        <el-option key="cpu" label="CPU" value="cpu"/>
+                                    </el-option-group>
+                                </el-select>
+                            </sly-field>
+
                         </div>
                     </el-collapse-transition>
                 </div>
-
-
-                <sly-field v-show="state.applyTrackingAlgorithm" title="Tracking Algorithm Device"
-                           description="CUDA device number (i.e. 0, 1, 2 or 3) or CPU">
-                    <el-select v-model="state.device" :disabled="state.activeStep !== 5 || !state.canApplyTrackingAlgorithm">
-                        <el-option-group key="GPU" label="GPU">
-                            <el-option key="0" label="0" value="cuda:0"></el-option>
-                            <el-option key="1" label="1" value="cuda:1"></el-option>
-                            <el-option key="2" label="2" value="cuda:2"></el-option>
-                            <el-option key="3" label="3" value="cuda:3"></el-option>
-                        </el-option-group>
-                        <el-option-group key="CPU" label="CPU">
-                            <el-option key="cpu" label="CPU" value="cpu"/>
-                        </el-option-group>
-                    </el-select>
-
-                </sly-field>
 
                 <sly-field title="Output project name"
                            description="Adjust output project name">
