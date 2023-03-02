@@ -183,9 +183,11 @@ def legacy_inference_video(task_id, video_id, startFrameIndex, framesCount, infe
 def can_stop():
     StateJson()["canStop"] = True
     StateJson().send_changes()
-    yield
-    StateJson()["canStop"] = False
-    StateJson().send_changes()
+    try:
+        yield
+    finally:
+        StateJson()["canStop"] = False
+        StateJson().send_changes()
 
 
 def on_inference_stop():
