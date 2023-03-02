@@ -23,6 +23,8 @@ def connect(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
     try:
         card_functions.get_model_info(state['sessionId'], state)
         card_functions.validate_model_type()
+        state['canApplyTrackingAlgorithm'] = bool(g.model_info.get("tracking_on_videos_support", True))
+        state['applyTrackingAlgorithm'] = state['canApplyTrackingAlgorithm']
 
         classes_rows = choose_classes_functions.generate_rows()
         choose_classes_functions.fill_table(classes_rows)

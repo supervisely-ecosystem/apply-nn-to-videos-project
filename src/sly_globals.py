@@ -87,3 +87,5 @@ StateJson()["restartFrom"] = None
 
 selected_classes_list = []
 available_classes_names = []
+
+deepsort_clip_encoder = None

@@ -74,8 +74,8 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
                 pbar_cb=progress.update,
             )
     else:
-        raise NotImplementedError
-        # return f.get_annotation_from_predictions(frame_to_annotation)
+        obj_classes = g.model_meta.obj_classes
+        return annotations_to_video_annotation(frame_to_annotation, obj_classes, video_data['frame_shape'])
 
 
 def annotate_videos(state):
@@ -135,3 +135,20 @@ def stop_annotate_videos(state):
     if g.inference_request_uuid:
         sly.logger.info("Stopping inference...")
         g.api.task.send_request(state['sessionId'], "stop_inference", data={"inference_request_uuid": g.inference_request_uuid})
+
+
+def annotations_to_video_annotation(frame_to_annotation: dict, obj_classes: sly.ObjClassCollection, video_shape: tuple):
+    name2vid_obj_cls = {x.name: sly.VideoObject(x) for x in obj_classes}
+    video_obj_classes = sly.VideoObjectCollection(list(name2vid_obj_cls.values()))
+    frames = []
+    for idx, ann in frame_to_annotation.items():
+        ann : sly.Annotation
+        figures = []
+        for label in ann.labels:
+            vid_obj = name2vid_obj_cls[label.obj_class.name]
+            vid_fig = sly.VideoFigure(vid_obj, label.geometry, idx)
+            figures.append(vid_fig)
+        frames.append(sly.Frame(idx, figures))
+    frames_coll = sly.FrameCollection(frames)
+    video_ann = sly.VideoAnnotation(video_shape, len(frames_coll), video_obj_classes, frames_coll)
+    return video_ann
