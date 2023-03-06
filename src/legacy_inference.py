@@ -43,6 +43,7 @@ def legacy_inference_video_async(task_id, video_id, startFrameIndex, framesCount
     g.inference_request_uuid = resp["inference_request_uuid"]
 
     is_inferring = True
+    pbar = None
     while is_inferring:
         progress = get_inference_progress(g.inference_request_uuid)
         current, total = progress['progress']['current'], progress['progress']['total']
