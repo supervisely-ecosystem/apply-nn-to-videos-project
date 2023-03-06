@@ -87,6 +87,7 @@ StateJson()["restartFrom"] = None
 selected_classes_list = []
 available_classes_names = []
 
+inference_request_uuid = None
 inference_session = None
 inference_cancelled = False
 
