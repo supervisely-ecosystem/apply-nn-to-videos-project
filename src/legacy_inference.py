@@ -1,4 +1,4 @@
-import sly_globals as g
+import src.sly_globals as g
 import supervisely as sly
 import time
 
