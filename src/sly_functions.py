@@ -18,6 +18,7 @@ from supervisely.nn.inference import SessionJSON
 
 import src.sly_globals as g
 import src.output_data.widgets as card_widgets
+from src.legacy_inference import legacy_inference_video, legacy_inference_video_async
 
 
 def filter_annotation_by_classes(annotation_predictions: dict, selected_classes: list) -> dict:
@@ -165,20 +166,6 @@ def draw_labels_on_frames(frames_to_image_path, frame_to_annotation):
         sly.image.write(frames_to_image_path[frame_index], img_rgb)
 
 
-def legacy_inference_video(task_id, video_id, startFrameIndex, framesCount, inference_setting):
-    result = g.api.task.send_request(
-        task_id, 
-        "inference_video_id",
-        data={
-            'videoId': video_id,
-            'startFrameIndex': startFrameIndex,
-            'framesCount': framesCount,
-            'settings': inference_setting
-        }, timeout=60 * 60 * 24
-    )
-    return result
-
-
 @contextmanager
 def can_stop():
     StateJson()["canStop"] = True
@@ -212,7 +199,8 @@ def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm 
     result = None
 
     if g.model_info.get("async_video_inference_support") is True:
-        try:  # for supporting serving versions in range [v6.69.47 - v6.69.53)
+        try:
+            # serving versions 6.69.53+
             with can_stop():
                 # Running async inference
                 g.inference_session = SessionJSON(g.api, task_id, inference_settings=inf_setting)
@@ -220,18 +208,16 @@ def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm 
                 iterator = g.inference_session.inference_video_id_async(video_id, startFrameIndex, framesCount)
                 result = list(progress_widget(iterator, message="Inferring model..."))
         except Exception as exc:
-            # Fallback to sync inference version
+            # Fallback for serving versions: [6.69.15, 6.69.53)
             sly.logger.warn("Error in async video inference.", exc_info=True)
             sly.logger.warn("Trying legacy method...")
-            with progress_widget(message="Gathering Predictions from Model...", total=1) as pbar:
-                result = legacy_inference_video(task_id, video_id, startFrameIndex, framesCount, inf_setting)
-                pbar.update(1)
+            g.inference_session = None
+            with can_stop():
+                result = legacy_inference_video_async(task_id, video_id, startFrameIndex, framesCount, inf_setting, progress_widget)
     else:
-        # Fallback to sync inference version
-        with progress_widget(message="Gathering Predictions from Model...", total=1) as pbar:
-            result = legacy_inference_video(task_id, video_id, startFrameIndex, framesCount, inf_setting)
-            pbar.update(1)
-
+        # Fallback to sync version (serving below 6.69.15)
+        result = legacy_inference_video(task_id, video_id, startFrameIndex, framesCount, inf_setting, progress_widget)
+    
     if g.inference_cancelled:
         on_inference_stop()
         progress_widget(message="", total=1)

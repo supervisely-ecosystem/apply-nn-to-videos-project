@@ -124,10 +124,15 @@ def annotate_videos(state):
 
 
 def stop_annotate_videos(state):
-    if g.inference_session:
+    if g.inference_session or g.inference_request_uuid:
         sly.logger.info("Stopping the inference...")
         g.inference_cancelled = True
+
+    if g.inference_session:
         g.inference_session.stop_async_inference()
+    
+    if g.inference_request_uuid:
+        g.api.task.send_request(state['sessionId'], "stop_inference", data={"inference_request_uuid": g.inference_request_uuid})
 
 
 def annotations_to_video_annotation(frame_to_annotation: dict, obj_classes: sly.ObjClassCollection, video_shape: tuple):

@@ -23,6 +23,8 @@ def start_annotation(background_tasks: BackgroundTasks,
         StateJson()["canStop"] = False
         StateJson().send_changes()
         g.inference_cancelled = False
+        g.inference_session = None
+        g.inference_request_uuid = None
 
         background_tasks.add_task(card_functions.annotate_videos, state=state)
     except Exception as ex:
