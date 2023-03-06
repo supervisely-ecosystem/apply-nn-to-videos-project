@@ -212,7 +212,7 @@ def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm 
             sly.logger.warn("Error in async video inference.", exc_info=True)
             sly.logger.warn("Trying legacy method...")
             with can_stop():
-                legacy_inference_video_async(task_id, video_id, startFrameIndex, framesCount, inf_setting, progress_widget)
+                result = legacy_inference_video_async(task_id, video_id, startFrameIndex, framesCount, inf_setting, progress_widget)
     else:
         # Fallback to sync version (serving below 6.69.15)
         result = legacy_inference_video(task_id, video_id, startFrameIndex, framesCount, inf_setting, progress_widget)
