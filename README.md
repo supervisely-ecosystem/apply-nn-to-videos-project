@@ -1,6 +1,6 @@
 <div align="center" markdown>
 
-<img src="https://imgur.com/dE7nQl6.png"/>  
+<img src="media/68747470733a2f2f696d6775722e636f6d2f6445376e516c362e706e67.png"/>  
 
 # Apply NN to Videos Project
 
@@ -75,16 +75,16 @@ Application supports next models:
 
 1. Launch Serve APP, designed for Videos Projects
 
-<img src="https://imgur.com/1v8EYKR.png" width="80%" style='padding-top: 10px'>  
+<img src="media/68747470733a2f2f696d6775722e636f6d2f31763845594b522e706e67.png" width="80%" style='padding-top: 10px'>  
 
 
 2. Add [Apply NN to videos project](https://ecosystem.supervise.ly/apps/apply-nn-to-videos-project) from ecosystem to your team  
 
-<img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/apply-nn-to-videos-project" src="https://imgur.com/LDo8K1A.png" width="350px" style='padding-bottom: 10px'/>
+<img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/apply-nn-to-videos-project" src="media/68747470733a2f2f696d6775722e636f6d2f4c446f384b31412e706e67.png" width="350px" style='padding-bottom: 10px'/>
 
 3. Run app from the context menu of **Videos Project**:  
 
-<img src="https://imgur.com/b1TU1cC.png" width="80%" style='padding-top: 10px'>  
+<img src="media/68747470733a2f2f696d6775722e636f6d2f623154553163432e706e67.png" width="80%" style='padding-top: 10px'>  
 
 4. Set the settings and apply NN to Videos Project
 
