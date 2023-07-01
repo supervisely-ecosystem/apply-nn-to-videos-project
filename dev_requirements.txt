@@ -1,4 +1,4 @@
-supervisely==6.69.66
+supervisely==6.72.55
 
 # base ----------------------------------------
 Cython
