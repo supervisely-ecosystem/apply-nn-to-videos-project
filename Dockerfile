@@ -1,4 +1,5 @@
-FROM supervisely/base-pytorch:latest
+FROM supervisely/base-py-sdk:6.72.55
 
-RUN git clone https://github.com/supervisely-ecosystem/apply-nn-to-videos-project.git
-RUN pip install -r apply-nn-to-videos-project/requirements.txt
+RUN pip install torch==1.7.1+cu110 torchvision==0.8.2+cu110 -f https://download.pytorch.org/whl/torch_stable.html
+COPY dev_requirements.txt dev_requirements.txt
+RUN pip install -r dev_requirements.txt
