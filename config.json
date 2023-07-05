@@ -19,7 +19,7 @@
   "isolate": true,
   "headless": false,
   "need_gpu": true,
-  "icon": "https://imgur.com/HPtoMih.png",
+  "icon": "media/icon.png",
   "icon_background": "#FFFFFF",
   "context_menu": {
     "target": [
@@ -27,5 +27,5 @@
     ],
     "context_root": "Neural Networks"
   },
-  "poster": "https://imgur.com/dE7nQl6.png"
+  "poster": "media/68747470733a2f2f696d6775722e636f6d2f6445376e516c362e706e67.png"
 }
