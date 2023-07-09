@@ -1,1 +1,0 @@
-git+https://github.com/supervisely/supervisely.git@add-progress-to-video-ann-append-method
