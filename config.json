@@ -13,7 +13,7 @@
   "entrypoint": "python -m uvicorn src.main:g.app --host 0.0.0.0 --port 8000",
   "port": 8000,
   "description": "NN Inference on videos in project or dataset",
-  "docker_image": "supervisely/apply-nn-to-videos-project:1.0.1",
+  "docker_image": "supervisely/apply-nn-to-videos-project:1.0.3",
   "instance_version": "6.4.57",
   "task_location": "workspace_tasks",
   "isolate": true,
@@ -22,9 +22,7 @@
   "icon": "https://imgur.com/HPtoMih.png",
   "icon_background": "#FFFFFF",
   "context_menu": {
-    "target": [
-      "videos_project"
-    ],
+    "target": ["videos_project"],
     "context_root": "Neural Networks"
   },
   "poster": "https://imgur.com/dE7nQl6.png"
