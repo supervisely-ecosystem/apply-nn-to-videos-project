@@ -41,8 +41,8 @@ def upload_to_project(video_data, annotation: sly.VideoAnnotation, dataset_id, p
     video_hash = video_data["videoHash"]
     video_name = video_data["name"]
     file_info = g.api.video.upload_hash(dataset_id, video_name, video_hash)
-
-    g.api.video.annotation.append(file_info.id, annotation, progress=progress)
+    progress_cb = progress(message="Uploading annotation", total=len(annotation.figures))
+    g.api.video.annotation.append(file_info.id, annotation, progress_cb=progress_cb)
 
 
 def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
@@ -149,9 +149,6 @@ def annotations_to_video_annotation(
     name2vid_obj_cls = {x.name: sly.VideoObject(x) for x in obj_classes}
     video_obj_classes = sly.VideoObjectCollection(list(name2vid_obj_cls.values()))
     frames = []
-
-    # with card_widgets.current_video_progress(message=f"Processing annotations", total=len(frame_to_annotation)) as progress:
-    # for idx, ann in frame_to_annotation.items():
 
     for idx, ann in card_widgets.current_video_progress(
         frame_to_annotation.items(), message="Processing annotation"
