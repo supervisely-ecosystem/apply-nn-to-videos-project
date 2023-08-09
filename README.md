@@ -32,6 +32,10 @@ Application key points:
 - Applies Deep Sort (tracking algorithm) to model Predictions 
 - Creates a new project with Labeled Videos
 
+🔥🔥🔥 Check out our [youtube tutorial](https://youtu.be/t6qsFMjB_xs) and the [Our Complete Guide to Object Tracking in our blog](https://supervisely.com/blog/complete-guide-to-object-tracking-best-ai-models-tools-and-methods-in-2023/)
+
+<a href="https://youtu.be/t6qsFMjB_xs" target="_blank"><img src="https://github.com/supervisely/blog-raw-media-content/assets/106374579/3711cc93-cf2c-46b8-b0fb-00922065e85d"/></a>
+
 
 # Demo
 
