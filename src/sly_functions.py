@@ -86,7 +86,7 @@ def finish_step(step_num, state, next_step=None):
     run_sync(state.synchronize_changes())
 
 
-def videos_to_frames(video_path, frames_range=None):
+def videos_to_frames(video_path, frames_range=None, pbar_cb=None):
     video_name = os.path.splitext(os.path.basename(video_path))[0]
     output_path = os.path.join(g.temp_dir, f'converted_{time.time_ns()}_{video_name}')
 
@@ -103,6 +103,7 @@ def videos_to_frames(video_path, frames_range=None):
                 cv2.imwrite(f"{output_path}/frame{count:06d}.jpg", image)  # save frame as JPEG file
         else:
             cv2.imwrite(f"{output_path}/frame{count:06d}.jpg", image)  # save frame as JPEG file
+        pbar_cb(1)
 
         success, image = vidcap.read()
         count += 1
@@ -112,15 +113,21 @@ def videos_to_frames(video_path, frames_range=None):
     return {'frames_path': output_path, 'fps': fps, 'video_path': video_path}
 
 
-def download_video(video_id, frames_range=None):
+def download_video(video_id, frames_range=None, progress=None):
     video_info = g.api.video.get_info_by_id(video_id)
+    video_file_size = int(video_info.file_meta["size"])
     save_path = os.path.join(g.temp_dir, f'{time.time_ns()}_{video_info.name}')
 
     if os.path.isfile(save_path):
         os.remove(save_path)
 
-    g.api.video.download_path(video_id, save_path)
-    return videos_to_frames(save_path, frames_range)
+    sly.logger.info(f'Downloading video: id{video_id}')
+    progress_download = progress(message=f'Downloading video: {video_id}', total=video_file_size)
+    g.api.video.download_path(video_id, save_path, progress_cb=progress_download.update)
+    
+    sly.logger.info('Cut video to frames...')
+    progress_cut = progress(message='Cut video to frames...', total=video_info.frames_count)
+    return videos_to_frames(save_path, frames_range, pbar_cb=progress_cut.update)
 
 
 def download_frames_range(video_id, frames_dir_path, frames_range, pbar_cb=None):
@@ -232,18 +239,17 @@ def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm 
     sly.logger.info(f"Inference done! Result has {len(result)} items")
     return result
 
-
 def apply_tracking_algorithm_to_predictions(state, video_id, frames_range, frame_to_annotation,
-                                            tracking_algorithm='deepsort', pbar_cb=None) -> sly.VideoAnnotation:
-    sly.logger.info(f'Applying tracking algorithm to predictions')
-
-    video_local_info = download_video(video_id=video_id, frames_range=frames_range)
+                                            tracking_algorithm='deepsort', progress=None) -> sly.VideoAnnotation:
+    video_local_info = download_video(video_id=video_id, frames_range=frames_range, progress=progress)
     video_remote_info = g.api.video.get_info_by_id(video_id)
 
+    sly.logger.info(f'Applying tracking algorithm to predictions')
     if tracking_algorithm == 'deepsort':
         opt = deep_sort_tracker.init_opt(state, frames_path=video_local_info['frames_path'])
 
-        tracker_predictions = deep_sort_tracker.track(opt=opt, frame_to_annotation=frame_to_annotation, pbar_cb=pbar_cb)
+        progress_track = progress(message=f'Applying tracking algorithm ({state["selectedTrackingAlgorithm"]})', total=abs(frames_range[0] - frames_range[1]) + 1)
+        tracker_predictions = deep_sort_tracker.track(opt=opt, frame_to_annotation=frame_to_annotation, pbar_cb=progress_track.update)
 
         ann_keeper = get_annotation_keeper(tracker_predictions,
                                            video_frames_path=video_local_info['frames_path'],
