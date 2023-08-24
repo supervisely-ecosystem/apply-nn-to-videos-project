@@ -39,21 +39,23 @@ def upload_video_to_sly(local_video_path, pbar_cb=None):
     if g.api.file.exists(g.team_id, remote_video_path):
         g.api.file.remove(g.team_id, remote_video_path)
 
-    file_info = g.api.file.upload(g.team_id, local_video_path, remote_video_path, progress_cb=pbar_cb)
+    file_info = g.api.file.upload(
+        g.team_id, local_video_path, remote_video_path, progress_cb=pbar_cb
+    )
     return file_info
 
 
 def generate_video_from_frames(preview_frames_path):
-    local_preview_video_path = os.path.join(g.preview_frames_path, 'preview.mp4')
+    local_preview_video_path = os.path.join(g.preview_frames_path, "preview.mp4")
     if os.path.isfile(local_preview_video_path) is True:
         os.remove(local_preview_video_path)
 
-    cmd_str = f'ffmpeg -f image2 -i {preview_frames_path}/frame%06d.png -c:v libx264 {local_preview_video_path}'
+    cmd_str = f"ffmpeg -f image2 -i {preview_frames_path}/frame%06d.png -c:v libx264 {local_preview_video_path}"
 
     os.system(cmd_str)
 
     for file in os.listdir(preview_frames_path):
-        if file.endswith('.png'):
+        if file.endswith(".png"):
             os.remove(os.path.join(preview_frames_path, file))
 
     return local_preview_video_path
@@ -75,12 +77,12 @@ def finish_step(step_num, state, next_step=None):
     if next_step is None:
         next_step = step_num + 1
 
-    DataJson()[f'done{step_num}'] = True
-    state[f'collapsed{next_step}'] = False
-    state[f'disabled{next_step}'] = False
-    state['activeStep'] = next_step
+    DataJson()[f"done{step_num}"] = True
+    state[f"collapsed{next_step}"] = False
+    state[f"disabled{next_step}"] = False
+    state["activeStep"] = next_step
 
-    state['restartFrom'] = None
+    state["restartFrom"] = None
 
     run_sync(DataJson().synchronize_changes())
     run_sync(state.synchronize_changes())
@@ -88,7 +90,7 @@ def finish_step(step_num, state, next_step=None):
 
 def videos_to_frames(video_path, frames_range=None):
     video_name = os.path.splitext(os.path.basename(video_path))[0]
-    output_path = os.path.join(g.temp_dir, f'converted_{time.time_ns()}_{video_name}')
+    output_path = os.path.join(g.temp_dir, f"converted_{time.time_ns()}_{video_name}")
 
     os.makedirs(output_path, exist_ok=True)
 
@@ -109,12 +111,12 @@ def videos_to_frames(video_path, frames_range=None):
 
     fps = vidcap.get(cv2.CAP_PROP_FPS)
 
-    return {'frames_path': output_path, 'fps': fps, 'video_path': video_path}
+    return {"frames_path": output_path, "fps": fps, "video_path": video_path}
 
 
 def download_video(video_id, frames_range=None):
     video_info = g.api.video.get_info_by_id(video_id)
-    save_path = os.path.join(g.temp_dir, f'{time.time_ns()}_{video_info.name}')
+    save_path = os.path.join(g.temp_dir, f"{time.time_ns()}_{video_info.name}")
 
     if os.path.isfile(save_path):
         os.remove(save_path)
@@ -147,9 +149,11 @@ def get_annotation_keeper(ann_data, video_frames_path, frames_count):
     obj_id_to_object_class = deep_sort_ann_keeper.get_obj_id_to_obj_class(ann_data)
     video_shape = deep_sort_ann_keeper.get_video_shape(video_frames_path)
 
-    ann_keeper = deep_sort_ann_keeper.AnnotationKeeper(video_shape=(video_shape[1], video_shape[0]),
-                                                       obj_id_to_object_class=obj_id_to_object_class,
-                                                       video_frames_count=frames_count)
+    ann_keeper = deep_sort_ann_keeper.AnnotationKeeper(
+        video_shape=(video_shape[1], video_shape[0]),
+        obj_id_to_object_class=obj_id_to_object_class,
+        video_frames_count=frames_count,
+    )
 
     return ann_keeper
 
@@ -179,7 +183,7 @@ def can_stop():
 
 def on_inference_stop():
     # reverting UI to starting state
-    DataJson()['annotatingStarted'] = False
+    DataJson()["annotatingStarted"] = False
     run_sync(DataJson().synchronize_changes())
 
 
@@ -188,13 +192,15 @@ def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm 
         inf_setting = yaml.safe_load(state["modelSettings"])
     except Exception as e:
         inf_setting = {}
-        sly.logger.warn(f'Model Inference launched without additional settings. \n'
-                        f'Reason: {e}', exc_info=True)
-    
-    task_id = state['sessionId']
+        sly.logger.warn(
+            f"Model Inference launched without additional settings. \n" f"Reason: {e}",
+            exc_info=True,
+        )
+
+    task_id = state["sessionId"]
     startFrameIndex = frames_range[0]
     framesCount = frames_range[1] - frames_range[0] + 1
-    
+
     sly.logger.debug("Starting inference...")
     result = None
 
@@ -204,8 +210,9 @@ def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm 
             with can_stop():
                 # Running async inference
                 g.inference_session = SessionJSON(g.api, task_id, inference_settings=inf_setting)
-                progress_widget(message="Preparing video...", total=1)
-                iterator = g.inference_session.inference_video_id_async(video_id, startFrameIndex, framesCount)
+                iterator = g.inference_session.inference_video_id_async(
+                    video_id, startFrameIndex, framesCount, preparing_cb=progress_widget
+                )
                 result = list(progress_widget(iterator, message="Inferring model..."))
         except Exception as exc:
             # Fallback for serving versions: [6.69.15, 6.69.53)
@@ -213,55 +220,68 @@ def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm 
             sly.logger.warn("Trying legacy method...")
             g.inference_session = None
             with can_stop():
-                result = legacy_inference_video_async(task_id, video_id, startFrameIndex, framesCount, inf_setting, progress_widget)
+                result = legacy_inference_video_async(
+                    task_id, video_id, startFrameIndex, framesCount, inf_setting, progress_widget
+                )
     else:
         # Fallback to sync version (serving below 6.69.15)
-        result = legacy_inference_video(task_id, video_id, startFrameIndex, framesCount, inf_setting, progress_widget)
-    
+        result = legacy_inference_video(
+            task_id, video_id, startFrameIndex, framesCount, inf_setting, progress_widget
+        )
+
     if g.inference_cancelled:
         on_inference_stop()
         progress_widget(message="", total=1)
         raise RuntimeError("The inference has been stopped by user.")
-    
+
     if not result:
         raise RuntimeError(f"Empty result: {result}")
 
-    if isinstance(result, dict) and 'ann' in result.keys():
+    if isinstance(result, dict) and "ann" in result.keys():
         result = result["ann"]
 
     sly.logger.info(f"Inference done! Result has {len(result)} items")
     return result
 
 
-def apply_tracking_algorithm_to_predictions(state, video_id, frames_range, frame_to_annotation,
-                                            tracking_algorithm='deepsort', pbar_cb=None) -> sly.VideoAnnotation:
-    sly.logger.info(f'Applying tracking algorithm to predictions')
+def apply_tracking_algorithm_to_predictions(
+    state, video_id, frames_range, frame_to_annotation, tracking_algorithm="deepsort", pbar_cb=None
+) -> sly.VideoAnnotation:
+    sly.logger.info(f"Applying tracking algorithm to predictions")
 
     video_local_info = download_video(video_id=video_id, frames_range=frames_range)
     video_remote_info = g.api.video.get_info_by_id(video_id)
 
-    if tracking_algorithm == 'deepsort':
-        opt = deep_sort_tracker.init_opt(state, frames_path=video_local_info['frames_path'])
+    if tracking_algorithm == "deepsort":
+        opt = deep_sort_tracker.init_opt(state, frames_path=video_local_info["frames_path"])
 
-        tracker_predictions = deep_sort_tracker.track(opt=opt, frame_to_annotation=frame_to_annotation, pbar_cb=pbar_cb)
+        tracker_predictions = deep_sort_tracker.track(
+            opt=opt, frame_to_annotation=frame_to_annotation, pbar_cb=pbar_cb
+        )
 
-        ann_keeper = get_annotation_keeper(tracker_predictions,
-                                           video_frames_path=video_local_info['frames_path'],
-                                           frames_count=video_remote_info.frames_count)
+        ann_keeper = get_annotation_keeper(
+            tracker_predictions,
+            video_frames_path=video_local_info["frames_path"],
+            frames_count=video_remote_info.frames_count,
+        )
         ann_keeper.add_figures_by_frames(tracker_predictions)
         annotations: sly.VideoAnnotation = ann_keeper.get_annotations()
         return annotations
     else:
-        raise NotImplementedError(f'Tracking algorithm {tracking_algorithm} is not implemented yet')
+        raise NotImplementedError(f"Tracking algorithm {tracking_algorithm} is not implemented yet")
 
 
 def frame_index_to_annotation(annotation_predictions, frames_range):
     frame_index_to_annotation_dict = {}
 
-    for frame_index, annotation_json in zip(range(frames_range[0], frames_range[1] + 1), annotation_predictions):
+    for frame_index, annotation_json in zip(
+        range(frames_range[0], frames_range[1] + 1), annotation_predictions
+    ):
         if isinstance(annotation_json, dict) and "annotation" in annotation_json.keys():
             annotation_json = annotation_json["annotation"]
-        frame_index_to_annotation_dict[frame_index] = sly.Annotation.from_json(annotation_json, g.model_meta)
+        frame_index_to_annotation_dict[frame_index] = sly.Annotation.from_json(
+            annotation_json, g.model_meta
+        )
 
     return frame_index_to_annotation_dict
 
