@@ -1,0 +1,13 @@
+git+https://github.com/supervisely/supervisely.git@preparing-video-progress-2
+
+# base
+Cython
+tensorboard>=2.2
+torch>=1.7.0
+torchvision>=0.8.1
+
+# plotting
+seaborn>=0.11.0
+ftfy==6.0.3
+regex
+git+https://github.com/supervisely-ecosystem/depends-CLIP.git
