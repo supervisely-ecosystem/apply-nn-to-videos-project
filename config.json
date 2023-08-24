@@ -1,32 +1,30 @@
 {
-    "name": "Apply NN to Videos Project",
-    "type": "app",
-    "version": "2.0.0",
-    "categories": [
-        "neural network",
-        "videos",
-        "detection & tracking",
-        "segmentation & tracking",
-        "inference interfaces",
-        "labeling"
-    ],
-    "entrypoint": "python -m uvicorn src.main:g.app --host 0.0.0.0 --port 8000",
-    "port": 8000,
-    "description": "Predictions on every frame are combined with DeepSort into tracks automatically",
-    "docker_image": "supervisely/labeling:6.72.96",
-    "instance_version": "6.4.57",
-    "task_location": "workspace_tasks",
-    "isolate": true,
-    "headless": false,
-    "need_gpu": false,
-    "gpu": "preferred",
-    "icon": "https://imgur.com/HPtoMih.png",
-    "icon_background": "#FFFFFF",
-    "context_menu": {
-        "target": [
-            "videos_project"
-        ],
-        "context_root": "Neural Networks"
-    },
-    "poster": "https://imgur.com/dE7nQl6.png"
+  "name": "Apply NN to Videos Project",
+  "type": "app",
+  "version": "2.0.0",
+  "categories": [
+    "neural network",
+    "videos",
+    "detection & tracking",
+    "segmentation & tracking",
+    "inference interfaces",
+    "labeling"
+  ],
+  "entrypoint": "python -m uvicorn src.main:g.app --host 0.0.0.0 --port 8000",
+  "port": 8000,
+  "description": "Predictions on every frame are combined with DeepSort into tracks automatically",
+  "docker_image": "supervisely/labeling:6.72.112",
+  "instance_version": "6.4.57",
+  "task_location": "workspace_tasks",
+  "isolate": true,
+  "headless": false,
+  "need_gpu": false,
+  "gpu": "preferred",
+  "icon": "https://imgur.com/HPtoMih.png",
+  "icon_background": "#FFFFFF",
+  "context_menu": {
+    "target": ["videos_project"],
+    "context_root": "Neural Networks"
+  },
+  "poster": "https://imgur.com/dE7nQl6.png"
 }
