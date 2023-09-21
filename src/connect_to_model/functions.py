@@ -41,11 +41,11 @@ def show_model_info():
     run_sync(DataJson().synchronize_changes())
 
 
-def format_info(exclude: Optional[List[str]] = None) -> Dict[str, Any]:
+def format_info(model_info: Dict[str, Any], exclude: Optional[List[str]] = None) -> Dict[str, Any]:
     formated_info = {}
     exclude = [] if exclude is None else exclude
 
-    for name, data in g.model_info:
+    for name, data in model_info.items():
         if name in exclude:
             sly.logger.debug(f"Field {name} excluded from session info")
             continue
