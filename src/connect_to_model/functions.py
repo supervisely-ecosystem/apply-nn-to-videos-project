@@ -1,4 +1,5 @@
 ### some card functional
+from typing import Any, Dict, List, Optional
 import supervisely as sly
 
 from supervisely.app import DataJson
@@ -35,9 +36,24 @@ def get_model_info(session_id, state):
 
 def show_model_info():
     DataJson()['connected'] = True
-    DataJson()['modelInfo'] = g.model_info
+    DataJson()['modelInfo'] = format_info(g.model_info, ["async_image_inference_support"])
 
     run_sync(DataJson().synchronize_changes())
+
+
+def format_info(model_info: Dict[str, Any], exclude: Optional[List[str]] = None) -> Dict[str, Any]:
+    formated_info = {}
+    exclude = [] if exclude is None else exclude
+
+    for name, data in model_info.items():
+        if name in exclude:
+            sly.logger.debug(f"Field {name} excluded from session info")
+            continue
+    
+        new_name = name.replace("_", " ").capitalize()
+        formated_info[new_name] = data
+
+    return formated_info
 
 
 def validate_model_type():
