@@ -1,5 +1,5 @@
-# supervisely==6.72.112
-git+https://github.com/supervisely/supervisely.git@video-inference-progress-fix
+supervisely==6.72.154
+# git+https://github.com/supervisely/supervisely.git@test-branch-name
 
 # base
 Cython
