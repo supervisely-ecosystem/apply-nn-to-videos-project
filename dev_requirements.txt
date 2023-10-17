@@ -1,4 +1,5 @@
-supervisely==6.72.112
+supervisely==6.72.154
+# git+https://github.com/supervisely/supervisely.git@test-branch-name
 
 # base
 Cython

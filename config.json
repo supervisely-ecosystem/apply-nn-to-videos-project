@@ -13,7 +13,7 @@
   "entrypoint": "python -m uvicorn src.main:g.app --host 0.0.0.0 --port 8000",
   "port": 8000,
   "description": "Predictions on every frame are combined with DeepSort into tracks automatically",
-  "docker_image": "supervisely/labeling:6.72.112",
+  "docker_image": "supervisely/labeling:6.72.154",
   "instance_version": "6.4.57",
   "task_location": "workspace_tasks",
   "isolate": true,
