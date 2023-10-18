@@ -40,6 +40,7 @@ def init_project_remotely(project_name="ApplyNNtoVideoProject"):
 def upload_to_project(video_data, annotation: sly.VideoAnnotation, dataset_id, progress):
     video_hash = video_data["videoHash"]
     video_name = video_data["name"]
+    sly.logger.debug(f"Video data: {video_data}")
     file_info = g.api.video.upload_hash(dataset_id, video_name, video_hash)
     progress_cb = progress(message="Uploading annotation", total=len(annotation.figures))
     g.api.video.annotation.append(file_info.id, annotation, progress_cb=progress_cb)
