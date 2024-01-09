@@ -96,4 +96,4 @@ Application supports next models:
 
 # Screenshot
 
-<img src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/assets/119248312/d25582ea-52c8-4950-87fd-3ce520a1a5d1" width="auto" style='padding-top: 10px'>
+<img src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/assets/119248312/bafb68c2-b082-43bf-9644-7cee1eb0f829" width="auto" style='padding-top: 10px'>
