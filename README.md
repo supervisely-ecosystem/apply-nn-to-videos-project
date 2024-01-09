@@ -34,7 +34,7 @@ Application key points:
 
 🔥🔥🔥 Check out our [youtube tutorial](https://youtu.be/t6qsFMjB_xs) and the [Our Complete Guide to Object Tracking in our blog](https://supervisely.com/blog/complete-guide-to-object-tracking-best-ai-models-tools-and-methods-in-2023/)
 
-<a href="https://youtu.be/t6qsFMjB_xs" target="_blank"><img src="https://github.com/supervisely/blog-raw-media-content/assets/106374579/3711cc93-cf2c-46b8-b0fb-00922065e85d"/></a>
+<a href="https://youtu.be/t6qsFMjB_xs" target="_blank"><img src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/assets/119248312/900e0ae1-9c21-4f36-9899-893090979b53"/></a>
 
 
 # Demo
@@ -96,4 +96,4 @@ Application supports next models:
 
 # Screenshot
 
-<img src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/screenshot.png" width="auto" style='padding-top: 10px'>
+<img src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/assets/119248312/d25582ea-52c8-4950-87fd-3ce520a1a5d1" width="auto" style='padding-top: 10px'>
