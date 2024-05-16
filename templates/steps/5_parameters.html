@@ -28,7 +28,7 @@
                         <div v-show="state.applyTrackingAlgorithm" style="display: inline-block">
 
                             <el-select style="margin: 0 0 10px 0; width: 140px"
-                                       :disabled="true"
+                                       :disabled="false"
                                        v-model="state.selectedTrackingAlgorithm">
                                 <el-option v-for="item in data.trackingAlgorithms"
                                            :key="item.value"

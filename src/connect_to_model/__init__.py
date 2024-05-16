@@ -20,11 +20,7 @@ DataJson()["modelInfo"] = {}
 DataJson()["connected"] = False
 DataJson()["connectionError"] = ""
 
-DataJson()["ssOptions"] = {
-    "sessionTags": ["deployed_nn"],
-    "showLabel": False,
-    "size": "small"
-}
+DataJson()["ssOptions"] = {"sessionTags": ["deployed_nn"], "showLabel": False, "size": "small"}
 
 DataJson()["done2"] = False
 
@@ -34,10 +30,10 @@ StateJson()["disabled2"] = True
 
 StateJson()["applyTrackingAlgorithm"] = True
 
-DataJson()['model_without_tracking'] = False
+DataJson()["model_without_tracking"] = False
 
-StateJson()["selectedTrackingAlgorithm"] = 'deepsort'
+StateJson()["selectedTrackingAlgorithm"] = "deepsort"
 DataJson()["trackingAlgorithms"] = [
-    {'label': 'Deep Sort', 'value': 'deepsort'},
+    {"label": "Deep Sort", "value": "deepsort"},
+    {"label": "BoT", "value": "bot_sort"},
 ]
-

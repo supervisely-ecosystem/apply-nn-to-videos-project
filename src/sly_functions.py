@@ -8,13 +8,15 @@ import ffmpeg
 
 import supervisely as sly
 
-import deep_sort.sly_tracker as deep_sort_tracker
-import deep_sort.sly_ann_keeper as deep_sort_ann_keeper
+from supervisely.nn.tracker import DeepSortTracker, BoTTracker
 
 from supervisely.app.widgets import SlyTqdm
 from supervisely.app import DataJson, StateJson
 from supervisely.app.fastapi import run_sync
 from supervisely.nn.inference import SessionJSON
+
+from supervisely.video_annotation.frame import Frame, VideoObjectCollection
+from supervisely.video_annotation.frame_collection import FrameCollection
 
 import src.sly_globals as g
 import src.output_data.widgets as card_widgets
@@ -145,17 +147,17 @@ def download_frames_range(video_id, frames_dir_path, frames_range, pbar_cb=None)
     return frame_to_image_path
 
 
-def get_annotation_keeper(ann_data, video_frames_path, frames_count):
-    obj_id_to_object_class = deep_sort_ann_keeper.get_obj_id_to_obj_class(ann_data)
-    video_shape = deep_sort_ann_keeper.get_video_shape(video_frames_path)
+# def get_annotation_keeper(ann_data, video_frames_path, frames_count):
+#     obj_id_to_object_class = deep_sort_ann_keeper.get_obj_id_to_obj_class(ann_data)
+#     video_shape = deep_sort_ann_keeper.get_video_shape(video_frames_path)
 
-    ann_keeper = deep_sort_ann_keeper.AnnotationKeeper(
-        video_shape=(video_shape[1], video_shape[0]),
-        obj_id_to_object_class=obj_id_to_object_class,
-        video_frames_count=frames_count,
-    )
+#     ann_keeper = deep_sort_ann_keeper.AnnotationKeeper(
+#         video_shape=(video_shape[1], video_shape[0]),
+#         obj_id_to_object_class=obj_id_to_object_class,
+#         video_frames_count=frames_count,
+#     )
 
-    return ann_keeper
+#     return ann_keeper
 
 
 def draw_labels_on_frames(frames_to_image_path, frame_to_annotation):
@@ -253,22 +255,21 @@ def apply_tracking_algorithm_to_predictions(
     video_remote_info = g.api.video.get_info_by_id(video_id)
 
     if tracking_algorithm == "deepsort":
-        opt = deep_sort_tracker.init_opt(state, frames_path=video_local_info["frames_path"])
-
-        tracker_predictions = deep_sort_tracker.track(
-            opt=opt, frame_to_annotation=frame_to_annotation, pbar_cb=pbar_cb
-        )
-
-        ann_keeper = get_annotation_keeper(
-            tracker_predictions,
-            video_frames_path=video_local_info["frames_path"],
-            frames_count=video_remote_info.frames_count,
-        )
-        ann_keeper.add_figures_by_frames(tracker_predictions)
-        annotations: sly.VideoAnnotation = ann_keeper.get_annotations()
-        return annotations
+        tracker = DeepSortTracker(state)
+    elif tracking_algorithm == "bot_sort":
+        tracker = BoTTracker(state)
     else:
         raise NotImplementedError(f"Tracking algorithm {tracking_algorithm} is not implemented yet")
+
+    frames_path = video_local_info["frames_path"]
+    image_paths = sorted(get_files_paths(frames_path, [".png", ".jpg", ".jpeg"]))
+
+    return tracker.track(
+        image_paths,
+        frame_to_annotation,
+        (video_remote_info.frame_height, video_remote_info.frame_width),
+        pbar_cb=pbar_cb,
+    )
 
 
 def frame_index_to_annotation(annotation_predictions, frames_range):

@@ -1,1 +1,10 @@
-git+https://github.com/supervisely/supervisely.git@tracking-algorithms
+git+https://github.com/supervisely/supervisely.git@tracking-algorithms#egg=supervisely[tracking]
+# matplotlib>=3.3.2, <4.0.0
+# scipy>=1.5.2, <2.0.0
+# lap
+# cython_bbox
+# termcolor
+# scikit-learn
+# faiss-gpu
+# tabulate
+# tensorboard
