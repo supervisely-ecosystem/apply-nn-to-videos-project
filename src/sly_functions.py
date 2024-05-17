@@ -40,7 +40,7 @@ def upload_video_to_sly(local_video_path, pbar_cb=None):
         g.api.file.remove(g.team_id, remote_video_path)
 
     file_info = g.api.file.upload(
-        g.team_id, local_video_path, remote_video_path, progress_cb=pbar_cb
+        g.team_id, local_video_path, f"/{remote_video_path}", progress_cb=pbar_cb
     )
     return file_info
 
