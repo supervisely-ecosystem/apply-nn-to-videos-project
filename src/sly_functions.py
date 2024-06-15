@@ -37,7 +37,7 @@ def filter_annotation_by_classes(annotation_predictions: dict, selected_classes:
 
 
 def upload_video_to_sly(local_video_path, pbar_cb=None):
-    remote_video_path = os.path.join("ApplyNNtoVideosProject", "preview.mp4")
+    remote_video_path = "/ApplyNNtoVideosProject/preview.mp4"
     if g.api.file.exists(g.team_id, remote_video_path):
         g.api.file.remove(g.team_id, remote_video_path)
 
