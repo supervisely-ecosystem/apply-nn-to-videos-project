@@ -64,7 +64,9 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
             )
             return sly.VideoAnnotation.from_json(ann_json, g.model_meta)
         except Exception:
-            sly.logger.warning("Failed to apply tracking on model, fallback to default mode")
+            sly.logger.warning(
+                "Failed to apply tracking on model, fallback to default mode", exc_info=True
+            )
 
     model_predictions = f.get_model_inference(
         state,

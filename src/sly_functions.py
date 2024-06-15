@@ -336,16 +336,19 @@ def track_on_model(
 
     sly.logger.debug("Starting inference...")
 
-    for _ in progress_widget(
-        g.inference_session.inference_video_id_async(
-            video_id,
-            startFrameIndex,
-            framesCount,
-            preparing_cb=progress_widget,
-            tracker=tracking_algorithm,
-        )
-    ):
-        pass
+    try:
+        for _ in progress_widget(
+            g.inference_session.inference_video_id_async(
+                video_id,
+                startFrameIndex,
+                framesCount,
+                tracker=tracking_algorithm,
+            )
+        ):
+            pass
+    except Exception:
+        g.inference_session.stop_async_inference()
+        raise
 
     result = g.inference_session.inference_result
     if result is None or result.get("video_ann", None) is None:
