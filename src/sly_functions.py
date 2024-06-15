@@ -257,7 +257,15 @@ def apply_tracking_algorithm_to_predictions(
     if tracking_algorithm == "deepsort":
         tracker = DeepSortTracker(state)
     elif tracking_algorithm == "bot_sort":
-        tracker = BoTTracker(state)
+        tracker = BoTTracker(
+            {
+                "track_high_thresh": 0.5,
+                "track_low_thresh": 0.1,
+                "new_track_thresh": 0.6,
+                "match_thresh": 0.8,
+                **state,
+            }
+        )
     else:
         raise NotImplementedError(f"Tracking algorithm {tracking_algorithm} is not implemented yet")
 
