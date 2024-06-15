@@ -9,6 +9,7 @@ import src.sly_functions as f
 import src.output_data.widgets as card_widgets
 from supervisely.app import DataJson
 from supervisely.app.fastapi import run_sync
+from supervisely.project.project import Project
 
 
 def restart(data, state):
@@ -115,6 +116,7 @@ def annotate_videos(state):
     res_project = g.api.project.get_info_by_id(project_id)
     DataJson().update(
         {
+            "dstProjectUrl": Project.get_url(res_project.id),
             "dstProjectId": res_project.id,
             "dstProjectName": res_project.name,
             "dstProjectPreviewUrl": g.api.image.preview_url(

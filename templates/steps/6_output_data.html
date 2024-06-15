@@ -39,7 +39,7 @@
                    description="">
             <sly-field title="" description="Project">
                 <a slot="title" target="_blank"
-                   :href="`${data.instanceAddress}/projects/${data.dstProjectId}/datasets`">{{ data.dstProjectName
+                   :href="`${data.dstProjectUrl}`">{{ data.dstProjectName
                     }}</a>
                 <sly-icon slot="icon" :options="{ imageUrl: `${data.dstProjectPreviewUrl}` }"/>
             </sly-field>
