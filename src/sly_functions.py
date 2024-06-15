@@ -257,12 +257,15 @@ def apply_tracking_algorithm_to_predictions(
     if tracking_algorithm == "deepsort":
         tracker = DeepSortTracker(state)
     elif tracking_algorithm == "bot":
+        default_tracking_settings = {
+            "track_high_thresh": 0.4,
+            "track_low_thresh": 0.1,
+            "new_track_thresh": 0.5,
+            "match_thresh": 0.6,
+        }
         tracker = BoTTracker(
             {
-                "track_high_thresh": 0.5,
-                "track_low_thresh": 0.1,
-                "new_track_thresh": 0.6,
-                "match_thresh": 0.8,
+                **default_tracking_settings,
                 **state,
             }
         )
@@ -315,6 +318,16 @@ def track_on_model(
         )
 
     inf_setting["classes"] = g.selected_classes_list
+
+    default_tracking_settings = {
+        "track_high_thresh": 0.4,
+        "track_low_thresh": 0.1,
+        "new_track_thresh": 0.5,
+        "match_thresh": 0.6,
+    }
+    for key, val in default_tracking_settings.items():
+        inf_setting.setdefault(key, val)
+
     task_id = state["sessionId"]
     startFrameIndex = frames_range[0]
     framesCount = frames_range[1] - frames_range[0] + 1
