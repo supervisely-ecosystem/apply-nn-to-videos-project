@@ -54,6 +54,18 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
     frames_max = state["framesMax"]
     frames_range = (frames_min[video_data["name"]], frames_max[video_data["name"]])
 
+    if state["applyTrackingAlgorithm"] is True:
+        try:
+            ann_json = f.track_on_model(
+                state,
+                video_id=video_data["videoId"],
+                frames_range=frames_range,
+                progress_widget=card_widgets.current_video_progress,
+            )
+            return sly.VideoAnnotation.from_json(ann_json, g.model_meta)
+        except Exception:
+            sly.logger.warning("Failed to apply tracking on model, fallback to default mode")
+
     model_predictions = f.get_model_inference(
         state,
         video_id=video_data["videoId"],

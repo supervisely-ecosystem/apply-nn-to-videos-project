@@ -13,7 +13,7 @@ from supervisely.nn.tracker import DeepSortTracker, BoTTracker
 from supervisely.app.widgets import SlyTqdm
 from supervisely.app import DataJson, StateJson
 from supervisely.app.fastapi import run_sync
-from supervisely.nn.inference import SessionJSON
+from supervisely.nn.inference import SessionJSON, Session
 
 from supervisely.video_annotation.frame import Frame, VideoObjectCollection
 from supervisely.video_annotation.frame_collection import FrameCollection
@@ -247,7 +247,7 @@ def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm 
 
 
 def apply_tracking_algorithm_to_predictions(
-    state, video_id, frames_range, frame_to_annotation, tracking_algorithm="deepsort", pbar_cb=None
+    state, video_id, frames_range, frame_to_annotation, tracking_algorithm="bot", pbar_cb=None
 ) -> sly.VideoAnnotation:
     sly.logger.info(f"Applying tracking algorithm to predictions")
 
@@ -256,7 +256,7 @@ def apply_tracking_algorithm_to_predictions(
 
     if tracking_algorithm == "deepsort":
         tracker = DeepSortTracker(state)
-    elif tracking_algorithm == "bot_sort":
+    elif tracking_algorithm == "bot":
         tracker = BoTTracker(
             {
                 "track_high_thresh": 0.5,
@@ -297,3 +297,45 @@ def frame_index_to_annotation(annotation_predictions, frames_range):
 
 def get_video_size(local_video_path):
     return os.path.getsize(local_video_path)
+
+
+def track_on_model(
+    state, video_id, frames_range, tracking_algorithm="bot", progress_widget: SlyTqdm = None
+):
+    if tracking_algorithm not in g.model_info.get("tracking_algorithms", []):
+        raise ValueError(f"Tracking algorithm {tracking_algorithm} is not supported by the model")
+
+    try:
+        inf_setting = yaml.safe_load(state["modelSettings"])
+    except Exception as e:
+        inf_setting = {}
+        sly.logger.warn(
+            f"Model Inference launched without additional settings. \n" f"Reason: {e}",
+            exc_info=True,
+        )
+
+    inf_setting["classes"] = g.selected_classes_list
+    task_id = state["sessionId"]
+    startFrameIndex = frames_range[0]
+    framesCount = frames_range[1] - frames_range[0] + 1
+
+    g.inference_session = Session(g.api, task_id, inference_settings=inf_setting)
+
+    sly.logger.debug("Starting inference...")
+
+    for _ in progress_widget(
+        g.inference_session.inference_video_id_async(
+            video_id,
+            startFrameIndex,
+            framesCount,
+            preparing_cb=progress_widget,
+            tracker=tracking_algorithm,
+        )
+    ):
+        pass
+
+    result = g.inference_session.inference_result
+    if result is None or result.get("video_ann", None) is None:
+        raise RuntimeError("Model returned empty result")
+
+    return result["video_ann"]

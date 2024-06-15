@@ -32,8 +32,8 @@ StateJson()["applyTrackingAlgorithm"] = True
 
 DataJson()["model_without_tracking"] = False
 
-StateJson()["selectedTrackingAlgorithm"] = "bot_sort"
+StateJson()["selectedTrackingAlgorithm"] = "bot"
 DataJson()["trackingAlgorithms"] = [
     {"label": "Deep Sort", "value": "deepsort"},
-    {"label": "BoT", "value": "bot_sort"},
+    {"label": "BoT", "value": "bot"},
 ]
