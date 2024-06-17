@@ -9,6 +9,7 @@ import src.sly_functions as f
 import src.output_data.widgets as card_widgets
 from supervisely.app import DataJson
 from supervisely.app.fastapi import run_sync
+from supervisely.project.project import Project
 
 
 def restart(data, state):
@@ -52,6 +53,20 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
     frames_min = state["framesMin"]
     frames_max = state["framesMax"]
     frames_range = (frames_min[video_data["name"]], frames_max[video_data["name"]])
+
+    if state["applyTrackingAlgorithm"] is True:
+        try:
+            ann_json = f.track_on_model(
+                state,
+                video_id=video_data["videoId"],
+                frames_range=frames_range,
+                progress_widget=card_widgets.current_video_progress,
+            )
+            return sly.VideoAnnotation.from_json(ann_json, g.model_meta)
+        except Exception:
+            sly.logger.warning(
+                "Failed to apply tracking on model, fallback to default mode", exc_info=True
+            )
 
     model_predictions = f.get_model_inference(
         state,
@@ -115,6 +130,7 @@ def annotate_videos(state):
     res_project = g.api.project.get_info_by_id(project_id)
     DataJson().update(
         {
+            "dstProjectUrl": Project.get_url(res_project.id),
             "dstProjectId": res_project.id,
             "dstProjectName": res_project.name,
             "dstProjectPreviewUrl": g.api.image.preview_url(

@@ -8,13 +8,15 @@ import ffmpeg
 
 import supervisely as sly
 
-import deep_sort.sly_tracker as deep_sort_tracker
-import deep_sort.sly_ann_keeper as deep_sort_ann_keeper
+from supervisely.nn.tracker import DeepSortTracker, BoTTracker
 
 from supervisely.app.widgets import SlyTqdm
 from supervisely.app import DataJson, StateJson
 from supervisely.app.fastapi import run_sync
-from supervisely.nn.inference import SessionJSON
+from supervisely.nn.inference import SessionJSON, Session
+
+from supervisely.video_annotation.frame import Frame, VideoObjectCollection
+from supervisely.video_annotation.frame_collection import FrameCollection
 
 import src.sly_globals as g
 import src.output_data.widgets as card_widgets
@@ -35,7 +37,7 @@ def filter_annotation_by_classes(annotation_predictions: dict, selected_classes:
 
 
 def upload_video_to_sly(local_video_path, pbar_cb=None):
-    remote_video_path = os.path.join("ApplyNNtoVideosProject", "preview.mp4")
+    remote_video_path = "/ApplyNNtoVideosProject/preview.mp4"
     if g.api.file.exists(g.team_id, remote_video_path):
         g.api.file.remove(g.team_id, remote_video_path)
 
@@ -145,17 +147,17 @@ def download_frames_range(video_id, frames_dir_path, frames_range, pbar_cb=None)
     return frame_to_image_path
 
 
-def get_annotation_keeper(ann_data, video_frames_path, frames_count):
-    obj_id_to_object_class = deep_sort_ann_keeper.get_obj_id_to_obj_class(ann_data)
-    video_shape = deep_sort_ann_keeper.get_video_shape(video_frames_path)
+# def get_annotation_keeper(ann_data, video_frames_path, frames_count):
+#     obj_id_to_object_class = deep_sort_ann_keeper.get_obj_id_to_obj_class(ann_data)
+#     video_shape = deep_sort_ann_keeper.get_video_shape(video_frames_path)
 
-    ann_keeper = deep_sort_ann_keeper.AnnotationKeeper(
-        video_shape=(video_shape[1], video_shape[0]),
-        obj_id_to_object_class=obj_id_to_object_class,
-        video_frames_count=frames_count,
-    )
+#     ann_keeper = deep_sort_ann_keeper.AnnotationKeeper(
+#         video_shape=(video_shape[1], video_shape[0]),
+#         obj_id_to_object_class=obj_id_to_object_class,
+#         video_frames_count=frames_count,
+#     )
 
-    return ann_keeper
+#     return ann_keeper
 
 
 def draw_labels_on_frames(frames_to_image_path, frame_to_annotation):
@@ -245,7 +247,7 @@ def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm 
 
 
 def apply_tracking_algorithm_to_predictions(
-    state, video_id, frames_range, frame_to_annotation, tracking_algorithm="deepsort", pbar_cb=None
+    state, video_id, frames_range, frame_to_annotation, tracking_algorithm="bot", pbar_cb=None
 ) -> sly.VideoAnnotation:
     sly.logger.info(f"Applying tracking algorithm to predictions")
 
@@ -253,22 +255,32 @@ def apply_tracking_algorithm_to_predictions(
     video_remote_info = g.api.video.get_info_by_id(video_id)
 
     if tracking_algorithm == "deepsort":
-        opt = deep_sort_tracker.init_opt(state, frames_path=video_local_info["frames_path"])
-
-        tracker_predictions = deep_sort_tracker.track(
-            opt=opt, frame_to_annotation=frame_to_annotation, pbar_cb=pbar_cb
+        tracker = DeepSortTracker(state)
+    elif tracking_algorithm == "bot":
+        default_tracking_settings = {
+            "track_high_thresh": 0.4,
+            "track_low_thresh": 0.1,
+            "new_track_thresh": 0.5,
+            "match_thresh": 0.6,
+        }
+        tracker = BoTTracker(
+            {
+                **default_tracking_settings,
+                **state,
+            }
         )
-
-        ann_keeper = get_annotation_keeper(
-            tracker_predictions,
-            video_frames_path=video_local_info["frames_path"],
-            frames_count=video_remote_info.frames_count,
-        )
-        ann_keeper.add_figures_by_frames(tracker_predictions)
-        annotations: sly.VideoAnnotation = ann_keeper.get_annotations()
-        return annotations
     else:
         raise NotImplementedError(f"Tracking algorithm {tracking_algorithm} is not implemented yet")
+
+    frames_path = video_local_info["frames_path"]
+    image_paths = sorted(get_files_paths(frames_path, [".png", ".jpg", ".jpeg"]))
+
+    return tracker.track(
+        image_paths,
+        frame_to_annotation,
+        (video_remote_info.frame_height, video_remote_info.frame_width),
+        pbar_cb=pbar_cb,
+    )
 
 
 def frame_index_to_annotation(annotation_predictions, frames_range):
@@ -288,3 +300,58 @@ def frame_index_to_annotation(annotation_predictions, frames_range):
 
 def get_video_size(local_video_path):
     return os.path.getsize(local_video_path)
+
+
+def track_on_model(
+    state, video_id, frames_range, tracking_algorithm="bot", progress_widget: SlyTqdm = None
+):
+    if tracking_algorithm not in g.model_info.get("tracking_algorithms", []):
+        raise ValueError(f"Tracking algorithm {tracking_algorithm} is not supported by the model")
+
+    try:
+        inf_setting = yaml.safe_load(state["modelSettings"])
+    except Exception as e:
+        inf_setting = {}
+        sly.logger.warn(
+            f"Model Inference launched without additional settings. \n" f"Reason: {e}",
+            exc_info=True,
+        )
+
+    inf_setting["classes"] = g.selected_classes_list
+
+    default_tracking_settings = {
+        "track_high_thresh": 0.4,
+        "track_low_thresh": 0.1,
+        "new_track_thresh": 0.5,
+        "match_thresh": 0.6,
+    }
+    for key, val in default_tracking_settings.items():
+        inf_setting.setdefault(key, val)
+
+    task_id = state["sessionId"]
+    startFrameIndex = frames_range[0]
+    framesCount = frames_range[1] - frames_range[0] + 1
+
+    g.inference_session = Session(g.api, task_id, inference_settings=inf_setting)
+
+    sly.logger.debug("Starting inference...")
+
+    try:
+        for _ in progress_widget(
+            g.inference_session.inference_video_id_async(
+                video_id,
+                startFrameIndex,
+                framesCount,
+                tracker=tracking_algorithm,
+            )
+        ):
+            pass
+    except Exception:
+        g.inference_session.stop_async_inference()
+        raise
+
+    result = g.inference_session.inference_result
+    if result is None or result.get("video_ann", None) is None:
+        raise RuntimeError("Model returned empty result")
+
+    return result["video_ann"]
