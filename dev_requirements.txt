@@ -1,5 +1,5 @@
-supervisely==6.73.107
-# git+https://github.com/supervisely/supervisely.git@test-branch-name
+# supervisely==6.73.107
+git+https://github.com/supervisely/supervisely.git@tracking-algorithms#egg=supervisely[tracking]
 
 # base
 Cython
