@@ -19,6 +19,7 @@ preview_frames_path = os.path.join(temp_dir, "preview_frames")
 
 # for debug
 from dotenv import load_dotenv
+
 load_dotenv(os.path.join(app_root_directory, "debug.env"))
 load_dotenv(os.path.expanduser("~/supervisely.env"))
 
@@ -30,11 +31,9 @@ class AnnotatorModes:
 
 api: sly.Api = sly.Api.from_env()
 
-app = FastAPI()
-sly_app = create()
+app = sly.Application(templates_dir=os.path.join(app_root_directory, "templates"))
 
-app.mount("/sly", sly_app)
-app.mount(
+app._fastapi.mount(
     "/static",
     StaticFiles(directory=os.path.join(app_root_directory, "static")),
     name="static",
@@ -64,9 +63,7 @@ project_id = int(os.environ["modal.state.slyProjectId"])
 workspace_id = int(os.environ["context.workspaceId"])
 
 project_info = api.project.get_info_by_id(project_id)
-project_meta: sly.ProjectMeta = sly.ProjectMeta.from_json(
-    api.project.get_meta(project_id)
-)
+project_meta: sly.ProjectMeta = sly.ProjectMeta.from_json(api.project.get_meta(project_id))
 
 ds_video_map = None
 model_info = None
