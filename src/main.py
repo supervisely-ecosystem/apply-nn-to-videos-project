@@ -24,3 +24,4 @@ async def apply_changes(state: StateJson = Depends(StateJson.from_request)):
 
 
 import src.handlers
+import src.functions

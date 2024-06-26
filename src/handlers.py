@@ -19,7 +19,7 @@ from src.ui.parameters.parameters import parameters_widget
 ### INPUT DATA ###
 
 
-@server.post("/select_projects_handler/")
+@server.post("/test/select_projects_handler")
 @sly.timeit
 def select_projects_handler(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
     table_rows = functions.choose_videos_generate_rows(g.project_id, state)  # temp solution
