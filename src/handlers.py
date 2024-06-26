@@ -21,7 +21,9 @@ from src.ui.parameters.parameters import parameters_widget
 
 @server.post("/test/select_projects_handler")
 @sly.timeit
-def select_projects_handler(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
+def select_projects_handler():
+    state = StateJson()
+    logger.debug("select_projects_handler", extra={"state": state})
     table_rows = functions.choose_videos_generate_rows(g.project_id, state)  # temp solution
     functions.choose_videos_fill_table(table_rows=table_rows, state=state)  # temp solution
 
