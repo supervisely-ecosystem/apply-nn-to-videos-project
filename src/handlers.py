@@ -23,7 +23,6 @@ from src.ui.parameters.parameters import parameters_widget
 @sly.timeit
 def select_projects_handler():
     state = StateJson()
-    logger.debug("select_projects_handler", extra={"state": state})
     table_rows = functions.choose_videos_generate_rows(g.project_id, state)  # temp solution
     functions.choose_videos_fill_table(table_rows=table_rows, state=state)  # temp solution
 
@@ -35,9 +34,9 @@ def select_projects_handler():
 
 @server.post("/connect-to-model/")
 @sly.timeit
-def connect(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
+def connect():
     DataJson()["model_without_tracking"] = False
-
+    state = StateJson()
     try:
         functions.get_model_info(state["sessionId"], state)
         functions.validate_model_type()
@@ -68,8 +67,9 @@ def connect(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
 
 
 @server.post("/restart/2/")
-def restart2(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
+def restart2():
     DataJson()["connected"] = False
+    state = StateJson()
     f.finish_step(1, state)
 
 
@@ -78,13 +78,14 @@ def restart2(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request))
 
 @server.post("/choose_classes/")
 @sly.timeit
-def choose_classes(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
+def choose_classes():
     try:
         selected_count = len(g.selected_classes_list)
         if selected_count == 0:
             raise ValueError("No classes selected. Please select one class at least.")
 
         DataJson()["videoUrl"] = None
+        state = StateJson()
         f.finish_step(step_num=3, state=state, next_step=5)
     except Exception as ex:
         logger.warn(f"Cannot select preferences: {repr(ex)}", exc_info=True)
@@ -94,16 +95,16 @@ def choose_classes(state: sly.app.StateJson = Depends(sly.app.StateJson.from_req
 
 
 @server.post("/classes_selection_change/")
-def selected_classes_changed(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
+def selected_classes_changed():
+    state = StateJson()
     functions.selected_classes_event(state)
 
 
 @choose_classes_widget.select_all_classes_button.add_route(
     app=server, route=ElementButton.Routes.BUTTON_CLICKED
 )
-def select_all_classes_button_clicked(
-    state: sly.app.StateJson = Depends(sly.app.StateJson.from_request),
-):
+def select_all_classes_button_clicked():
+    state = StateJson()
     state["selectedClasses"] = [True] * len(g.available_classes_names)
     run_sync(state.synchronize_changes())
     functions.selected_classes_event(state)
@@ -112,16 +113,16 @@ def select_all_classes_button_clicked(
 @choose_classes_widget.deselect_all_classes_button.add_route(
     app=server, route=ElementButton.Routes.BUTTON_CLICKED
 )
-def deselect_all_classes_button_clicked(
-    state: sly.app.StateJson = Depends(sly.app.StateJson.from_request),
-):
+def deselect_all_classes_button_clicked():
+    state = StateJson()
     state["selectedClasses"] = [False] * len(g.available_classes_names)
     run_sync(state.synchronize_changes())
     functions.selected_classes_event(state)
 
 
 @server.post("/restart/3/")
-def restart3(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
+def restart3():
+    state = StateJson()
     f.finish_step(2, state)
 
 
@@ -151,15 +152,17 @@ def restart3(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request))
 
 @server.post("/apply-parameters/")
 @sly.timeit
-def apply_parameters(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
+def apply_parameters():
+    state = StateJson()
     DataJson()["dstProjectName"] = None
     f.finish_step(5, state)
 
 
 @server.post("/generate-annotation-example/")
 @sly.timeit
-def generate_annotation_example(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
+def generate_annotation_example():
     try:
+        state = StateJson()
         DataJson()["videoUrl"] = None
         DataJson()["previewLoading"] = True
         run_sync(DataJson().synchronize_changes())
@@ -194,7 +197,8 @@ def generate_annotation_example(state: sly.app.StateJson = Depends(sly.app.State
 
 
 @server.post("/restart/5/")
-def restart5(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
+def restart5():
+    state = StateJson()
     f.finish_step(3, state, 5)
 
 
@@ -203,11 +207,9 @@ def restart5(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request))
 
 @server.post("/start-annotation/")
 @sly.timeit
-def start_annotation(
-    background_tasks: BackgroundTasks,
-    state: sly.app.StateJson = Depends(sly.app.StateJson.from_request),
-):
+def start_annotation(background_tasks: BackgroundTasks):
     try:
+        state = StateJson()
         DataJson()["annotatingStarted"] = True
         run_sync(DataJson().synchronize_changes())
         StateJson()["canStop"] = False
@@ -231,15 +233,14 @@ def start_annotation(
 
 
 @server.post("/restart/6")
-def restart6(state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
+def restart6():
+    state = StateJson()
     f.finish_step(5, state)
 
 
 @server.post("/stop-annotation/")
-def stop_annotation(
-    background_tasks: BackgroundTasks,
-    state: sly.app.StateJson = Depends(sly.app.StateJson.from_request),
-):
+def stop_annotation(background_tasks: BackgroundTasks):
     StateJson()["canStop"] = False
     StateJson().send_changes()
+    state = StateJson()
     background_tasks.add_task(functions.stop_annotate_videos, state=state)
