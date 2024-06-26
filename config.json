@@ -10,7 +10,7 @@
     "inference interfaces",
     "labeling"
   ],
-  "entrypoint": "python -m uvicorn src.main:g.app --host 0.0.0.0 --port 8000",
+  "entrypoint": "python -m uvicorn src.main:app --host 0.0.0.0 --port 8000",
   "port": 8000,
   "description": "Predictions on every frame are combined with BoT-SORT/DeepSort into tracks automatically",
   "docker_image": "supervisely/apply-nn-to-videos-project:1.0.1",

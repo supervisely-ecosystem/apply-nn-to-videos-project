@@ -11,6 +11,7 @@ from starlette.staticfiles import StaticFiles
 from supervisely.app import DataJson, StateJson
 from supervisely.app.fastapi import create, Jinja2Templates
 
+
 app_root_directory = str(pathlib.Path(__file__).parent.absolute().parents[0])
 sly.logger.info(f"Root source directory: {app_root_directory}")
 
@@ -30,16 +31,6 @@ class AnnotatorModes:
 
 
 api: sly.Api = sly.Api.from_env()
-
-app = sly.Application(templates_dir=os.path.join(app_root_directory, "templates"))
-
-app._fastapi.mount(
-    "/static",
-    StaticFiles(directory=os.path.join(app_root_directory, "static")),
-    name="static",
-)
-
-templates_env = Jinja2Templates(directory=os.path.join(app_root_directory, "templates"))
 
 supported_model_types = [
     "Semantic Segmentation",

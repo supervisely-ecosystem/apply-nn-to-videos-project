@@ -19,7 +19,6 @@ from supervisely.video_annotation.frame import Frame, VideoObjectCollection
 from supervisely.video_annotation.frame_collection import FrameCollection
 
 import src.sly_globals as g
-import src.output_data.widgets as card_widgets
 from src.legacy_inference import legacy_inference_video, legacy_inference_video_async
 
 

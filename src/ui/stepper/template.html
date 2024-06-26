@@ -1,0 +1,10 @@
+<div id="apply-nn-to-video-project" style="padding: 20px">
+    <sly-stepper :active="data.activeStep">
+        {% for step in widget._steps %}
+        <sly-stepper-item>
+            {{{step}}}
+        </sly-stepper-item>
+        {% endfor %}
+    </sly-stepper>
+    {% include 'dialogs.html' %}
+</div>
