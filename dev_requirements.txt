@@ -1,5 +1,5 @@
 supervisely[tracking]==6.73.116
-git+https://github.com/supervisely/supervisely.git@tracking-algorithms#egg=supervisely[tracking]
+#git+https://github.com/supervisely/supervisely.git@tracking-algorithms#egg=supervisely[tracking]
 
 # base
 Cython
@@ -11,4 +11,4 @@ torchvision>=0.8.1
 seaborn>=0.11.0
 ftfy==6.0.3
 regex
-# git+https://github.com/supervisely-ecosystem/depends-CLIP.git
+git+https://github.com/supervisely-ecosystem/depends-CLIP.git
