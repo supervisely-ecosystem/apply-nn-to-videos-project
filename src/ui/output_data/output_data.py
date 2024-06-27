@@ -1,4 +1,4 @@
-from supervisely.app.widgets import Widget, NotificationBox, SlyTqdm
+from supervisely.app.widgets import Widget, NotificationBox, SlyTqdm, ProjectThumbnail
 
 
 apply_nn_to_video_project_progress = SlyTqdm(widget_id="apply_nn_to_video_project_progress")
@@ -16,6 +16,7 @@ class OutputDataWidget(Widget):
         self.apply_nn_to_video_project_progress = apply_nn_to_video_project_progress
         self.current_video_progress = current_video_progress
         self.apply_nn_notification_box = apply_nn_notification_box
+        self.project_thumbnail = ProjectThumbnail(info=None)
         super().__init__(widget_id=widget_id, file_path=__file__)
 
     def get_json_data(self):
@@ -23,6 +24,9 @@ class OutputDataWidget(Widget):
 
     def get_json_state(self):
         return {}
+
+    def set_project_thumbnail(self, project_info):
+        self.project_thumbnail.set(project_info)
 
 
 output_data_widget = OutputDataWidget()

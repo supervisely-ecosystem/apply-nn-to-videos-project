@@ -357,14 +357,10 @@ def annotate_videos(state):
             )
 
     res_project = g.api.project.get_info_by_id(project_id)
+    output_data_widget.set_project_thumbnail(res_project)
     DataJson().update(
         {
-            "dstProjectUrl": Project.get_url(res_project.id),
-            "dstProjectId": res_project.id,
             "dstProjectName": res_project.name,
-            "dstProjectPreviewUrl": g.api.image.preview_url(
-                res_project.reference_image_url, 100, 100
-            ),
         }
     )
 

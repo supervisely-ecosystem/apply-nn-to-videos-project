@@ -34,16 +34,7 @@
     </el-button>
 
     <div v-if="data.dstProjectName">
-        <sly-field style="margin: 0 0"
-                   title="Output Project"
-                   description="">
-            <sly-field title="" description="Project">
-                <a slot="title" target="_blank"
-                   :href="`${data.dstProjectUrl}`">{{ data.dstProjectName
-                    }}</a>
-                <sly-icon slot="icon" :options="{ imageUrl: `${data.dstProjectPreviewUrl}` }"/>
-            </sly-field>
-        </sly-field>
+        {{{ widget.project_thumbnail }}}
         <div>
             <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
             <span style="color: #5a6772;">Done</span>
