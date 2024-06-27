@@ -1,3 +1,4 @@
+import os
 import uvicorn
 import yaml
 
@@ -8,20 +9,19 @@ from starlette.requests import Request
 from supervisely.app import StateJson
 
 import src.sly_globals as g
+from src.ui import layout
+
+app = sly.Application(
+    layout=layout,
+    static_dir=os.path.join(g.app_root_directory, "static"),
+)
+server = app.get_server()
 
 
-import src.input_data
-import src.connect_to_model
-import src.choose_classes
-import src.parameters
-import src.output_data
-
-
-@g.app.get("/")
-def read_index(request: Request):
-    return g.templates_env.TemplateResponse('index.html', {'request': request})
-
-
-@g.app.post("/apply_changes/")
+@server.post("/apply_changes/")
 async def apply_changes(state: StateJson = Depends(StateJson.from_request)):
     await state.synchronize_changes()
+
+
+import src.handlers
+import src.functions

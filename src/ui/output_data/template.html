@@ -1,0 +1,47 @@
+<sly-card title="Apply NN to video project"
+          subtitle="Track video processing"
+          ref="step6"
+          :options="{collapsable: true}"
+
+          :disabled="{disabled: state.activeStep < 6, message: 'complete previous step'}">
+
+
+    <el-collapse-transition>
+        <div v-show='!data.dstProjectName && data.annotatingStarted' style="margin: 0 5px 15px 2px">
+            <div style="margin: 10px 0">
+                {{{ widget.apply_nn_notification_box }}}
+            </div>
+            {{{ widget.apply_nn_to_video_project_progress }}}
+            <div style="margin-top: 10px">
+                {{{ widget.current_video_progress }}}
+            </div>
+        </div>
+    </el-collapse-transition>
+    <el-button v-if="!data.dstProjectName"
+               type="primary" class="regular"
+               @click="post('/start-annotation/')"
+               :loading="data.annotatingStarted === true"
+    >
+        <i class="zmdi zmdi-play mr5" v-if="!data.annotatingStarted"></i> apply NN to videos project
+    </el-button>
+
+    <el-button v-if="!data.dstProjectName && data.annotatingStarted === true"
+               type="danger" class="regular"
+               @click="post('/stop-annotation/')"
+               :disabled="state.canStop === false"
+    >
+    <i class="zmdi zmdi-stop mr5"></i> Stop
+    </el-button>
+
+    <div v-if="data.dstProjectName">
+        {{{ widget.project_thumbnail }}}
+        <div>
+            <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
+            <span style="color: #5a6772;">Done</span>
+        </div>
+
+
+    </div>
+
+
+</sly-card>

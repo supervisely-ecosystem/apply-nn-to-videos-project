@@ -11,6 +11,7 @@ from starlette.staticfiles import StaticFiles
 from supervisely.app import DataJson, StateJson
 from supervisely.app.fastapi import create, Jinja2Templates
 
+
 app_root_directory = str(pathlib.Path(__file__).parent.absolute().parents[0])
 sly.logger.info(f"Root source directory: {app_root_directory}")
 
@@ -19,6 +20,7 @@ preview_frames_path = os.path.join(temp_dir, "preview_frames")
 
 # for debug
 from dotenv import load_dotenv
+
 load_dotenv(os.path.join(app_root_directory, "debug.env"))
 load_dotenv(os.path.expanduser("~/supervisely.env"))
 
@@ -29,18 +31,6 @@ class AnnotatorModes:
 
 
 api: sly.Api = sly.Api.from_env()
-
-app = FastAPI()
-sly_app = create()
-
-app.mount("/sly", sly_app)
-app.mount(
-    "/static",
-    StaticFiles(directory=os.path.join(app_root_directory, "static")),
-    name="static",
-)
-
-templates_env = Jinja2Templates(directory=os.path.join(app_root_directory, "templates"))
 
 supported_model_types = [
     "Semantic Segmentation",
@@ -64,9 +54,7 @@ project_id = int(os.environ["modal.state.slyProjectId"])
 workspace_id = int(os.environ["context.workspaceId"])
 
 project_info = api.project.get_info_by_id(project_id)
-project_meta: sly.ProjectMeta = sly.ProjectMeta.from_json(
-    api.project.get_meta(project_id)
-)
+project_meta: sly.ProjectMeta = sly.ProjectMeta.from_json(api.project.get_meta(project_id))
 
 ds_video_map = None
 model_info = None

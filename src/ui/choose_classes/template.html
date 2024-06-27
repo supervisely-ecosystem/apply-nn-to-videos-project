@@ -1,0 +1,58 @@
+<sly-card title="Select the classes to be used"
+          subtitle="annotations will only be saved for the selected classes"
+          :options="{collapsable: true}"
+
+          :disabled="{disabled: state.activeStep < 3, message: 'complete previous step'}"
+          ref="step3">
+
+
+    <div>
+        <div v-if="state.activeStep === 3" style="display:flex; margin: 0 0 10px 0">
+            <div style="margin-right: 15px">{{{ widget.select_all_classes_button }}}</div>
+            <div >{{{ widget.deselect_all_classes_button }}}</div>
+        </div>
+        <table>
+            <tbody>
+            <tr v-for="(objClass, index) in data.classesTable">
+                <td>
+                    <el-checkbox
+                            :disabled="state.activeStep !== 3"
+                            @change="post(/classes_selection_change/);"
+                            v-model="state.selectedClasses[index]"></el-checkbox>
+                </td>
+                <td><i class="zmdi zmdi-circle ml5 mr5" :style="{color: objClass.color}"></i>
+                </td>
+                <td>{{objClass.label}}</td>
+                <td class="ml5" style="color: #777777">{{objClass.shapeType}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div style="width: 100%">
+        <el-button
+                v-if="state.activeStep < 4"
+                type="primary"
+                style="margin-top: 20px; align-self: flex-start"
+                class="regular"
+                @click="post('/choose_classes/')">
+            SELECT classes
+        </el-button>
+        <div v-else class="mt10">
+            <div>
+                <i class="zmdi zmdi-check-circle mr5"
+                   style="color: #13ce66; margin-top: 5px; margin-bottom: 5px"></i>
+                <span style="color: #5a6772;">
+                Class(-es) successfully selected
+            </span>
+            </div>
+            <el-button type="warning" class="regular mt10" :plain="true"
+                       @click="state.restartFrom = 3;"
+
+                       :disabled="data.annotatingStarted">
+                <i class="zmdi zmdi-rotate-left mr5"></i> reselect classes
+            </el-button>
+        </div>
+    </div>
+
+
+</sly-card>
