@@ -1,3 +1,5 @@
+import os
+import shutil
 from typing import Any, Dict, List, Optional
 import yaml
 
@@ -214,6 +216,39 @@ def get_video_for_preview(state):
             end_frame = start_frame + 29
 
     return video_info["videoId"], (start_frame, end_frame)
+
+
+def get_random_frame(state):
+    videos_table = DataJson()["videosTable"]
+    selected_videos = state["selectedVideos"]
+
+    frames_min = state["framesMin"]
+    frames_max = state["framesMax"]
+
+    random.shuffle(selected_videos)
+    video_name = selected_videos[0]
+
+    video_info = [row for row in videos_table if row["name"] == video_name][0]
+    frame_index = random.randint(frames_min[video_info["name"]], frames_max[video_info["name"]])
+    return video_info["videoId"], frame_index
+
+
+def get_preview_image(video_id, frame_to_annotation, frame_index):
+    with parameters_widget.preview_progress(message="Downloading Frame", total=1) as progress:
+        frame_to_image_path = f.download_frames_range(
+            video_id, g.preview_frames_path, (frame_index, frame_index), pbar_cb=progress.update
+        )
+
+    with parameters_widget.preview_progress(message="Generating Preview", total=1) as progress:
+        f.draw_labels_on_frames(frame_to_image_path, frame_to_annotation)
+        local_image_path = frame_to_image_path[frame_index]
+        progress.update(1)
+
+    preview_image_name = f"preview_image{sly.rand_str(8)}.jpg"
+    preview_image_path = os.path.join(g.app_root_directory, "static", preview_image_name)
+    shutil.copy(local_image_path, preview_image_path)
+    url = f"static/{preview_image_name}"
+    return url
 
 
 def get_preview_video(video_id, frame_to_annotation, frames_range):

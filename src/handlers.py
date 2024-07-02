@@ -168,23 +168,39 @@ def generate_annotation_example():
         run_sync(DataJson().synchronize_changes())
         g.inference_cancelled = False
 
-        video_id, frames_range = functions.get_video_for_preview(state)
+        video_id, frame_index = functions.get_random_frame(state)
 
         model_predictions = f.get_model_inference(
             state,
             video_id=video_id,
-            frames_range=frames_range,
+            frames_range=(frame_index, frame_index),
             progress_widget=parameters_widget.preview_progress,
         )
 
-        frame_to_annotation = f.frame_index_to_annotation(model_predictions, frames_range)
-
-        frame_to_annotation = f.filter_annotation_by_classes(
-            frame_to_annotation, g.selected_classes_list
+        frame_to_annotation = f.frame_index_to_annotation(
+            model_predictions, (frame_index, frame_index)
         )
-        preview_url = functions.get_preview_video(video_id, frame_to_annotation, frames_range)
 
-        DataJson()["videoUrl"] = preview_url
+        preview_url = functions.get_preview_image(video_id, frame_to_annotation, frame_index)
+        DataJson()["frameUrl"] = preview_url
+
+        # video_id, frames_range = functions.get_video_for_preview(state)
+
+        # model_predictions = f.get_model_inference(
+        #     state,
+        #     video_id=video_id,
+        #     frames_range=frames_range,
+        #     progress_widget=parameters_widget.preview_progress,
+        # )
+
+        # frame_to_annotation = f.frame_index_to_annotation(model_predictions, frames_range)
+
+        # frame_to_annotation = f.filter_annotation_by_classes(
+        #     frame_to_annotation, g.selected_classes_list
+        # )
+        # preview_url = functions.get_preview_video(video_id, frame_to_annotation, frames_range)
+
+        # DataJson()["videoUrl"] = preview_url
 
     except Exception as ex:
         logger.warn(f"Cannot generate preview: {repr(ex)}", exc_info=True)

@@ -96,7 +96,7 @@
 
     <sly-card title="Inference Preview"
               class="card-vertical-lifter"
-              subtitle="Generate 30 frames preview"
+              subtitle="Generate preview of the inference results on random frame"
               style="width: 100%;"
               :collapsed.sync="state.collapsed5"
               :disabled="{disabled: state.activeStep < 5, message: 'complete previous step'}"
@@ -113,8 +113,15 @@
             </el-button>
         </div>
 
-
         <el-collapse-transition>
+            <div v-show='!(data.frameUrl || data.previewLoading)'>
+                {{{ widget.here_will_be_preview_notification }}}
+            </div>
+        </el-collapse-transition>
+
+        <img v-if="data.frameUrl" :src="data.frameUrl" style="max-height: 650px; max-width: 100%;">
+
+        <!-- <el-collapse-transition>
             <div v-show='!(data.videoUrl || data.previewLoading)'>
                 {{{ widget.here_will_be_preview_notification }}}
             </div>
@@ -123,10 +130,9 @@
 
         <video v-if="data.videoUrl" controls style="max-height: 650px; max-width: 100%;">
 
-            <!--                <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">-->
             <source :src="data.videoUrl" type="video/mp4">
             Your browser does not support the video tag.
-        </video>
+        </video> -->
         <div v-else v-if="data.previewLoading">
             {{{ widget.preview_progress }}}
         </div>
