@@ -11,6 +11,7 @@ from supervisely import Project
 import src.sly_globals as g
 from src.ui.parameters.parameters import parameters_widget
 from src.ui.output_data.output_data import output_data_widget
+import src.workflow as w
 
 
 ### CONNECT TO MODEL ###
@@ -367,6 +368,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
 def annotate_videos(state):
     selected_videos_names = state["selectedVideos"]
 
+    w.workflow_input(g.api, project_id=g.project_id, session_id=state["sessionId"])
     output_project_name = state["expId"]
     project_id = init_project_remotely(project_name=output_project_name)
 
@@ -393,6 +395,7 @@ def annotate_videos(state):
 
     res_project = g.api.project.get_info_by_id(project_id)
     output_data_widget.set_project_thumbnail(res_project)
+    w.workflow_output(g.api, res_project.id)
     DataJson().update(
         {
             "dstProjectName": res_project.name,
