@@ -4,8 +4,9 @@ supervisely[tracking]==6.73.158
 # base
 Cython
 tensorboard>=2.2
-torch>=1.7.0
-torchvision>=0.8.1
+torch>=2.2.1
+torchvision>=0.17.1
+boxmot==11.0.6
 
 # plotting
 seaborn>=0.11.0

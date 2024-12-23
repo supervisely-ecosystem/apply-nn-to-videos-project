@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Uvicorn",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
             "args": [
@@ -17,7 +17,6 @@
                 "8000",
                 "--ws",
                 "websockets",
-                "--reload"
             ],
             "jinja": true,
             "justMyCode": false,
