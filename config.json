@@ -26,5 +26,8 @@
     "target": ["videos_project"],
     "context_root": "Neural Networks"
   },
-  "poster": "https://imgur.com/dE7nQl6.png"
+  "poster": "https://imgur.com/dE7nQl6.png",
+  "license": {
+    "type": "AGPL-3.0"
+  }
 }
