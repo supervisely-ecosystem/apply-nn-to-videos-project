@@ -32,5 +32,5 @@ StateJson()["selectedTrackingAlgorithm"] = "boxmot"
 DataJson()["trackingAlgorithms"] = [
     {"label": "Deep Sort", "value": "deepsort"},
     {"label": "BoT", "value": "bot"},
-    {"label": "BoxMOT", "value": "boxmot"},
+    {"label": "BoT-SORT (boxmot)", "value": "boxmot"},
 ]
