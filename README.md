@@ -7,7 +7,7 @@
 <p align="center">
   <a href="#Overview">Overview</a> •
   <a href="#Demo">Demo</a> •
-  <a href="#Related-Apps">Related Apps</a> •
+  <!-- <a href="#Related-Apps">Related Apps</a> • -->
   <a href="#How-To-Run">How To Run</a> •
     <a href="#Screenshot">Screenshot</a>
 </p>
@@ -29,8 +29,9 @@ Application key points:
 - Supports Object Detection Models
 - Supports Instance Segmentation Models
 - Supports Semantic Segmentation Models
-- Applies Deep Sort (tracking algorithm) to model Predictions 
+- Applies a tracking-by-detection ([BoT-Sort](https://github.com/NirAharon/BoT-SORT)) algorithm to the model predictions
 - Creates a new project with Labeled Videos
+
 
 🔥🔥🔥 Check out our [youtube tutorial](https://youtu.be/t6qsFMjB_xs) and the [Our Complete Guide to Object Tracking in our blog](https://supervisely.com/blog/complete-guide-to-object-tracking-best-ai-models-tools-and-methods-in-2023/)
 
@@ -46,7 +47,7 @@ Application key points:
 
 
 
-# Related Apps
+<!-- # Related Apps
 
 Application supports next models: 
 
@@ -68,7 +69,7 @@ Application supports next models:
 - [Serve UNet](https://ecosystem.supervisely.com/apps/supervisely-ecosystem/unet/supervisely/serve)  
        <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/unet/supervisely/serve" src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/unet.png" width="350px"/>
 - [Serve MMSegmentation](https://ecosystem.supervisely.com/apps/supervisely-ecosystem/mmsegmentation/serve)  
-     <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/mmsegmentation/serve" src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/mmSeg.png" width="350px"/>
+     <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/mmsegmentation/serve" src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/mmSeg.png" width="350px"/> -->
       
 
 
