@@ -1,8 +1,38 @@
-FROM supervisely/base-py-sdk:6.72.96
+FROM nvidia/cuda:12.2.2-cudnn8-runtime-ubuntu22.04
 
-RUN pip install torch==2.2.1 torchvision==0.17.1 --index-url https://download.pytorch.org/whl/cu121
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PATH="/usr/src/tensorrt/bin:${PATH}"
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-pip \
+    git \
+    curl \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libmagic-dev \
+    libexiv2-dev
+
+RUN ln -s /usr/bin/python3 /usr/bin/python \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir \
+    torch==2.2.1 \
+    torchvision==0.17.1
+
+RUN pip install --no-cache-dir \
+    setuptools==69.5.1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    python3-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY dev_requirements.txt dev_requirements.txt
-RUN pip install -r dev_requirements.txt
+RUN pip install --no-cache-dir -r dev_requirements.txt
 RUN python3 -c "from supervisely.nn.tracker import *"
 
 RUN pip install gdown && \
