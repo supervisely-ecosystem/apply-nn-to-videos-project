@@ -1,22 +1,17 @@
 import os
-from pathlib import Path
 import shutil
 from typing import Any, Dict, List, Optional
-import numpy as np
 import yaml
-from PIL import Image
 
 import supervisely as sly
 from supervisely.app import DataJson
 from supervisely.app.fastapi import run_sync
-from supervisely import Project
 
 import src.sly_globals as g
 from src.ui.parameters.parameters import parameters_widget
 from src.ui.output_data.output_data import output_data_widget
 import src.workflow as w
-from src.video import video_to_frames_ffmpeg
-from src import boxmot_tracking
+from src.boxmot_tracking import apply_boxmot
 
 
 ### CONNECT TO MODEL ###
@@ -358,56 +353,15 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
         ) as progress:
             tracking_algorithm = state["selectedTrackingAlgorithm"]
             if tracking_algorithm == "boxmot":
-                device = state["device"]
-                work_dir = g.temp_dir
-                video_path = f"{work_dir}/video.mp4"
-                frames_dir = f"{Path(video_path).parent}/frames"
-                img_h, img_w = video_data["frame_shape"]
-                sly.fs.remove_dir(frames_dir)
-                g.api.video.download_path(video_id, video_path)
-                video_to_frames_ffmpeg(video_path, frames_dir)
-                img_paths = sorted(Path(frames_dir).glob("*.jpg"), key=lambda x: x.name)
-                tracker = boxmot_tracking.load_tracker(tracker_type="botsort", device=device)
-                name2cat = {x.name: i for i, x in enumerate(g.model_meta.obj_classes)}
-                cat2name = {c: n for n, c in name2cat.items()}
-                cat2obj = {i: obj for i, obj in enumerate(g.model_meta.obj_classes)}
-
-                # Track
-                results = []
-                for i, ann in frame_to_annotation.items():
-                    img = Image.open(img_paths[i])
-                    detections = boxmot_tracking.ann_to_detections(ann, name2cat)  # N x (x, y, x, y, conf, cls)
-                    tracks = tracker.update(detections, np.asarray(img))  # M x (x, y, x, y, track_id, conf, cls, det_id)
-                    results.append(tracks)
-                    progress.update(1)
-
-                # Create VideoAnnotation
-                video_objects = {}  # track_id -> VideoObject
-                frames = []
-                for (i, ann), tracks in zip(frame_to_annotation.items(), results):
-                    frame_figures = []
-                    for track in tracks:
-                        # crop bbox to image size
-                        dims = np.array([img_w, img_h, img_w, img_h]) - 1e-5
-                        track[:4] = np.clip(track[:4], 0, dims)
-                        x1, y1, x2, y2, track_id, conf, cat = track[:7]
-                        cat = int(cat)
-                        track_id = int(track_id)
-                        rect = sly.Rectangle(y1, x1, y2, x2)
-                        video_object = video_objects.get(track_id)
-                        if video_object is None:
-                            obj_cls = cat2obj[cat]
-                            video_object = sly.VideoObject(obj_cls)
-                            video_objects[track_id] = video_object
-                        frame_figures.append(sly.VideoFigure(video_object, rect, i))
-                    frames.append(sly.Frame(i, frame_figures))
-
-                objects = list(video_objects.values())
-                video_ann = sly.VideoAnnotation(
-                    img_size=video_data["frame_shape"],
-                    frames_count=len(frame_to_annotation),
-                    objects=sly.VideoObjectCollection(objects),
-                    frames=sly.FrameCollection(frames),
+                apply_boxmot(
+                    g.api,
+                    video_id=video_id,
+                    frame_shape=video_data["frame_shape"],
+                    frame_to_annotation=frame_to_annotation,
+                    device=state["device"],
+                    work_dir=g.temp_dir,
+                    model_meta=g.model_meta,
+                    progress=progress,
                 )
             else:
                 video_ann = f.apply_tracking_algorithm_to_predictions(
