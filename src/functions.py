@@ -353,7 +353,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
         ) as progress:
             tracking_algorithm = state["selectedTrackingAlgorithm"]
             if tracking_algorithm == "boxmot":
-                apply_boxmot(
+                video_ann = apply_boxmot(
                     g.api,
                     video_id=video_id,
                     frame_shape=video_data["frame_shape"],
