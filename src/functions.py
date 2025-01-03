@@ -6,12 +6,12 @@ import yaml
 import supervisely as sly
 from supervisely.app import DataJson
 from supervisely.app.fastapi import run_sync
-from supervisely import Project
 
 import src.sly_globals as g
 from src.ui.parameters.parameters import parameters_widget
 from src.ui.output_data.output_data import output_data_widget
 import src.workflow as w
+from src.boxmot_tracking import apply_boxmot
 
 
 ### CONNECT TO MODEL ###
@@ -318,12 +318,13 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
     frames_min = state["framesMin"]
     frames_max = state["framesMax"]
     frames_range = (frames_min[video_data["name"]], frames_max[video_data["name"]])
+    video_id = video_data["videoId"]
 
-    if state["applyTrackingAlgorithm"] is True:
+    if state["applyTrackingAlgorithm"] is True and state["selectedTrackingAlgorithm"] != "boxmot":
         try:
             ann_json = f.track_on_model(
                 state,
-                video_id=video_data["videoId"],
+                video_id=video_id,
                 frames_range=frames_range,
                 progress_widget=output_data_widget.current_video_progress,
             )
@@ -335,7 +336,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
 
     model_predictions = f.get_model_inference(
         state,
-        video_id=video_data["videoId"],
+        video_id=video_id,
         frames_range=frames_range,
         progress_widget=output_data_widget.current_video_progress,
     )
@@ -350,14 +351,28 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
             message=f'Applying tracking algorithm ({state["selectedTrackingAlgorithm"]})',
             total=abs(frames_range[0] - frames_range[1]) + 1,
         ) as progress:
-            return f.apply_tracking_algorithm_to_predictions(
-                state=state,
-                video_id=video_data["videoId"],
-                frames_range=frames_range,
-                frame_to_annotation=frame_to_annotation,
-                tracking_algorithm=state["selectedTrackingAlgorithm"],
-                pbar_cb=progress.update,
-            )
+            tracking_algorithm = state["selectedTrackingAlgorithm"]
+            if tracking_algorithm == "boxmot":
+                video_ann = apply_boxmot(
+                    g.api,
+                    video_id=video_id,
+                    frame_shape=video_data["frame_shape"],
+                    frame_to_annotation=frame_to_annotation,
+                    device=state["device"],
+                    work_dir=g.temp_dir,
+                    model_meta=g.model_meta,
+                    progress=progress,
+                )
+            else:
+                video_ann = f.apply_tracking_algorithm_to_predictions(
+                    state=state,
+                    video_id=video_id,
+                    frames_range=frames_range,
+                    frame_to_annotation=frame_to_annotation,
+                    tracking_algorithm=tracking_algorithm,
+                    pbar_cb=progress.update,
+                )
+            return video_ann
     else:
         obj_classes = g.model_meta.obj_classes
         return annotations_to_video_annotation(
