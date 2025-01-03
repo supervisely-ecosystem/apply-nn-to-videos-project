@@ -23,7 +23,7 @@ RUN pip install --no-cache-dir \
     torchvision==0.17.1
 
 RUN pip install --no-cache-dir \
-    setuptools==69.5.1
+    setuptools==59.6.0
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
