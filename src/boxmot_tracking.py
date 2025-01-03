@@ -104,7 +104,7 @@ def create_video_annotation(
         frame_figures = []
         for track in tracks:
             # crop bbox to image size
-            dims = np.array([img_w, img_h, img_w, img_h]) - 1e-5
+            dims = np.array([img_w, img_h, img_w, img_h]) - 1
             track[:4] = np.clip(track[:4], 0, dims)
             x1, y1, x2, y2, track_id, conf, cat = track[:7]
             cat = int(cat)

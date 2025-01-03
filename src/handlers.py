@@ -234,7 +234,7 @@ def start_annotation(background_tasks: BackgroundTasks):
         g.inference_session = None
         g.inference_request_uuid = None
 
-        background_tasks.add_task(functions.annotate_videos, state=state)
+        functions.annotate_videos(state=state)
     except Exception as ex:
         DataJson()["annotatingStarted"] = False
         logger.warn(f"Cannot apply NN to Videos Project: {repr(ex)}", exc_info=True)
