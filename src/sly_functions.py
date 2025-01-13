@@ -19,6 +19,7 @@ from supervisely.video_annotation.frame import Frame, VideoObjectCollection
 from supervisely.video_annotation.frame_collection import FrameCollection
 
 import src.sly_globals as g
+import src.functions as f
 from src.legacy_inference import legacy_inference_video, legacy_inference_video_async
 
 
@@ -190,7 +191,7 @@ def on_inference_stop():
 
 def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm = None):
     try:
-        inf_setting = yaml.safe_load(state["modelSettings"])
+        inf_setting, _ = f.get_model_and_tracking_settings(state)
     except Exception as e:
         inf_setting = {}
         sly.logger.warn(
@@ -308,7 +309,7 @@ def track_on_model(
         raise ValueError(f"Tracking algorithm {tracking_algorithm} is not supported by the model")
 
     try:
-        inf_setting = yaml.safe_load(state["modelSettings"])
+        inf_setting, _ = f.get_model_and_tracking_settings(state)
     except Exception as e:
         inf_setting = {}
         sly.logger.warn(

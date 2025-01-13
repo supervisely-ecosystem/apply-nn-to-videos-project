@@ -21,8 +21,9 @@ preview_frames_path = os.path.join(temp_dir, "preview_frames")
 # for debug
 from dotenv import load_dotenv
 
-load_dotenv(os.path.join(app_root_directory, "debug.env"))
-load_dotenv(os.path.expanduser("~/supervisely.env"))
+if sly.is_development():
+    load_dotenv(os.path.join(app_root_directory, "local.env"))
+    load_dotenv(os.path.expanduser("~/supervisely.env"))
 
 
 class AnnotatorModes:
@@ -80,3 +81,6 @@ inference_session = None
 inference_cancelled = False
 
 deepsort_clip_encoder = None
+
+model_settings = ""
+tracking_settings = ""

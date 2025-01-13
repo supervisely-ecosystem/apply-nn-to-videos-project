@@ -40,6 +40,11 @@ def connect():
     try:
         functions.get_model_info(state["sessionId"], state)
         functions.validate_model_type()
+
+        tracking_algorithm = state["selectedTrackingAlgorithm"]
+        functions.get_default_tracking_settings(tracking_algorithm)
+
+        state["modelSettings"] = g.model_settings + "\n" + g.tracking_settings
         state["canApplyTrackingAlgorithm"] = bool(
             g.model_info.get("tracking_on_videos_support", True)
         )
@@ -156,6 +161,16 @@ def apply_parameters():
     state = StateJson()
     DataJson()["dstProjectName"] = None
     f.finish_step(5, state)
+
+
+@server.post("/tracking-algorithm-changed/")
+@sly.timeit
+def algorithm_changed():
+    state = StateJson()
+    tracker_algorithm = state["selectedTrackingAlgorithm"]
+    functions.get_default_tracking_settings(tracker_algorithm)
+    state["modelSettings"] = g.model_settings + "\n" + g.tracking_settings
+    run_sync(state.synchronize_changes())
 
 
 @server.post("/generate-annotation-example/")
