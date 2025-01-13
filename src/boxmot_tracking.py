@@ -11,15 +11,16 @@ from src.video import video_to_frames_ffmpeg
 
 
 def apply_boxmot(
-        api: sly.Api,
-        video_id: int,
-        frame_shape: tuple,
-        frame_to_annotation: dict,
-        device: str,
-        work_dir: str,
-        model_meta: sly.ProjectMeta,
-        progress,
-    ):
+    api: sly.Api,
+    video_id: int,
+    frame_shape: tuple,
+    frame_to_annotation: dict,
+    device: str,
+    work_dir: str,
+    model_meta: sly.ProjectMeta,
+    progress,
+    tracking_settings,
+):
     video_path = f"{work_dir}/video.mp4"
     frames_dir = f"{Path(video_path).parent}/frames"
     sly.fs.remove_dir(frames_dir)
@@ -32,12 +33,16 @@ def apply_boxmot(
     img_paths = sorted(Path(frames_dir).glob("*.jpg"), key=lambda x: x.name)
 
     # Track
-    tracker = load_tracker(tracker_type="botsort", device=device)
+    tracker = load_tracker(
+        tracker_type="botsort", device=device, tracking_settings=tracking_settings
+    )
     results = []
     for i, ann in frame_to_annotation.items():
         img = Image.open(img_paths[i])
         detections = ann_to_detections(ann, name2cat)  # N x (x, y, x, y, conf, cls)
-        tracks = tracker.update(detections, np.asarray(img))  # M x (x, y, x, y, track_id, conf, cls, det_id)
+        tracks = tracker.update(
+            detections, np.asarray(img)
+        )  # M x (x, y, x, y, track_id, conf, cls, det_id)
         results.append(tracks)
         progress.update(1)
 
@@ -46,35 +51,43 @@ def apply_boxmot(
     return video_ann
 
 
-def load_tracker(tracker_type: str, device: str, half: bool = False, per_class: bool = False):
+def load_tracker(
+    tracker_type: str,
+    device: str,
+    half: bool = False,
+    per_class: bool = False,
+    tracking_settings: dict = None,
+):
     if "cuda" in device and ":" not in device:
         device = "cuda:0"
 
-    tracker_config = TRACKER_CONFIGS / (tracker_type + '.yaml')
+    tracker_config = TRACKER_CONFIGS / (tracker_type + ".yaml")
 
     # Load configuration from file
     with open(tracker_config, "r") as f:
         yaml_config = yaml.load(f, Loader=yaml.FullLoader)
-        tracker_args = {param: details['default'] for param, details in yaml_config.items()}
-    tracker_args['per_class'] = per_class
+        tracker_args = {param: details["default"] for param, details in yaml_config.items()}
+        if tracking_settings is not None:
+            tracker_args.update(tracking_settings)
+    tracker_args["per_class"] = per_class
 
-    reid_weights = '~/.cache/supervisely/checkpoints/osnet_x1_0_msmt17.pt'
-    if device == 'cpu':
-        reid_weights = '~/.cache/supervisely/checkpoints/osnet_x0_5_msmt17.pt'
+    reid_weights = "~/.cache/supervisely/checkpoints/osnet_x1_0_msmt17.pt"
+    if device == "cpu":
+        reid_weights = "~/.cache/supervisely/checkpoints/osnet_x0_5_msmt17.pt"
     reid_weights = os.path.expanduser(reid_weights)
 
     reid_args = {
-        'reid_weights': Path(reid_weights),
-        'device': device,
-        'half': half,
+        "reid_weights": Path(reid_weights),
+        "device": device,
+        "half": half,
     }
 
-    if tracker_type == 'bytetrack':
+    if tracker_type == "bytetrack":
         tracker = ByteTrack(**tracker_args)
-    elif tracker_type == 'botsort':
+    elif tracker_type == "botsort":
         tracker_args.update(reid_args)
         tracker = BotSort(**tracker_args)
-    if hasattr(tracker, 'model'):
+    if hasattr(tracker, "model"):
         tracker.model.warmup()
     return tracker
 
@@ -92,11 +105,11 @@ def ann_to_detections(ann: sly.Annotation, cls2label: dict):
 
 
 def create_video_annotation(
-        frame_to_annotation: dict,
-        tracking_results: list,
-        frame_shape: tuple,
-        cat2obj: dict,      
-    ):
+    frame_to_annotation: dict,
+    tracking_results: list,
+    frame_shape: tuple,
+    cat2obj: dict,
+):
     img_h, img_w = frame_shape
     video_objects = {}  # track_id -> VideoObject
     frames = []

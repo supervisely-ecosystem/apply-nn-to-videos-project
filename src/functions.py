@@ -32,17 +32,49 @@ def get_model_info(session_id, state):
     g.model_meta = sly.ProjectMeta.from_json(meta_json)
 
     try:
-        state["modelSettings"] = g.api.task.send_request(
+        g.model_settings = g.api.task.send_request(
             session_id, "get_custom_inference_settings", data={}
         ).get("settings", None)
-        if state["modelSettings"] is None or len(state["modelSettings"]) == 0:
-            raise ValueError()
-        elif isinstance(state["modelSettings"], dict):
-            state["modelSettings"] = yaml.dump(state["modelSettings"], allow_unicode=True)
-        sly.logger.info(f'Custom inference settings: {state["modelSettings"]}')
+        if g.model_settings is None or len(g.model_settings) == 0:
+            raise ValueError("Failed to get model settings")
+        elif isinstance(g.model_settings, dict):
+            g.model_settings = yaml.dump(g.model_settings, allow_unicode=True)
+        sly.logger.info(f"Custom inference settings: {g.model_settings}")
+        g.model_settings = "# Model settings:\n" + g.model_settings
+
     except Exception as ex:
-        state["modelSettings"] = ""
+        g.model_settings = ""
         sly.logger.info("Model doesn't support custom inference settings.\n" f"Reason: {repr(ex)}")
+
+
+def get_model_and_tracking_settings(state):
+    settings = state["modelSettings"]
+    if "#Tracking settings:" in settings:
+        g.model_settings, g.tracking_settings = settings.split("#Tracking settings:")
+        return yaml.safe_load(g.model_settings), yaml.safe_load(g.tracking_settings)
+    else:
+        g.model_settings = settings
+        g.tracking_settings = ""
+        return yaml.safe_load(g.model_settings), None
+
+
+def get_default_tracking_settings(tracker_type: str = "boxmot"):
+    try:
+        if tracker_type == "boxmot":
+            settings = {
+                "track_high_thresh": 0.6,
+                "track_low_thresh": 0.1,
+                "new_track_thresh": 0.7,
+                "match_thresh": 0.8,
+            }
+            g.tracking_settings = "#Tracking settings:\n" + yaml.dump(settings, allow_unicode=True)
+        else:
+            g.tracking_settings = ""
+    except Exception as ex:
+        g.tracking_settings = ""
+        sly.logger.info(
+            f"Failed to get tracking settings for {tracker_type}.\n" f"Reason: {repr(ex)}"
+        )
 
 
 def show_model_info():
@@ -353,6 +385,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
         ) as progress:
             tracking_algorithm = state["selectedTrackingAlgorithm"]
             if tracking_algorithm == "boxmot":
+                _, tracking_settings = get_model_and_tracking_settings(state)
                 video_ann = apply_boxmot(
                     g.api,
                     video_id=video_id,
@@ -362,6 +395,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
                     work_dir=g.temp_dir,
                     model_meta=g.model_meta,
                     progress=progress,
+                    tracking_settings=tracking_settings,
                 )
             else:
                 video_ann = f.apply_tracking_algorithm_to_predictions(

@@ -29,7 +29,9 @@
 
                             <el-select style="margin: 0 0 10px 0; width: 140px"
                                        :disabled="false"
-                                       v-model="state.selectedTrackingAlgorithm">
+                                       v-model="state.selectedTrackingAlgorithm"
+                                       @input="(evt) => {state.selectedTrackingAlgorithm = evt; post('/tracking-algorithm-changed')}"
+                                       >
                                 <el-option v-for="item in data.trackingAlgorithms"
                                            :key="item.value"
                                            :label="item.label"
