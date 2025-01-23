@@ -16,7 +16,11 @@ DataJson()["modelInfo"] = {}
 DataJson()["connected"] = False
 DataJson()["connectionError"] = ""
 
-DataJson()["ssOptions"] = {"sessionTags": ["deployed_nn"], "showLabel": False, "size": "small"}
+DataJson()["ssOptions"] = {
+    "sessionTags": ["deployed_nn", "deployed_nn_object_segmentation"],
+    "showLabel": False,
+    "size": "small",
+}
 
 DataJson()["done2"] = False
 
