@@ -48,6 +48,8 @@ def connect():
         state["canApplyTrackingAlgorithm"] = bool(
             g.model_info.get("tracking_on_videos_support", True)
         )
+        if g.model_info.get("task type") == "promptable segmentation":
+            state["canApplyTrackingAlgorithm"] = False
         state["applyTrackingAlgorithm"] = state["canApplyTrackingAlgorithm"]
 
         classes_rows = functions.choose_classes_generate_rows()
