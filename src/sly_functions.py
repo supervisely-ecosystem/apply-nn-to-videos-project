@@ -218,9 +218,9 @@ def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm 
                 # result = list(progress_widget(iterator, message="Inferring model..."))
                 result = []
                 with progress_widget(total=len(iterator), message="Inferring model...") as pbar:
-                    for pred in iterator:
+                    for i, pred in enumerate(iterator):
                         result.extend(pred)
-                        pbar.update(16)
+                        pbar.update(16 * (i + 1))
 
         except Exception as exc:
             # Fallback for serving versions: [6.69.15, 6.69.53)
