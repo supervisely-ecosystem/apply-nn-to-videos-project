@@ -221,8 +221,8 @@ def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm 
                     for i, pred in enumerate(iterator):
                         print("---Prediction----")
                         print(pred)
-                        result.extend(pred)
-                        pbar.update(16 * (i + 1))
+                        result.append(pred)
+                        pbar.update()
 
         except Exception as exc:
             # Fallback for serving versions: [6.69.15, 6.69.53)
