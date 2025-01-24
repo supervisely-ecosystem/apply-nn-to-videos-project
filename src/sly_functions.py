@@ -215,14 +215,7 @@ def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm 
                 iterator = g.inference_session.inference_video_id_async(
                     video_id, startFrameIndex, framesCount, preparing_cb=progress_widget
                 )
-                # result = list(progress_widget(iterator, message="Inferring model..."))
-                result = []
-                with progress_widget(total=len(iterator), message="Inferring model...") as pbar:
-                    for i, pred in enumerate(iterator):
-                        print("---Prediction----")
-                        print(pred)
-                        result.append(pred)
-                        pbar.update()
+                result = list(progress_widget(iterator, message="Inferring model..."))
 
         except Exception as exc:
             # Fallback for serving versions: [6.69.15, 6.69.53)
