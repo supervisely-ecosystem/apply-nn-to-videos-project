@@ -216,6 +216,7 @@ def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm 
                     video_id, startFrameIndex, framesCount, preparing_cb=progress_widget
                 )
                 result = list(progress_widget(iterator, message="Inferring model..."))
+
         except Exception as exc:
             # Fallback for serving versions: [6.69.15, 6.69.53)
             sly.logger.warn("Error in async video inference.", exc_info=True)
