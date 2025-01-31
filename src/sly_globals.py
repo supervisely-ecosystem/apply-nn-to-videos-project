@@ -84,3 +84,5 @@ deepsort_clip_encoder = None
 
 model_settings = ""
 tracking_settings = ""
+
+result_meta = None

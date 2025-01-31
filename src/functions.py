@@ -328,9 +328,9 @@ def init_project_remotely(project_name="ApplyNNtoVideoProject"):
         change_name_if_conflict=True,
     )
 
-    meta = g.model_meta  # @TODO generate meta for multiclass
-
-    g.api.project.update_meta(project.id, meta.to_json())
+    to_remove = [c.name for c in g.model_meta.obj_classes if c.name not in g.selected_classes_list]
+    meta = meta.delete_obj_classes(to_remove)
+    g.result_meta = g.api.project.update_meta(project.id, meta)
 
     return project.id
 
@@ -393,7 +393,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
                     frame_to_annotation=frame_to_annotation,
                     device=state["device"],
                     work_dir=g.temp_dir,
-                    model_meta=g.model_meta,
+                    model_meta=g.result_meta,
                     progress=progress,
                     tracking_settings=tracking_settings,
                 )
@@ -408,7 +408,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
                 )
             return video_ann
     else:
-        obj_classes = g.model_meta.obj_classes
+        obj_classes = g.result_meta.obj_classes
         return annotations_to_video_annotation(
             frame_to_annotation, obj_classes, video_data["frame_shape"]
         )
