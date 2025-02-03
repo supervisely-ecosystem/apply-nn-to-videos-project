@@ -327,8 +327,14 @@ def init_project_remotely(project_name="ApplyNNtoVideoProject", meta: sly.Projec
         type=sly.ProjectType.VIDEOS,
         change_name_if_conflict=True,
     )
-    to_remove = [c.name for c in g.model_meta.obj_classes if c.name not in g.selected_classes_list]
-    meta = meta.delete_obj_classes(to_remove)
+    if meta is None:
+        meta = g.model_meta.clone(
+            [c.name for c in g.model_meta.obj_classes if c.name in g.selected_classes_list]
+        )
+    else:
+        meta = meta.delete_obj_classes(
+            [c.name for c in g.model_meta.obj_classes if c.name not in g.selected_classes_list]
+        )
     g.result_meta = g.api.project.update_meta(project.id, meta)
 
     return project.id
@@ -418,8 +424,7 @@ def annotate_videos(state):
 
     w.workflow_input(g.api, project_id=g.project_id, session_id=state["sessionId"])
     output_project_name = state["expId"]
-    meta = sly.ProjectMeta(g.model_meta.obj_classes, g.model_meta.tag_metas)
-    project_id = init_project_remotely(project_name=output_project_name, meta=meta)
+    project_id = init_project_remotely(project_name=output_project_name)
 
     for ds_name in g.ds_video_map:
         dataset = g.api.dataset.create(project_id, ds_name, change_name_if_conflict=True)
