@@ -320,14 +320,13 @@ def shutdown_app():
         sly.logger.info("Application shutdown successfully")
 
 
-def init_project_remotely(project_name="ApplyNNtoVideoProject"):
+def init_project_remotely(project_name="ApplyNNtoVideoProject", meta: sly.ProjectMeta = None):
     project = g.api.project.create(
         g.workspace_id,
         project_name,
         type=sly.ProjectType.VIDEOS,
         change_name_if_conflict=True,
     )
-
     to_remove = [c.name for c in g.model_meta.obj_classes if c.name not in g.selected_classes_list]
     meta = meta.delete_obj_classes(to_remove)
     g.result_meta = g.api.project.update_meta(project.id, meta)
@@ -419,7 +418,8 @@ def annotate_videos(state):
 
     w.workflow_input(g.api, project_id=g.project_id, session_id=state["sessionId"])
     output_project_name = state["expId"]
-    project_id = init_project_remotely(project_name=output_project_name)
+    meta = sly.ProjectMeta(g.model_meta.obj_classes, g.model_meta.tag_metas)
+    project_id = init_project_remotely(project_name=output_project_name, meta=meta)
 
     for ds_name in g.ds_video_map:
         dataset = g.api.dataset.create(project_id, ds_name, change_name_if_conflict=True)
