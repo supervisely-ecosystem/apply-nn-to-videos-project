@@ -17,7 +17,7 @@
                     type="text"
                     class="ml5"
                     style="padding: 0; font-size: 20px"
-                    @click="$refs['sly-select-app-session'].fetchSessions()"
+                    @click="$refs['sly-select-app-session-{{{ widget.widget_id }}}'].fetchSessions()"
                     ><i class="zmdi zmdi-refresh mr5"></i></el-button
             ></el-tooltip>
 
