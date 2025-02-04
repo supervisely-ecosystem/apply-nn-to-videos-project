@@ -320,21 +320,15 @@ def shutdown_app():
         sly.logger.info("Application shutdown successfully")
 
 
-def init_project_remotely(project_name="ApplyNNtoVideoProject", meta: sly.ProjectMeta = None):
+def init_project_remotely(project_name="ApplyNNtoVideoProject"):
     project = g.api.project.create(
         g.workspace_id,
         project_name,
         type=sly.ProjectType.VIDEOS,
         change_name_if_conflict=True,
     )
-    if meta is None:
-        meta = g.model_meta.clone(
-            [c.name for c in g.model_meta.obj_classes if c.name in g.selected_classes_list]
-        )
-    else:
-        meta = meta.delete_obj_classes(
-            [c.name for c in g.model_meta.obj_classes if c.name not in g.selected_classes_list]
-        )
+    classes_to_keep = [c.name for c in g.model_meta.obj_classes if c.name in g.selected_classes_list]
+    meta = g.model_meta.clone(classes_to_keep)
     g.result_meta = g.api.project.update_meta(project.id, meta)
 
     return project.id
