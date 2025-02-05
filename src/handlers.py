@@ -197,6 +197,9 @@ def generate_annotation_example():
         frame_to_annotation = f.frame_index_to_annotation(
             model_predictions, (frame_index, frame_index)
         )
+        frame_to_annotation = f.filter_annotation_by_classes(
+            frame_to_annotation, g.selected_classes_list
+        )
 
         preview_url = functions.get_preview_image(video_id, frame_to_annotation, frame_index)
         DataJson()["frameUrl"] = preview_url
