@@ -327,7 +327,7 @@ def init_project_remotely(project_name="ApplyNNtoVideoProject"):
         type=sly.ProjectType.VIDEOS,
         change_name_if_conflict=True,
     )
-    classes_to_keep = [c.name for c in g.model_meta.obj_classes if c.name in g.selected_classes_list]
+    classes_to_keep = [c for c in g.model_meta.obj_classes if c.name in g.selected_classes_list]
     meta = g.model_meta.clone(classes_to_keep)
     g.result_meta = g.api.project.update_meta(project.id, meta)
 
