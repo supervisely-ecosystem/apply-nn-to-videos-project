@@ -164,14 +164,13 @@ def get_videos_info(project_id, state):
     frames_min = {}
     frames_max = {}
 
-    datasets = g.api.dataset.get_list(project_id)
     g.ds_video_map = {}
-    for ds in datasets:
+    for ds in g.datasets:
         videos_info = g.api.video.get_list(ds.id)
-        g.ds_video_map[ds.name] = []
+        g.ds_video_map[ds.id] = []
 
         for video_info in videos_info:
-            g.ds_video_map[ds.name].append(video_info.name)
+            g.ds_video_map[ds.id].append(video_info)
             general_videos_info.append(
                 {
                     "name": video_info.name,
@@ -411,6 +410,28 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
         return annotations_to_video_annotation(
             frame_to_annotation, obj_classes, video_data["frame_shape"]
         )
+    
+
+def get_dataset(dataset_id: int, datasets: Optional[List[sly.DatasetInfo]] = None) -> sly.DatasetInfo:
+    if datasets is None:
+        datasets = g.datasets
+    ds = next((ds for ds in g.datasets if ds.id == dataset_id), None)
+    if ds is None:
+        raise ValueError(f"Dataset with id {dataset_id} not found in the project {g.project_id}")
+    return ds
+
+
+def get_or_create_dst_dataset(src_dataset_id: int, dst_project_id: int):
+    if src_dataset_id in g.dst_datasets:
+        return g.dst_datasets[src_dataset_id]
+    src_dataset = get_dataset(src_dataset_id)
+    if src_dataset.parent_id is not None:
+        get_or_create_dst_dataset(src_dataset.parent_id, dst_project_id)
+    parent_dst_dataset_id = None
+    parent_dst_dataset = g.dst_datasets.get(src_dataset.parent_id, None)
+    if parent_dst_dataset is not None:
+        parent_dst_dataset_id = parent_dst_dataset.id
+    return g.api.dataset.create(project_id=dst_project_id, name=src_dataset.name, parent_id=parent_dst_dataset_id, change_name_if_conflict=True)
 
 
 def annotate_videos(state):
@@ -420,16 +441,19 @@ def annotate_videos(state):
     output_project_name = state["expId"]
     project_id = init_project_remotely(project_name=output_project_name)
 
-    for ds_name in g.ds_video_map:
-        dataset = g.api.dataset.create(project_id, ds_name, change_name_if_conflict=True)
+    for ds_id in g.ds_video_map:
+        src_dataset = get_dataset(ds_id, g.datasets)
+        dst_dataset = get_or_create_dst_dataset(src_dataset.id, project_id)
 
         videos_table = DataJson()["videosTable"]
 
+        ds_name = src_dataset.name
+        ds_video_names = [v.name for v in g.ds_video_map[ds_id]]
         selected_videos_data = [
             row
             for row in videos_table
             if row["name"] in selected_videos_names
-            and row["name"] in g.ds_video_map[ds_name]
+            and row["name"] in ds_video_names
             and row["dataset"] == ds_name
         ]
 
@@ -438,7 +462,7 @@ def annotate_videos(state):
         ):
             annotation: sly.VideoAnnotation = get_video_annotation(video_data, state)
             upload_to_project(
-                video_data, annotation, dataset.id, output_data_widget.current_video_progress
+                video_data, annotation, dst_dataset.id, output_data_widget.current_video_progress
             )
 
     res_project = g.api.project.get_info_by_id(project_id)
