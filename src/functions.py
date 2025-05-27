@@ -431,7 +431,9 @@ def get_or_create_dst_dataset(src_dataset_id: int, dst_project_id: int):
     parent_dst_dataset = g.dst_datasets.get(src_dataset.parent_id, None)
     if parent_dst_dataset is not None:
         parent_dst_dataset_id = parent_dst_dataset.id
-    return g.api.dataset.create(project_id=dst_project_id, name=src_dataset.name, parent_id=parent_dst_dataset_id, change_name_if_conflict=True)
+    dst_dataset = g.api.dataset.create(project_id=dst_project_id, name=src_dataset.name, parent_id=parent_dst_dataset_id, change_name_if_conflict=True)
+    g.dst_datasets[src_dataset_id] = dst_dataset
+    return dst_dataset
 
 
 def annotate_videos(state):
