@@ -1,15 +1,13 @@
 import os
-import sys
 import pathlib
+from typing import Dict, List
 
 import torch.cuda
 
 import supervisely as sly
 
-from fastapi import FastAPI
-from starlette.staticfiles import StaticFiles
 from supervisely.app import DataJson, StateJson
-from supervisely.app.fastapi import create, Jinja2Templates
+from supervisely.api.video.video_api import VideoInfo
 
 
 app_root_directory = str(pathlib.Path(__file__).parent.absolute().parents[0])
@@ -57,7 +55,8 @@ workspace_id = int(os.environ["context.workspaceId"])
 project_info = api.project.get_info_by_id(project_id)
 project_meta: sly.ProjectMeta = sly.ProjectMeta.from_json(api.project.get_meta(project_id))
 
-ds_video_map = None
+datasets = api.dataset.get_list(project_id, recursive=True)
+ds_video_map: Dict[int, List[VideoInfo]] = None
 model_info = None
 model_meta: sly.ProjectMeta = None
 device = (
@@ -86,3 +85,5 @@ model_settings = ""
 tracking_settings = ""
 
 result_meta = None
+
+dst_datasets = {} # src dataset id -> dst dataset info
