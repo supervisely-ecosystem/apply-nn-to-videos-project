@@ -14,6 +14,7 @@ from src.ui import layout
 app = sly.Application(
     layout=layout,
     static_dir=os.path.join(g.app_root_directory, "static"),
+    show_header=False
 )
 server = app.get_server()
 
