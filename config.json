@@ -14,7 +14,7 @@
   "port": 8000,
   "description": "Predictions on every frame are combined with BoT-SORT/DeepSort into tracks automatically",
   "docker_image": "supervisely/apply-nn-to-videos-project:1.0.5",
-  "instance_version": "6.10.0",
+  "instance_version": "6.12.44",
   "task_location": "workspace_tasks",
   "isolate": true,
   "headless": false,

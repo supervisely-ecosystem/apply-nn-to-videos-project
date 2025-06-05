@@ -1,4 +1,4 @@
-supervisely[tracking]==6.73.158
+supervisely[tracking]==6.73.374
 
 # base
 Cython
