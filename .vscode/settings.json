@@ -5,7 +5,7 @@
         "supervisely.egg-info": true,
         ".venv": true
     },
-    "python.defaultInterpreterPath": ".venv/bin/python",
+    // "python.defaultInterpreterPath": ".venv/bin/python",
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
     "editor.formatOnType": true,
