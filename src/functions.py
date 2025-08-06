@@ -351,6 +351,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
     frames_range = (frames_min[video_data["name"]], frames_max[video_data["name"]])
     framesCount = frames_range[1] - frames_range[0] + 1
     
+    apply_tracker = state["applyTrackingAlgorithm"]
     tracker = state["selectedTrackingAlgorithm"]
     progress_widget=output_data_widget.current_video_progress
     
@@ -359,7 +360,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
     inf_setting["classes"] = g.selected_classes_list
     session = sly.nn.inference.Session(api=api, task_id=task_id, inference_settings=inf_setting)
     
-    if tracker == "botsort":
+    if tracker == "botsort" and apply_tracker:
         for _ in progress_widget(
             session.inference_video_id_async(
                 video_id=video_id,
@@ -395,7 +396,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
             frame_to_annotation, g.selected_classes_list
         )
 
-        if tracker == "boxmot":
+        if tracker == "boxmot" and apply_tracker:
             with output_data_widget.current_video_progress(
                 message=f'Applying tracking algorithm ({state["selectedTrackingAlgorithm"]})',
                 total=abs(frames_range[0] - frames_range[1]) + 1,
@@ -412,7 +413,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
                     progress=progress,
                     tracking_settings=tracking_settings,
                 )
-        else:
+        elif not apply_tracker:
             sly.logger.info("Tracking algorithm is not applied")
             obj_classes = g.result_meta.obj_classes
             video_ann = annotations_to_video_annotation(
