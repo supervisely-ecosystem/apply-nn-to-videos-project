@@ -303,56 +303,56 @@ def get_video_size(local_video_path):
     return os.path.getsize(local_video_path)
 
 
-# def track_on_model(
-#     state, video_id, frames_range, tracking_algorithm="boxmot", progress_widget: SlyTqdm = None
-# ):
-#     if tracking_algorithm not in g.model_info.get("tracking_algorithms", []):
-#         raise ValueError(f"Tracking algorithm {tracking_algorithm} is not supported by the model")
+def track_on_model(
+    state, video_id, frames_range, tracking_algorithm="boxmot", progress_widget: SlyTqdm = None
+):
+    if tracking_algorithm not in g.model_info.get("tracking_algorithms", []):
+        raise ValueError(f"Tracking algorithm {tracking_algorithm} is not supported by the model")
 
-#     try:
-#         inf_setting, _ = f.get_model_and_tracking_settings(state)
-#     except Exception as e:
-#         inf_setting = {}
-#         sly.logger.warn(
-#             f"Model Inference launched without additional settings. \n" f"Reason: {e}",
-#             exc_info=True,
-#         )
+    try:
+        inf_setting, _ = f.get_model_and_tracking_settings(state)
+    except Exception as e:
+        inf_setting = {}
+        sly.logger.warn(
+            f"Model Inference launched without additional settings. \n" f"Reason: {e}",
+            exc_info=True,
+        )
 
-#     inf_setting["classes"] = g.selected_classes_list
+    inf_setting["classes"] = g.selected_classes_list
 
-#     default_tracking_settings = {
-#         "track_high_thresh": 0.4,
-#         "track_low_thresh": 0.1,
-#         "new_track_thresh": 0.5,
-#         "match_thresh": 0.6,
-#     }
-#     for key, val in default_tracking_settings.items():
-#         inf_setting.setdefault(key, val)
+    default_tracking_settings = {
+        "track_high_thresh": 0.4,
+        "track_low_thresh": 0.1,
+        "new_track_thresh": 0.5,
+        "match_thresh": 0.6,
+    }
+    for key, val in default_tracking_settings.items():
+        inf_setting.setdefault(key, val)
 
-#     task_id = state["sessionId"]
-#     startFrameIndex = frames_range[0]
-#     framesCount = frames_range[1] - frames_range[0] + 1
+    task_id = state["sessionId"]
+    startFrameIndex = frames_range[0]
+    framesCount = frames_range[1] - frames_range[0] + 1
 
-#     g.inference_session = Session(g.api, task_id, inference_settings=inf_setting)
+    g.inference_session = Session(g.api, task_id, inference_settings=inf_setting)
 
-#     sly.logger.debug("Starting inference...")
+    sly.logger.debug("Starting inference...")
 
-#     try:
-#         for _ in progress_widget(
-#             g.inference_session.inference_video_id_async(
-#                 video_id,
-#                 startFrameIndex,
-#                 framesCount,
-#                 tracker=tracking_algorithm,
-#             )
-#         ):
-#             pass
-#     except Exception:
-#         g.inference_session.stop_async_inference()
-#         raise
+    try:
+        for _ in progress_widget(
+            g.inference_session.inference_video_id_async(
+                video_id,
+                startFrameIndex,
+                framesCount,
+                tracker=tracking_algorithm,
+            )
+        ):
+            pass
+    except Exception:
+        g.inference_session.stop_async_inference()
+        raise
 
-#     result = g.inference_session.inference_result
-#     if result is None or result.get("video_ann", None) is None:
-#         raise RuntimeError("Model returned empty result")
+    result = g.inference_session.inference_result
+    if result is None or result.get("video_ann", None) is None:
+        raise RuntimeError("Model returned empty result")
 
-#     return result["video_ann"]
+    return result["video_ann"]

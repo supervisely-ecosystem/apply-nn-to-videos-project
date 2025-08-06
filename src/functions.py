@@ -349,6 +349,8 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
     frames_min = state["framesMin"]
     frames_max = state["framesMax"]
     frames_range = (frames_min[video_data["name"]], frames_max[video_data["name"]])
+    framesCount = frames_range[1] - frames_range[0] + 1
+    
     tracker = state["selectedTrackingAlgorithm"]
     progress_widget=output_data_widget.current_video_progress
     
@@ -361,14 +363,18 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
         for _ in progress_widget(
             session.inference_video_id_async(
                 video_id=video_id,
-                start_frame_index=frames_min,
-                frames_count=frames_max,
+                start_frame_index=frames_range[0],
+                frames_count=framesCount,
                 tracker=tracker
             )
         ):
-            pass
+                pass
         
-        video_ann = session.inference_result["video_ann"]
+        video_ann_json  = session.inference_result["video_ann"]
+        video_ann = sly.VideoAnnotation.from_json(
+            data=video_ann_json, 
+            project_meta=g.result_meta
+        )
         
     else: 
         iterator = session.inference_video_id_async( 
@@ -464,7 +470,7 @@ def annotate_videos(state):
         for video_data in output_data_widget.apply_nn_to_video_project_progress(
             selected_videos_data, message=f"Inference Videos in dataset: {ds_name}"
         ):
-            annotation: sly.VideoAnnotation = get_video_annotation(video_data, state)
+            annotation: sly.VideoAnnotation = get_video_annotation(video_data, state) #check format
             upload_to_project(
                 video_data, annotation, dst_dataset.id, output_data_widget.current_video_progress
             )
