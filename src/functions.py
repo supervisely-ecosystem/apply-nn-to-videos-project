@@ -371,7 +371,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
         ):
                 pass
         
-        video_ann_json  = session.inference_result["video_ann"]
+        video_ann_json  = session.inference_result["video_ann"] # None
         video_ann = sly.VideoAnnotation.from_json(
             data=video_ann_json, 
             project_meta=g.result_meta
