@@ -380,8 +380,8 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
     else: 
         iterator = session.inference_video_id_async( 
             video_id=video_id,
-            start_frame_index=frames_min,
-            frames_count=frames_max,
+            start_frame_index=frames_range[0],
+            frames_count=framesCount,
             preparing_cb=progress_widget
         )
         model_predictions = list(progress_widget(iterator, message="Inferring model..."))
