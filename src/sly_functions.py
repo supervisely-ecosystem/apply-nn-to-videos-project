@@ -285,16 +285,35 @@ def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm 
 
 
 def frame_index_to_annotation(annotation_predictions, frames_range):
+    """
+    Convert frame predictions to frame index annotation dictionary.
+    
+    Args:
+        annotation_predictions: List of annotations (can be sly.Annotation objects or dicts)
+        frames_range: Tuple of (start_frame, end_frame)
+        
+    Returns:
+        Dict mapping frame indices to sly.Annotation objects
+    """
     frame_index_to_annotation_dict = {}
 
-    for frame_index, annotation_json in zip(
+    for frame_index, annotation_data in zip(
         range(frames_range[0], frames_range[1] + 1), annotation_predictions
     ):
-        if isinstance(annotation_json, dict) and "annotation" in annotation_json.keys():
-            annotation_json = annotation_json["annotation"]
-        frame_index_to_annotation_dict[frame_index] = sly.Annotation.from_json(
-            annotation_json, g.model_meta
-        )
+        # Handle different input types
+        if isinstance(annotation_data, sly.Annotation):
+            # Already a Supervisely annotation object
+            annotation = annotation_data
+        elif isinstance(annotation_data, dict):
+            # Handle JSON format (backward compatibility)
+            annotation_json = annotation_data
+            if "annotation" in annotation_json:
+                annotation_json = annotation_json["annotation"]
+            annotation = sly.Annotation.from_json(annotation_json, g.model_meta)
+        else:
+            raise ValueError(f"Unsupported annotation type: {type(annotation_data)}")
+            
+        frame_index_to_annotation_dict[frame_index] = annotation
 
     return frame_index_to_annotation_dict
 
