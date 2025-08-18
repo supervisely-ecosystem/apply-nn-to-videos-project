@@ -343,46 +343,64 @@ def upload_to_project(video_data, annotation: sly.VideoAnnotation, dataset_id, p
     progress_cb = progress(message="Uploading annotation", total=len(annotation.figures))
     g.api.video.annotation.append(file_info.id, annotation, progress_cb=progress_cb)
 
-
 def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
+    task_id = state["sessionId"]
+    video_id = video_data["videoId"]
     frames_min = state["framesMin"]
     frames_max = state["framesMax"]
     frames_range = (frames_min[video_data["name"]], frames_max[video_data["name"]])
-    video_id = video_data["videoId"]
-
-    if state["applyTrackingAlgorithm"] is True and state["selectedTrackingAlgorithm"] != "boxmot":
-        try:
-            ann_json = f.track_on_model(
-                state,
+    framesCount = frames_range[1] - frames_range[0] + 1
+    
+    apply_tracker = state["applyTrackingAlgorithm"]
+    tracker = state["selectedTrackingAlgorithm"]
+    progress_widget=output_data_widget.current_video_progress
+    
+    api = sly.Api()
+    inf_setting, _ = get_model_and_tracking_settings(state)
+    inf_setting["classes"] = g.selected_classes_list
+    session = sly.nn.inference.Session(api=api, task_id=task_id, inference_settings=inf_setting)
+    
+    if tracker == "botsort" and apply_tracker:
+        for _ in progress_widget(
+            session.inference_video_id_async(
                 video_id=video_id,
-                frames_range=frames_range,
-                progress_widget=output_data_widget.current_video_progress,
+                start_frame_index=frames_range[0],
+                frames_count=framesCount,
+                tracker=tracker
             )
-            return sly.VideoAnnotation.from_json(ann_json, g.model_meta)
-        except Exception:
-            sly.logger.warning(
-                "Failed to apply tracking on model, fallback to default mode", exc_info=True
-            )
+        ):
+                pass
+        
+        video_ann_json  = session.inference_result["video_ann"] # None
+        video_ann = sly.VideoAnnotation.from_json(
+            data=video_ann_json, 
+            project_meta=g.result_meta
+        )
+        
+    else: 
+        iterator = session.inference_video_id_async( 
+            video_id=video_id,
+            start_frame_index=frames_range[0],
+            frames_count=framesCount,
+            preparing_cb=progress_widget
+        )
+        model_predictions = list(progress_widget(iterator, message="Inferring model..."))
+        if not model_predictions:
+            raise RuntimeError(f"Empty result: {model_predictions}")
+        if isinstance(model_predictions, dict) and "ann" in model_predictions.keys():
+            model_predictions = model_predictions["ann"]
+        sly.logger.info(f"Inference done! Result has {len(model_predictions)} items")
 
-    model_predictions = f.get_model_inference(
-        state,
-        video_id=video_id,
-        frames_range=frames_range,
-        progress_widget=output_data_widget.current_video_progress,
-    )
+        frame_to_annotation = f.frame_index_to_annotation(model_predictions, frames_range)
+        frame_to_annotation = f.filter_annotation_by_classes(
+            frame_to_annotation, g.selected_classes_list
+        )
 
-    frame_to_annotation = f.frame_index_to_annotation(model_predictions, frames_range)
-    frame_to_annotation = f.filter_annotation_by_classes(
-        frame_to_annotation, g.selected_classes_list
-    )
-
-    if state["applyTrackingAlgorithm"] is True:
-        with output_data_widget.current_video_progress(
-            message=f'Applying tracking algorithm ({state["selectedTrackingAlgorithm"]})',
-            total=abs(frames_range[0] - frames_range[1]) + 1,
-        ) as progress:
-            tracking_algorithm = state["selectedTrackingAlgorithm"]
-            if tracking_algorithm == "boxmot":
+        if tracker == "boxmot" and apply_tracker:
+            with output_data_widget.current_video_progress(
+                message=f'Applying tracking algorithm ({state["selectedTrackingAlgorithm"]})',
+                total=abs(frames_range[0] - frames_range[1]) + 1,
+            ) as progress:
                 _, tracking_settings = get_model_and_tracking_settings(state)
                 video_ann = apply_boxmot(
                     g.api,
@@ -395,23 +413,14 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
                     progress=progress,
                     tracking_settings=tracking_settings,
                 )
-            else:
-                video_ann = f.apply_tracking_algorithm_to_predictions(
-                    state=state,
-                    video_id=video_id,
-                    frames_range=frames_range,
-                    frame_to_annotation=frame_to_annotation,
-                    tracking_algorithm=tracking_algorithm,
-                    pbar_cb=progress.update,
-                )
-            return video_ann
-    else:
-        obj_classes = g.result_meta.obj_classes
-        return annotations_to_video_annotation(
-            frame_to_annotation, obj_classes, video_data["frame_shape"]
-        )
+        elif not apply_tracker:
+            sly.logger.info("Tracking algorithm is not applied")
+            obj_classes = g.result_meta.obj_classes
+            video_ann = annotations_to_video_annotation(
+                frame_to_annotation, obj_classes, video_data["frame_shape"]
+            )
+    return video_ann
     
-
 def get_dataset(dataset_id: int, datasets: Optional[List[sly.DatasetInfo]] = None) -> sly.DatasetInfo:
     if datasets is None:
         datasets = g.datasets
@@ -462,7 +471,7 @@ def annotate_videos(state):
         for video_data in output_data_widget.apply_nn_to_video_project_progress(
             selected_videos_data, message=f"Inference Videos in dataset: {ds_name}"
         ):
-            annotation: sly.VideoAnnotation = get_video_annotation(video_data, state)
+            annotation: sly.VideoAnnotation = get_video_annotation(video_data, state) #check format
             upload_to_project(
                 video_data, annotation, dst_dataset.id, output_data_widget.current_video_progress
             )

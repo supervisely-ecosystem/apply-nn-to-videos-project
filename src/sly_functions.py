@@ -8,7 +8,7 @@ import ffmpeg
 
 import supervisely as sly
 
-from supervisely.nn.tracker import DeepSortTracker, BoTTracker
+# from supervisely.nn.tracker import DeepSortTracker, BoTTracker
 
 from supervisely.app.widgets import SlyTqdm
 from supervisely.app import DataJson, StateJson
@@ -247,54 +247,73 @@ def get_model_inference(state, video_id, frames_range, progress_widget: SlyTqdm 
     return result
 
 
-def apply_tracking_algorithm_to_predictions(
-    state, video_id, frames_range, frame_to_annotation, tracking_algorithm="bot", pbar_cb=None
-) -> sly.VideoAnnotation:
-    sly.logger.info(f"Applying tracking algorithm to predictions")
+# def apply_tracking_algorithm_to_predictions(
+#     state, video_id, frames_range, frame_to_annotation, tracking_algorithm="bot", pbar_cb=None
+# ) -> sly.VideoAnnotation:
+#     sly.logger.info(f"Applying tracking algorithm to predictions")
 
-    video_local_info = download_video(video_id=video_id, frames_range=frames_range)
-    video_remote_info = g.api.video.get_info_by_id(video_id)
+#     video_local_info = download_video(video_id=video_id, frames_range=frames_range)
+#     video_remote_info = g.api.video.get_info_by_id(video_id)
 
-    if tracking_algorithm == "deepsort":
-        tracker = DeepSortTracker(state)
-    elif tracking_algorithm == "bot":
-        default_tracking_settings = {
-            "track_high_thresh": 0.4,
-            "track_low_thresh": 0.1,
-            "new_track_thresh": 0.5,
-            "match_thresh": 0.6,
-        }
-        tracker = BoTTracker(
-            {
-                **default_tracking_settings,
-                **state,
-            }
-        )
-    else:
-        raise NotImplementedError(f"Tracking algorithm {tracking_algorithm} is not implemented yet")
+#     if tracking_algorithm == "deepsort":
+#         tracker = DeepSortTracker(state)
+#     elif tracking_algorithm == "bot":
+#         default_tracking_settings = {
+#             "track_high_thresh": 0.4,
+#             "track_low_thresh": 0.1,
+#             "new_track_thresh": 0.5,
+#             "match_thresh": 0.6,
+#         }
+#         tracker = BoTTracker(
+#             {
+#                 **default_tracking_settings,
+#                 **state,
+#             }
+#         )
+#     else:
+#         raise NotImplementedError(f"Tracking algorithm {tracking_algorithm} is not implemented yet")
 
-    frames_path = video_local_info["frames_path"]
-    image_paths = sorted(get_files_paths(frames_path, [".png", ".jpg", ".jpeg"]))
+#     frames_path = video_local_info["frames_path"]
+#     image_paths = sorted(get_files_paths(frames_path, [".png", ".jpg", ".jpeg"]))
 
-    return tracker.track(
-        image_paths,
-        frame_to_annotation,
-        (video_remote_info.frame_height, video_remote_info.frame_width),
-        pbar_cb=pbar_cb,
-    )
+#     return tracker.track(
+#         image_paths,
+#         frame_to_annotation,
+#         (video_remote_info.frame_height, video_remote_info.frame_width),
+#         pbar_cb=pbar_cb,
+#     )
 
 
 def frame_index_to_annotation(annotation_predictions, frames_range):
+    """
+    Convert frame predictions to frame index annotation dictionary.
+    
+    Args:
+        annotation_predictions: List of annotations (can be sly.Annotation objects or dicts)
+        frames_range: Tuple of (start_frame, end_frame)
+        
+    Returns:
+        Dict mapping frame indices to sly.Annotation objects
+    """
     frame_index_to_annotation_dict = {}
 
-    for frame_index, annotation_json in zip(
+    for frame_index, annotation_data in zip(
         range(frames_range[0], frames_range[1] + 1), annotation_predictions
     ):
-        if isinstance(annotation_json, dict) and "annotation" in annotation_json.keys():
-            annotation_json = annotation_json["annotation"]
-        frame_index_to_annotation_dict[frame_index] = sly.Annotation.from_json(
-            annotation_json, g.model_meta
-        )
+        # Handle different input types
+        if isinstance(annotation_data, sly.Annotation):
+            # Already a Supervisely annotation object
+            annotation = annotation_data
+        elif isinstance(annotation_data, dict):
+            # Handle JSON format (backward compatibility)
+            annotation_json = annotation_data
+            if "annotation" in annotation_json:
+                annotation_json = annotation_json["annotation"]
+            annotation = sly.Annotation.from_json(annotation_json, g.model_meta)
+        else:
+            raise ValueError(f"Unsupported annotation type: {type(annotation_data)}")
+            
+        frame_index_to_annotation_dict[frame_index] = annotation
 
     return frame_index_to_annotation_dict
 
@@ -304,7 +323,7 @@ def get_video_size(local_video_path):
 
 
 def track_on_model(
-    state, video_id, frames_range, tracking_algorithm="bot", progress_widget: SlyTqdm = None
+    state, video_id, frames_range, tracking_algorithm="boxmot", progress_widget: SlyTqdm = None
 ):
     if tracking_algorithm not in g.model_info.get("tracking_algorithms", []):
         raise ValueError(f"Tracking algorithm {tracking_algorithm} is not supported by the model")
