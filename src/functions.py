@@ -110,6 +110,8 @@ def validate_model_type():
 
     else:
         raise TypeError(f"Model doesn't support videos processing")
+    
+    
 
 
 ### CHOOSE CLASSES ###
@@ -353,6 +355,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
     
     apply_tracker = state["applyTrackingAlgorithm"]
     tracker = state["selectedTrackingAlgorithm"]
+    
     progress_widget=output_data_widget.current_video_progress
     
     api = sly.Api()
@@ -361,6 +364,9 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
     session = sly.nn.inference.Session(api=api, task_id=task_id, inference_settings=inf_setting)
     
     if tracker == "botsort" and apply_tracker:
+        if tracker not in g.model_info.get("tracking_algorithms"):
+            raise ValueError(f"Tracking algorithm {tracker} is not supported by this version of serving app. Please deploy the latest version or use BoT-SORT(boxmot) tracker.")
+        
         for _ in progress_widget(
             session.inference_video_id_async(
                 video_id=video_id,
