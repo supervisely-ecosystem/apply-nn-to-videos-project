@@ -377,7 +377,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
         ):
                 pass
         
-        video_ann_json  = session.inference_result["video_ann"] # None
+        video_ann_json  = session.inference_result["video_ann"]
         video_ann = sly.VideoAnnotation.from_json(
             data=video_ann_json, 
             project_meta=g.result_meta
@@ -477,7 +477,7 @@ def annotate_videos(state):
         for video_data in output_data_widget.apply_nn_to_video_project_progress(
             selected_videos_data, message=f"Inference Videos in dataset: {ds_name}"
         ):
-            annotation: sly.VideoAnnotation = get_video_annotation(video_data, state) #check format
+            annotation: sly.VideoAnnotation = get_video_annotation(video_data, state) 
             upload_to_project(
                 video_data, annotation, dst_dataset.id, output_data_widget.current_video_progress
             )
