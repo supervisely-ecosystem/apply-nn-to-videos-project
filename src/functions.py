@@ -376,7 +376,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
             classes=g.selected_classes_list,
             inference_settings=inf_setting,
         ) as session:
-            _ = list(progress_widget(session))            
+            _ = list(progress_widget(session, message="Inferring model with tracking...", total=framesCount))            
         
         video_ann_json  = session.final_result["video_ann"]
         video_ann = sly.VideoAnnotation.from_json(
@@ -393,7 +393,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
             inference_settings=inf_setting,
             tracking=False
         ) as session:
-            model_predictions: List[Prediction] = list(progress_widget(session, message="Inferring model..."))
+            model_predictions: List[Prediction] = list(progress_widget(session, message="Inferring model...", total=framesCount))
         if not model_predictions:
             raise RuntimeError(f"Empty result: {model_predictions}")
         model_predictions = [pred.annotation for pred in model_predictions]
