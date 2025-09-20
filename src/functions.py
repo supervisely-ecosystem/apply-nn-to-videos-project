@@ -376,7 +376,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
             classes=g.selected_classes_list,
             inference_settings=inf_setting,
         ) as session:
-            predictions = list(session)            
+            _ = list(progress_widget(session))            
         
         video_ann_json  = session.final_result["video_ann"]
         video_ann = sly.VideoAnnotation.from_json(
