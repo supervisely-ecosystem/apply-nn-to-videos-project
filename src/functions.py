@@ -12,7 +12,7 @@ from src.ui.parameters.parameters import parameters_widget
 from src.ui.output_data.output_data import output_data_widget
 import src.workflow as w
 from src.boxmot_tracking import apply_boxmot
-
+from supervisely.nn.model.prediction import Prediction
 
 ### CONNECT TO MODEL ###
 
@@ -361,40 +361,42 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
     api = sly.Api()
     inf_setting, _ = get_model_and_tracking_settings(state)
     inf_setting["classes"] = g.selected_classes_list
-    session = sly.nn.inference.Session(api=api, task_id=task_id, inference_settings=inf_setting)
+    model_api = api.nn.connect(task_id)
     
     if tracker == "botsort" and apply_tracker:
         if tracker not in g.model_info.get("tracking_algorithms"):
             raise ValueError(f"Tracking algorithm {tracker} is not supported by this version of serving app. Please deploy the latest version or use BoT-SORT(boxmot) tracker.")
         
-        for _ in progress_widget(
-            session.inference_video_id_async(
-                video_id=video_id,
-                start_frame_index=frames_range[0],
-                frames_count=framesCount,
-                tracker=tracker
-            )
-        ):
-                pass
+        with model_api.predict_detached(
+            video_id=video_id,
+            start_frame=frames_range[0],
+            num_frames=framesCount,
+            tracking=True,
+            tracking_config={"tracker": tracker},
+            classes=g.selected_classes_list,
+            inference_settings=inf_setting,
+        ) as session:
+            _ = list(progress_widget(session, message="Inferring model with tracking...", total=framesCount))            
         
-        video_ann_json  = session.inference_result["video_ann"]
+        video_ann_json  = session.final_result["video_ann"]
         video_ann = sly.VideoAnnotation.from_json(
             data=video_ann_json, 
             project_meta=g.result_meta
         )
         
     else: 
-        iterator = session.inference_video_id_async( 
+        with model_api.predict_detached(
             video_id=video_id,
-            start_frame_index=frames_range[0],
-            frames_count=framesCount,
-            preparing_cb=progress_widget
-        )
-        model_predictions = list(progress_widget(iterator, message="Inferring model..."))
+            start_frame=frames_range[0],
+            num_frames=framesCount,
+            classes=g.selected_classes_list,
+            inference_settings=inf_setting,
+            tracking=False
+        ) as session:
+            model_predictions: List[Prediction] = list(progress_widget(session, message="Inferring model...", total=framesCount))
         if not model_predictions:
             raise RuntimeError(f"Empty result: {model_predictions}")
-        if isinstance(model_predictions, dict) and "ann" in model_predictions.keys():
-            model_predictions = model_predictions["ann"]
+        model_predictions = [pred.annotation for pred in model_predictions]
         sly.logger.info(f"Inference done! Result has {len(model_predictions)} items")
 
         frame_to_annotation = f.frame_index_to_annotation(model_predictions, frames_range)
