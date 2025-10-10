@@ -52,23 +52,23 @@ Application key points:
 Application supports next models: 
 
 ### Object Detection:  
-  - [Serve YOLOv5](../../../../supervisely-ecosystem/yolov5/supervisely/serve)  
+  - [Serve YOLOv5](../../../../../../supervisely-ecosystem/yolov5/supervisely/serve)  
       <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/yolov5/supervisely/serve" src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/yoloV5.png" width="350px"/> 
-  - [Serve MMDetection](../../../../supervisely-ecosystem/mmdetection/serve)  
+  - [Serve MMDetection](../../../../../supervisely-ecosystem/mmdetection/serve)  
     <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/mmdetection/serve" src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/mmDet.png" width="350px"/>
     
 ### Instance Segmentation:  
   
-- [Serve Detectron2](../../../../supervisely-ecosystem/detectron2/supervisely/instance_segmentation/serve)  
+- [Serve Detectron2](../../../../../../../supervisely-ecosystem/detectron2/supervisely/instance_segmentation/serve)  
       <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/detectron2/supervisely/instance_segmentation/serve" src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/detectron2.png" width="350px"/>
-- [Serve MMDetection](../../../../supervisely-ecosystem/mmdetection/serve)    
+- [Serve MMDetection](../../../../../supervisely-ecosystem/mmdetection/serve)    
       <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/mmdetection/serve" src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/mmDet.png" width="350px"/>
 
 ### Semantic Segmentation:  
 
-- [Serve UNet](../../../../supervisely-ecosystem/unet/supervisely/serve)  
+- [Serve UNet](../../../../../../supervisely-ecosystem/unet/supervisely/serve)  
        <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/unet/supervisely/serve" src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/unet.png" width="350px"/>
-- [Serve MMSegmentation](../../../../supervisely-ecosystem/mmsegmentation/serve)  
+- [Serve MMSegmentation](../../../../../supervisely-ecosystem/mmsegmentation/serve)  
      <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/mmsegmentation/serve" src="https://github.com/supervisely-ecosystem/apply-nn-to-videos-project/releases/download/v0.0.1/mmSeg.png" width="350px"/> -->
       
 
