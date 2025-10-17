@@ -12,7 +12,7 @@
     <a href="#Screenshot">Screenshot</a>
 </p>
 
-[![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](../../../../supervisely-ecosystem/apply-nn-to-videos-project)
+[![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](https://ecosystem.supervisely.com/apps/supervisely-ecosystem/apply-nn-to-videos-project)
 [![](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://supervisely.com/slack)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/supervisely-ecosystem/apply-nn-to-videos-project)
 [![views](https://app.supervisely.com/img/badges/views/supervisely-ecosystem/apply-nn-to-videos-project.png)](https://supervisely.com)
@@ -83,7 +83,7 @@ Application supports next models:
 <img src="https://imgur.com/1v8EYKR.png" width="80%" style='padding-top: 10px'>  
 
 
-2. Add [Apply NN to videos project](../../../../supervisely-ecosystem/apply-nn-to-videos-project) from ecosystem to your team  
+2. Add [Apply NN to videos project](https://ecosystem.supervisely.com/apps/apply-nn-to-videos-project) from ecosystem to your team  
 
 <img data-key="sly-module-link" data-module-slug="supervisely-ecosystem/apply-nn-to-videos-project" src="https://imgur.com/LDo8K1A.png" width="350px" style='padding-bottom: 10px'/>
 
