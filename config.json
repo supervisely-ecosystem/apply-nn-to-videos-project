@@ -13,8 +13,8 @@
   "entrypoint": "python -m uvicorn src.main:app --host 0.0.0.0 --port 8000",
   "port": 8000,
   "description": "Predictions on every frame are combined with BoT-SORT/DeepSort into tracks automatically",
-  "docker_image": "supervisely/apply-nn-to-videos-project:1.0.8",
-  "instance_version": "6.15.35",
+  "docker_image": "supervisely/apply-nn-to-videos-project:6.73.564",
+  "instance_version": "6.15.60",
   "task_location": "workspace_tasks",
   "isolate": true,
   "headless": false,
@@ -23,7 +23,9 @@
   "icon": "https://imgur.com/HPtoMih.png",
   "icon_background": "#FFFFFF",
   "context_menu": {
-    "target": ["videos_project"],
+    "target": [
+      "videos_project"
+    ],
     "context_root": "Neural Networks"
   },
   "poster": "https://imgur.com/dE7nQl6.png",
