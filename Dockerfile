@@ -40,4 +40,4 @@ COPY dev_requirements.txt dev_requirements.txt
 RUN pip install --no-cache-dir -r dev_requirements.txt
 RUN python3 -c "from supervisely.nn.tracker import *"
 
-LABEL python_sdk_version="6.73.492"
+LABEL python_sdk_version="6.73.564"
