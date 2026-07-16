@@ -1,5 +1,5 @@
 <div id="apply-nn-to-video-project" style="padding: 20px">
-    <sly-stepper :active="data.activeStep">
+    <sly-stepper :active="state.activeStep">
         {% for step in widget._steps %}
         <sly-stepper-item>
             {{{step}}}
