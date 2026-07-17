@@ -98,7 +98,8 @@ def ann_to_detections(ann: sly.Annotation, cls2label: dict):
     for label in ann.labels:
         cat = cls2label[label.obj_class.name]
         bbox = label.geometry.to_bbox()
-        conf = label.tags.get("confidence").value
+        confidence_tag = label.tags.get("confidence")
+        conf = confidence_tag.value if confidence_tag is not None else 1.0
         detections.append([bbox.left, bbox.top, bbox.right, bbox.bottom, conf, cat])
     detections = np.array(detections)
     return detections
@@ -111,7 +112,7 @@ def create_video_annotation(
     cat2obj: dict,
 ):
     img_h, img_w = frame_shape
-    video_objects = {}  # track_id -> VideoObject
+    video_objects = {}  # (track_id, object class) -> VideoObject
     frames = []
     for (i, ann), tracks in zip(frame_to_annotation.items(), tracking_results):
         frame_figures = []
@@ -122,13 +123,25 @@ def create_video_annotation(
             x1, y1, x2, y2, track_id, conf, cat = track[:7]
             cat = int(cat)
             track_id = int(track_id)
-            rect = sly.Rectangle(y1, x1, y2, x2)
-            video_object = video_objects.get(track_id)
+            det_id = int(track[7]) if len(track) > 7 else -1
+            source_label = None
+            if 0 <= det_id < len(ann.labels):
+                source_label = ann.labels[det_id]
+            obj_cls = cat2obj[cat]
+            if source_label is None and obj_cls.geometry_type != sly.Rectangle.geometry_type:
+                continue
+            geometry = (
+                source_label.geometry
+                if source_label is not None
+                and source_label.obj_class.geometry_type == obj_cls.geometry_type
+                else sly.Rectangle(y1, x1, y2, x2)
+            )
+            object_key = (track_id, obj_cls.name)
+            video_object = video_objects.get(object_key)
             if video_object is None:
-                obj_cls = cat2obj[cat]
                 video_object = sly.VideoObject(obj_cls)
-                video_objects[track_id] = video_object
-            frame_figures.append(sly.VideoFigure(video_object, rect, i))
+                video_objects[object_key] = video_object
+            frame_figures.append(sly.VideoFigure(video_object, geometry, i))
         frames.append(sly.Frame(i, frame_figures))
 
     objects = list(video_objects.values())
