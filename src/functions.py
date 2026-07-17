@@ -11,7 +11,7 @@ import src.sly_globals as g
 from src.ui.parameters.parameters import parameters_widget
 from src.ui.output_data.output_data import output_data_widget
 import src.workflow as w
-from src.boxmot_tracking import apply_boxmot
+from src.boxmot_tracking import apply_boxmot, get_boxmot_inference_classes
 from supervisely.nn.model.prediction import Prediction
 
 ### CONNECT TO MODEL ###
@@ -355,12 +355,17 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
     
     apply_tracker = state["applyTrackingAlgorithm"]
     tracker = state["selectedTrackingAlgorithm"]
+    inference_classes = list(g.selected_classes_list)
+    if tracker == "boxmot" and apply_tracker:
+        inference_classes = get_boxmot_inference_classes(
+            inference_classes, g.model_meta
+        )
     
     progress_widget=output_data_widget.current_video_progress
     
     api = sly.Api()
     inf_setting, _ = get_model_and_tracking_settings(state)
-    inf_setting["classes"] = g.selected_classes_list
+    inf_setting["classes"] = inference_classes
     model_api = api.nn.connect(task_id)
     
     if tracker == "botsort" and apply_tracker:
@@ -373,7 +378,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
             num_frames=framesCount,
             tracking=True,
             tracking_config={"tracker": tracker},
-            classes=g.selected_classes_list,
+            classes=inference_classes,
             inference_settings=inf_setting,
         ) as session:
             _ = list(progress_widget(session, message="Inferring model with tracking...", total=framesCount))            
@@ -389,7 +394,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
             video_id=video_id,
             start_frame=frames_range[0],
             num_frames=framesCount,
-            classes=g.selected_classes_list,
+            classes=inference_classes,
             inference_settings=inf_setting,
             tracking=False
         ) as session:
@@ -401,7 +406,7 @@ def get_video_annotation(video_data, state) -> sly.VideoAnnotation:
 
         frame_to_annotation = f.frame_index_to_annotation(model_predictions, frames_range)
         frame_to_annotation = f.filter_annotation_by_classes(
-            frame_to_annotation, g.selected_classes_list
+            frame_to_annotation, inference_classes
         )
 
         if tracker == "boxmot" and apply_tracker:
